@@ -1028,6 +1028,8 @@
       menu.addEventListener("click", event => { if (event.target.closest("button")) tools.open = false; });
       tools.append(summary, menu); actions.append(tools);
     }
+    // V3: Übersetzen bleibt sichtbar neben Antworten/Weiterleiten, vor „⋯“ (assets/v3-translate.js).
+    window.PBTranslate?.attach(actions, reader, mail);
     // Protection hints (rules, lists) stand between the actions and the message itself.
     reader.append(actions, ...(window.PBSchutz ? [PBSchutz.mailPanel(mail)] : []), window.PBMailView ? PBMailView.render(mail) : el("pre", "mail-text", mail.text));
     for (const [index, a] of mail.attachments.entries()) {

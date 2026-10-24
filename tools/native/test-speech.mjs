@@ -24,16 +24,20 @@ try{
   await page.goto(url);await page.waitForFunction(()=>window.PBWorkspace&&document.getElementById('mic'));
   const mic=page.locator('#mic');
   await mic.click();
-  ok('While listening the 🎤 shows 🔴',await mic.textContent()==='🔴');
-  await page.waitForFunction(()=>document.getElementById('mic').textContent==='🎤');
+  ok('V3: the first tap asks "Welche Sprache sprichst du?" before listening',await page.locator('#v3SpeechMenu h3').textContent()==='Welche Sprache sprichst du?'&&await page.evaluate(()=>speechCalls.length===0));
+  await page.locator('#v3SpeechMenu [data-speech="en-US"]').click();
+  ok('While listening the 🎤 shows 🔴 and is marked busy',await mic.textContent()==='🔴'&&await mic.getAttribute('aria-busy')==='true');
+  await page.waitForFunction(()=>{const m=document.getElementById('mic');return m.getAttribute('aria-busy')===null&&m.textContent.trim()==='';});
+  ok('Afterwards the mic button shows its line symbol again (V3), not an empty button',await mic.evaluate(m=>!!m.querySelector('svg.v3-icon')));
   ok('The recognized words land in the search field',await page.locator('#q').inputValue()==='Rechnung Zahnarzt');
-  ok('Android is asked in the app language with a short prompt',await page.evaluate(()=>speechCalls.length===1&&speechCalls[0].language==='de-DE'&&speechCalls[0].prompt==='Sprechen Sie jetzt'));
+  ok('Android listens in the chosen spoken language (English), the prompt stays in the app language',await page.evaluate(()=>speechCalls.length===1&&speechCalls[0].language==='en-US'&&speechCalls[0].prompt==='Sprechen Sie jetzt'));
+  ok('The chip next to the mic shows the spoken language',await page.locator('#v3SpeechChip').textContent()==='EN');
   ok('The old "Dein Browser kann keine Sprach-Eingabe" message does not appear',!(await page.locator('#toast').textContent()).includes('Dein Browser'));
   await page.evaluate(()=>{document.documentElement.lang='pl';speechAnswer={cancelled:true,text:''};});await page.locator('#q').fill('bleibt');
-  await mic.click();await page.waitForFunction(()=>speechCalls.length===2&&document.getElementById('mic').textContent==='🎤');
-  ok('Cancelling keeps the typed search and asks in Polish',await page.locator('#q').inputValue()==='bleibt'&&await page.evaluate(()=>speechCalls[1].language==='pl-PL'));
+  await mic.click();await page.waitForFunction(()=>speechCalls.length===2&&document.getElementById('mic').getAttribute('aria-busy')===null);
+  ok('Cancelling keeps the typed search; switching the app to Polish keeps the chosen spoken language',await page.locator('#q').inputValue()==='bleibt'&&await page.evaluate(()=>speechCalls[1].language==='en-US'));
   await page.evaluate(()=>{document.documentElement.lang='de';speechAnswer='missing';});
-  await mic.click();await page.waitForFunction(()=>speechCalls.length===3&&document.getElementById('mic').textContent==='🎤');
+  await mic.click();await page.waitForFunction(()=>speechCalls.length===3&&document.getElementById('mic').getAttribute('aria-busy')===null);
   ok('Without a speech recognizer on the device the app says so plainly',(await page.locator('#toast').textContent()).includes('keine Spracherkennung eingerichtet'));
   // Dictation in text fields (Klaus 2026-10-22): the question to the AI about a file gets 🎤 too.
   await page.evaluate(async()=>{const t='Mietvertrag ab 1. Mai';const r={hash:await sha256(new TextEncoder().encode(t).buffer),name:'Vertrag.txt',path:'Vertrag.txt',type:'text/plain',ext:'txt',date:Date.now(),size:t.length,snippet:t,via:'test',vector:buildVector(tokens(t)),tf:termFreq(tokens(t)),summary:'',category:'',dirId:null,nameTokens:tokens('Vertrag'),dupes:[],tags:[]};CATALOG.push(r);openKiModal(r.hash);});

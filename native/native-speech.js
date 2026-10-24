@@ -20,9 +20,10 @@
   let busy = false;
   async function listen(mic) {
     if (busy) return;
-    busy = true; const was = mic.textContent; mic.textContent = '🔴'; mic.setAttribute('aria-busy', 'true');
+    // V3: innerHTML keeps the line symbol when the button is restored.
+    busy = true; const was = mic.innerHTML; mic.textContent = '🔴'; mic.setAttribute('aria-busy', 'true');
     try {
-      const result = await plugin.listen({ language: LANG[lang()], prompt: say(0) });
+      const result = await plugin.listen({ language: (window.PBSpeechLang?.() || LANG[lang()]), prompt: say(0) });
       const text = typeof result?.text === 'string' ? result.text.trim().slice(0, 500) : '';
       if (result?.cancelled || !text) return;
       const q = document.getElementById('q');
@@ -30,7 +31,7 @@
       q.value = text; q.dispatchEvent(new Event('input', { bubbles: true })); q.focus();
     } catch (error) {
       note(say(String(error?.code || error?.message || '').includes('UNAVAILABLE') ? 1 : 2));
-    } finally { busy = false; mic.textContent = was; mic.removeAttribute('aria-busy'); }
+    } finally { busy = false; mic.innerHTML = was; mic.removeAttribute('aria-busy'); }
   }
   // Klaus 2026-10-22: "Wenn der Text eingegeben werden kann, dann bitte auch mit Mikrofon". Every larger text
   // field (question to the AI about a file, writing a mail, notes …) gets 🎤; the spoken text goes in at the cursor.
@@ -40,7 +41,7 @@
     if (busy) return;
     busy = true; mic.textContent = '🔴'; mic.setAttribute('aria-busy', 'true');
     try {
-      const result = await plugin.listen({ language: LANG[lang()], prompt: say(0) });
+      const result = await plugin.listen({ language: (window.PBSpeechLang?.() || LANG[lang()]), prompt: say(0) });
       const text = typeof result?.text === 'string' ? result.text.trim().slice(0, 2000) : '';
       if (result?.cancelled || !text) return;
       const start = field.selectionStart ?? field.value.length, end = field.selectionEnd ?? start;

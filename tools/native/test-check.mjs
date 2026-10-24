@@ -77,18 +77,18 @@ try{
   await page.evaluate(async()=>{document.documentElement.lang='de';for(const r of CATALOG){delete r.pruefung;await idbPut('catalog',r);}PBWorkspace.refresh();});
   const all=page.locator('.explorer-toolbar .pb-check-all-button');
   await page.waitForFunction(()=>document.querySelector('.explorer-toolbar .pb-check-all-button')?.textContent.includes('(3 offen)'));
-  ok('"Alle prüfen" says how many are open',(await all.textContent())==='🛡 Alle prüfen (3 offen)');
+  ok('"Alle prüfen" says how many are open (V3: shield as line symbol)',(await all.textContent())==='Alle prüfen (3 offen)'&&await all.locator('svg.v3-icon').count()===1);
   await all.click();
   const allDlg=page.locator('dialog.pb-check-all');await allDlg.waitFor({timeout:120000});
   ok('"Alle prüfen" shows the status of ALL files and lists the findings (Klaus 2026-10-22: no more "0 geprüft" next to known findings)',(await allDlg.locator('.pb-check-stand').textContent()).includes('⚠ 2 mit Fund')&&(await allDlg.locator('.pb-check-stand').textContent()).includes('✓ 1 ohne Fund')&&(await allDlg.textContent()).includes('Prüfstand aller 3 Dateien')&&await allDlg.locator('.pb-check-found li').count()===2);
   await allDlg.locator('button',{hasText:'Schließen'}).click();
-  await page.waitForFunction(()=>document.querySelector('.explorer-toolbar .pb-check-all-button')?.textContent==='🛡 Alle geprüft');
+  await page.waitForFunction(()=>document.querySelector('.explorer-toolbar .pb-check-all-button')?.textContent==='Alle geprüft');
   ok('Afterwards nothing is open any more, and the button still shows the status',!(await all.isDisabled()));
   // A file whose original is not on the device: never "jetzt prüfen".
   await page.evaluate(async()=>{const r=CATALOG.find(x=>!x.mail);delete r.pruefung;SESSION_FILES.delete(r.hash);await idbPut('catalog',r);PBWorkspace.refresh();});
   await page.waitForFunction(()=>[...document.querySelectorAll('#explorerFiles .pb-check-badge')].some(b=>b.dataset.check==='missing'));
   ok('Without the original the mark says "Original fehlt · nicht prüfbar"',(await page.locator('#explorerFiles .pb-check-badge[data-check="missing"]').first().textContent())==='⊘ Original fehlt · nicht prüfbar');
-  ok('Such files are not counted as "offen"; the button names them',(await all.textContent())==='🛡 Prüfstand · ⊘ 1 ohne Original');
+  ok('Such files are not counted as "offen"; the button names them',(await all.textContent())==='Prüfstand · ⊘ 1 ohne Original');
   await all.click();
   const standDlg=page.locator('dialog.pb-check-all');await standDlg.waitFor();
   ok('The status names the file without original and how to get it back',(await standDlg.locator('.pb-check-stand').textContent()).includes('⊘ 1 nicht prüfbar')&&(await standDlg.textContent()).includes('noch einmal ein'));

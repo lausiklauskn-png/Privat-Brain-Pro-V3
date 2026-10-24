@@ -136,7 +136,7 @@ public final class UpgradeProbe extends Instrumentation {
                 js("window.Capacitor.Plugins.ProMail.accounts().then(a=>window.__probeAccount=a.items.some(x=>x.id==='"+ID+"'));PBWorkspace.navigate('settings');true");
                 await("window.__probeAccount === true && document.querySelector('#vaultPlace h3')?.textContent.includes('Storage location and encryption') && document.querySelector('#vault-choose')?.getBoundingClientRect().width > 0 && window.PBVault?.active() === false");
                 js("document.querySelector('[data-lang=de]').click();true");
-                await("document.querySelector('#vaultPlace h3')?.textContent === '🔐 Speicherort und Verschlüsselung'");
+                await("document.querySelector('#vaultPlace h3')?.textContent.trim() === 'Speicherort und Verschlüsselung' && !!document.querySelector('#vaultPlace h3 > svg.v3-icon')");
                 // Let the real ACTION_OPEN_DOCUMENT_TREE leave the app, then cancel it.
                 js("localStorage.setItem('pb_fs_ok','1');PBWorkspace.navigate('intake');document.querySelector('#pickDir').click();true");
                 android.accessibilityservice.AccessibilityServiceInfo info=getUiAutomation().getServiceInfo();

@@ -26,3 +26,83 @@ html.v3 .mail-app{border-radius:var(--radius);box-shadow:var(--shadow-sm)}
 html.v3 .mail-list .mail-item{border-top-color:var(--line)}
 html.v3 .mail-avatar{font-size:.8rem}
 html.v3 .mail-account-bar select{font-weight:600}
+
+/* ===== Kompakt (Klaus 2026-10-24): weniger Leerraum oben, kleinere Kästen und Knöpfe, keine Erklärtexte ===== */
+html.v3 .v3-ic{display:inline-flex;align-items:center;gap:6px}
+html.v3 .v3-ic>.v3-icon{width:16px;height:16px}
+/* Erklärungen der alten Fassung raus; Ergebnis-Zeilen bleiben. */
+html.v3 #panel-search:not(.v3-help-open) .search-welcome,html.v3 #panel-search:not(.v3-help-open) .search-totals,html.v3 #panel-search:not(.v3-help-open) #searchEmpty{display:none!important}
+html.v3 #panel-search:not(.v3-help-open) #searchInfo.v3-quiet{display:none}
+html.v3 .panel>h2{display:none}
+html.v3 .live-mail .mail-head>h2,html.v3 .mail-app:not(.live-mail)>.mail-head>h2{display:none}
+html.v3 footer [data-i18n="footer1"],html.v3 footer [data-i18n="footer2"],html.v3 footer br{display:none}
+html.v3 footer{padding:10px 0;font-size:.75rem}
+/* Kopfzeile: Logo und Name nicht übereinander, kleinere Schrift. */
+html.v3 header.top{gap:8px;padding-bottom:6px}
+html.v3 header.top .logo{flex:none;display:flex}
+html.v3 header.top .brand{min-width:0}
+html.v3 header.top .brand h1{font-family:var(--sans);font-weight:600;font-size:1.05rem;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0}
+/* Suchfeld: flacher Kasten, Knöpfe ~32 px, Umschalter ohne Wortbruch. */
+html.v3 #panel-search .searchbox{padding:6px;gap:6px;border-radius:var(--radius-sm);box-shadow:none;flex-wrap:wrap;align-items:center}
+html.v3 #panel-search #q{min-height:36px;padding:6px 10px;flex:1 1 220px;min-width:0}
+html.v3 #mic{padding:0!important;width:36px;height:36px;display:inline-grid;place-items:center}
+html.v3 #mode{flex:0 0 auto}
+html.v3 #mode button{white-space:nowrap;padding:6px 10px;min-height:32px;font-size:.85rem}
+html.v3 .v3-filter-toggle{display:none;align-items:center;gap:6px;min-height:32px;padding:0 10px;white-space:nowrap}
+html.v3 .v3-filter-toggle .v3-icon{width:16px;height:16px}
+html.v3 .filterbar{gap:6px;margin:6px 0}
+html.v3 .filterbar select,html.v3 .filterbar button{min-height:32px;padding-top:4px;padding-bottom:4px;font-size:.85rem}
+html.v3 .searchmeta{margin:4px 0;gap:6px}
+html.v3 .combinerow{margin:2px 0;font-size:.85rem}
+html.v3 .panel{padding-top:6px}
+/* Explorer: eine Werkzeugzeile, kleinere Felder. */
+html.v3 .explorer-toolbar{gap:6px}
+html.v3 .explorer-toolbar input,html.v3 .explorer-toolbar select,html.v3 .explorer-toolbar button{min-height:32px}
+/* Mail: Hinweis kleiner. */
+html.v3 .mail-notice{padding:6px 12px;font-size:.78rem}
+@media (max-width:650px){
+  html.v3 .v3-filter-toggle{display:inline-flex}
+  html.v3:not(.v3-filters-open) #filterbar{display:none}
+  html.v3 #filterbar{display:grid;grid-template-columns:1fr 1fr}
+  html.v3 #panel-search #q{flex-basis:100%;order:-1}
+  html.v3 #mode{flex:1 1 auto;display:flex}
+  html.v3 #mode button{flex:1}
+  html.v3 header.top .logo img{width:28px;height:28px}
+}
+/* Dateien: Erklärsätze und die drei Punkte „Liest nur · Schlägt vor · Bewegt nichts“ raus; Knöpfe und Status bleiben. */
+html.v3 .library-setup:not(.v3-help-open) [data-ws="libraryHelp"],html.v3 #drop:not(.v3-help-open) #fsHint,html.v3 #drop:not(.v3-help-open) [data-i18n="dropDnd"],html.v3 #drop:not(.v3-help-open)>[data-i18n="dropP"],html.v3 #drop:not(.v3-help-open)~.native-import-reassurance{display:none!important}
+html.v3 #panel-intake .note{padding:10px 12px;margin:0 0 10px}
+html.v3 #panel-intake .note h3{font-family:var(--sans);font-size:.95rem;font-weight:600;margin:0 0 6px}
+html.v3 #libraryStatus{font-size:.8rem;color:var(--mut);margin:6px 0 0}
+html.v3 #drop{padding:14px 12px}
+html.v3 #drop>h2{font-family:var(--sans);font-size:1.05rem;font-weight:600;margin:0 0 10px}
+html.v3 #drop .btnrow{gap:6px;margin:0}
+html.v3 #drop .btnrow button{min-height:32px;padding:4px 12px}
+/* Symbol vor dem Text, auch bei Knöpfen, die als Block gesetzt sind. */
+html.v3 button.v3-ic,html.v3 .explorer-folder.v3-ic{display:inline-flex!important;align-items:center}
+html.v3 .explorer-toolbar{display:flex;flex-wrap:wrap;align-items:center}
+html.v3 #explorerFilter{flex:1 1 180px;min-width:0;width:auto}
+html.v3 #explorerSort{flex:0 0 auto;width:auto;max-width:100%}
+
+/* „?“ je Kasten: zeigt die Erklärung und blendet sie wieder aus (Klaus 2026-10-24). */
+html.v3 .v3-help{flex:none;width:26px;height:26px;min-height:26px;padding:0;border-radius:50%;display:inline-grid;place-items:center;
+  border:1px solid var(--line);background:var(--card);color:var(--mut);font:600 .85rem/1 var(--sans);box-shadow:none;cursor:pointer}
+html.v3 .v3-help[aria-expanded="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+html.v3 .library-setup,html.v3 #drop{position:relative}
+html.v3 .library-setup>.v3-help,html.v3 #drop>.v3-help{position:absolute;top:8px;right:8px}
+html.v3 #mode button{width:auto!important;min-width:max-content;max-width:none!important;flex:0 0 auto}
+@media (max-width:650px){html.v3 #mode button{flex:1 1 auto}}
+
+/* Sprech-Sprache neben dem Mikrofon */
+html.v3 .v3-speech-chip{min-width:34px;height:36px;padding:0 6px;font:600 .75rem/1 var(--sans);letter-spacing:.04em;color:var(--mut);border-radius:var(--radius-sm)}
+html.v3 .v3-speech-code{display:inline-grid;place-items:center;min-width:28px;height:20px;border-radius:5px;background:var(--card2);font:700 .7rem/1 var(--sans);color:var(--acc)}
+
+/* Übersetzung beim Lesen */
+html.v3 .v3-translate{margin:10px 0;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--card2)}
+html.v3 .v3-translate-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+html.v3 .v3-translate-head strong{margin-right:auto;font-size:.9rem}
+html.v3 .v3-translate-to{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;color:var(--mut)}
+html.v3 .v3-translate-to select{min-height:30px;padding:2px 8px}
+html.v3 .v3-translate-status:empty{display:none}
+html.v3 .v3-translate-out{white-space:pre-wrap;line-height:1.6;margin-top:8px;padding:10px;border-radius:var(--radius-sm);background:var(--card);border:1px solid var(--line)}
+html.v3 .v3-translate-btn .v3-icon{width:16px;height:16px}

@@ -25,9 +25,9 @@ for (const input of files) {
 let html = await readFile(join(root, 'index.html'), 'utf8');
 // Native branding is independent of the unchanged PWA source.
 for (const [before, after] of [
-  ['<title>Private Brain — nach Bedeutung suchen</title>', '<title>Private Brain Pro — nach Bedeutung suchen</title>'],
-  ['<meta name="apple-mobile-web-app-title" content="Private Brain">', '<meta name="apple-mobile-web-app-title" content="Private Brain Pro">'],
-  ['<h1>Private Brain</h1>', '<h1>Private Brain Pro</h1>']
+  ['<title>Private Brain — nach Bedeutung suchen</title>', '<title>Private Brain V3 — nach Bedeutung suchen</title>'],
+  ['<meta name="apple-mobile-web-app-title" content="Private Brain">', '<meta name="apple-mobile-web-app-title" content="Private Brain V3">'],
+  ['<h1>Private Brain</h1>', '<h1>Private Brain V3</h1>']
 ]) {
   if (!html.includes(before)) throw new Error('Review native branding after source changes');
   html = html.replace(before, after);

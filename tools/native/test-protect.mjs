@@ -142,7 +142,7 @@ try{
   const all=await page.evaluate(()=>document.body.innerText);
   ok('Nowhere does the app claim "virenfrei" or "virus-free"',!/virenfrei|virus-free|keine viren/i.test(all));
   await page.evaluate(()=>{document.documentElement.lang='en';});
-  ok('Card follows the language switch',await page.locator('#schutzPlace h3').textContent()==='🛡 Protection against malware, spam and scams');
+  ok('Card follows the language switch (V3: line symbol instead of emoji)',await page.locator('#schutzPlace h3').textContent().then(t=>t.trim()==='Protection against malware, spam and scams')&&await page.locator('#schutzPlace h3 > svg.v3-icon').count()===1);
   ok('No page errors on device A',A.errors.length===0);
   // ---------- offline and locked ----------
   const B=await device('B',{offline:true,unlocked:false});
