@@ -1,7 +1,11 @@
 # Private Brain Pro V3 — Sitzungs-Anker
 
-**Nächste Sitzung (Klaus 2026-10-24): Standard-Thema Klar, V3 als eigene App, Kontaktfotos a (Adressbuch) und b (von Hand).**
-[Start-Brief](BRIEF_NACHFOLGE_2026-10-24_V3-START.md) mit Aufgaben S1–S4 in Reihenfolge.
+**Nächste Sitzung (Klaus 2026-10-24): V3 als Windows-Version, selbe Methode wie bei Pro.**
+[Windows-Brief](BRIEF_NACHFOLGE_2026-10-25_V3-WINDOWS.md) (Achtung: `windows/` trägt noch Pros Namen und Kennung).
+Danach/daneben der [Start-Brief](BRIEF_NACHFOLGE_2026-10-24_V3-START.md) S1–S5 (Klar als Standard, eigene App, Kontaktfotos).
+Stand heute: [Abschlussbrief](BRIEF_ABSCHLUSS_2026-10-24_V3.md), Erkenntnisse: [Forschung](docs/FORSCHUNG-2026-10-24.md).
+Suche: ein Schalter „Bedeutung“, Sprachkürzel neben dem Mikrofon; Spaltenbreiten in Postfach/Explorer ziehbar;
+Explorer sortiert über ein Feld; Design „Bisher“ heißt „Erdton“.
 
 **V3 im Browser (Klaus 2026-10-24):** https://lausiklauskn-png.github.io/Privat-Brain-Pro-V3/ ist installierbar
 (Knopf oben, Name und Text unter dem Symbol „Private Brain V3“, Symbol mit „V3“: `icon-v3-*.png` aus
