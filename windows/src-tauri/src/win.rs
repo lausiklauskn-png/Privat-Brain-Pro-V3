@@ -3,7 +3,7 @@ use std::path::Path;
 #[cfg(windows)]
 pub fn startup_error(){
     use windows::{core::HSTRING,Win32::UI::WindowsAndMessaging::{MessageBoxW,MB_OK,MB_ICONERROR}};
-    unsafe{MessageBoxW(None,&HSTRING::from("Private Brain Pro konnte nicht starten. Ihre Daten wurden nicht zurückgesetzt. Bitte die Installation und den verfügbaren Speicher prüfen.\n\nPrivate Brain Pro could not start. Your data was not reset. Please check the installation and available storage.\n\nAPP_START_FAILED"),&HSTRING::from("Private Brain Pro"),MB_OK|MB_ICONERROR);}
+    unsafe{MessageBoxW(None,&HSTRING::from("Private Brain V3 konnte nicht starten. Ihre Daten wurden nicht zurückgesetzt. Bitte die Installation und den verfügbaren Speicher prüfen.\n\nPrivate Brain V3 could not start. Your data was not reset. Please check the installation and available storage.\n\nAPP_START_FAILED"),&HSTRING::from("Private Brain V3"),MB_OK|MB_ICONERROR);}
 }
 #[cfg(not(windows))]
 pub fn startup_error(){}
@@ -25,7 +25,7 @@ pub fn no_links(path:&Path)->Result<(),String> {
 #[cfg(windows)]
 pub fn protect(data:&[u8],binding:&str,decrypt:bool)->Result<Vec<u8>,String>{
     use windows::{core::PCWSTR,Win32::{Foundation::{HLOCAL,LocalFree},Security::Cryptography::{CryptProtectData,CryptUnprotectData,CRYPTPROTECT_UI_FORBIDDEN,CRYPT_INTEGER_BLOB}}};
-    let entropy=format!("private-brain-pro-windows|{}",binding).into_bytes();
+    let entropy=format!("private-brain-v3-windows|{}",binding).into_bytes();
     let blob=|bytes:&[u8]|CRYPT_INTEGER_BLOB{cbData:bytes.len() as u32,pbData:bytes.as_ptr() as *mut u8};
     let (input,extra)=(blob(data),blob(&entropy));let mut output=CRYPT_INTEGER_BLOB::default();
     unsafe{

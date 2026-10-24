@@ -74,7 +74,7 @@ final class DesktopOAuth implements MailEngine.OAuthProvider {
                         try {URI uri=URI.create(first.length>1?first[1]:"");valid&=uri.getScheme()==null&&uri.getRawPath().equals(path)&&uri.getRawQuery()!=null;values=query(uri.getRawQuery()==null?"":uri.getRawQuery());}
                         catch(Exception invalid){valid=false;}
                         valid &= MessageDigest.isEqual(state.getBytes(StandardCharsets.US_ASCII),values.getOrDefault("state","").getBytes(StandardCharsets.US_ASCII));
-                        String response=valid?"Private Brain Pro: Du kannst dieses Fenster jetzt schliessen.":"Diese Anmeldeantwort wurde nicht angenommen.";
+                        String response=valid?"Private Brain V3: Du kannst dieses Fenster jetzt schliessen.":"Diese Anmeldeantwort wurde nicht angenommen.";
                         byte[] body=response.getBytes(StandardCharsets.UTF_8);
                         socket.getOutputStream().write(((valid?"HTTP/1.1 200 OK":"HTTP/1.1 400 Bad Request")+"\r\nContent-Type: text/plain; charset=utf-8\r\nCache-Control: no-store\r\nContent-Security-Policy: default-src 'none'\r\nConnection: close\r\nContent-Length: "+body.length+"\r\n\r\n").getBytes(StandardCharsets.US_ASCII));socket.getOutputStream().write(body);
                         if(valid){if(values.containsKey("error"))throw new MailFailure("CANCELLED");code=values.get("code");if(code==null||code.isEmpty())throw new MailFailure("GMAIL_AUTH_REQUIRED");}

@@ -2549,8 +2549,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "925383efa346730478fb4838dbe9137d2a47675ad789c546d150a6e1dd4ab31c"
 
 [[package]]
-name = "private-brain-pro"
-version = "1.0.0-preview.29"
+name = "private-brain-v3"
+version = "3.0.0-preview.1"
 dependencies = [
  "base64 0.22.1",
  "getrandom 0.3.4",

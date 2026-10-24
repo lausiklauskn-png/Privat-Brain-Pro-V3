@@ -3,7 +3,7 @@
 function Wait-ApplicationRemoval {
   $deadline = [DateTime]::UtcNow.AddSeconds(60)
   do {
-    if (!(Test-Path $exe) -and !(Test-Path 'HKCU:\Software\Classes\Applications\private-brain-pro.exe')) { return }
+    if (!(Test-Path $exe) -and !(Test-Path 'HKCU:\Software\Classes\Applications\private-brain-v3.exe')) { return }
     Start-Sleep -Milliseconds 250
   } while ([DateTime]::UtcNow -lt $deadline)
   if (Test-Path $exe) { throw 'Uninstaller left the application binary after 60 seconds.' }

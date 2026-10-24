@@ -43,6 +43,26 @@ W5 **Release-Ablauf für V3** (nur auf Klaus' Wunsch): eigener Workflow `windows
 W6 **Herausgeber-Studio:** in der App (Android oder Windows) Schlüssel erzeugen, Sicherung und Ersatzschlüssel aufbewahren,
    den öffentlichen Schlüssel in `native/license-keys.json` eintragen; erst dann wirken Codes auf Käufergeräten.
 
+## Stand 2026-10-24 (W1–W3 gebaut, CI auf GitHub steht aus)
+
+- **W1 erledigt:** `tauri.conf.json` heißt „Private Brain V3“, Kennung `de.familyprojekt.privatebrain.v3`, Version
+  `3.0.0-preview.1`, Programm `private-brain-v3.exe`, Herausgeber „Private Brain V3“. Damit eigener Installationsordner
+  (`%LOCALAPPDATA%\Private Brain V3`), eigener Datenordner (`%LOCALAPPDATA%\de.familyprojekt.privatebrain.v3`), eigener
+  Deinstallationseintrag und eigenes „Öffnen mit“. Fenstertitel, Startfehler, Passwortfenster, Lizenzseite, Gmail-Antwortseite,
+  DPAPI-Zusatz (`private-brain-v3-windows|…`) und Installername `Private-Brain-V3-Windows-…-x64-setup.exe` auf V3.
+  Updates sucht V3 nur in `lausiklauskn-png/Privat-Brain-Pro-V3` unter Tags `v3-windows-3.0.0-preview.N` (Pros Kanal
+  nie; eigene Kernprobe). Symbol: `icon-v3-windows.ico` (16–256 px) wird unverändert zu `src-tauri/icons/icon.ico`.
+- **Bleibt absichtlich „pro“:** das Java-Paket `de.familyprojekt.privatebrain.pro` der Mail-Maschine (sie wird aus den
+  gemeinsamen Android-Quellen übersetzt, nur ein Code-Name), die Bridge-Namen `ProMail`/`ProVault`…, das Sicherungsformat
+  `app:'private-brain-pro'` (eine Pro-Sicherung bleibt in V3 lesbar) und `gmail-desktop.json` (W4).
+- **W2 geprüft:** der Windows-Bau nimmt `www/` aus `tools/native/prepare-web.mjs` ganz; `themes.*`, `v3-ui.*`,
+  `v3-translate.js` sind drin, Titel „Private Brain V3“. `shared-source.json` entsteht bei jedem Bau neu (24 Quellen).
+- **W3 erledigt:** `pruefung/*.ps1` auf neue Namen/Ordner. Neu `pruefung/coexist.ps1`: installiert vorher den echten
+  Pro-Installer `windows-v1.0.0-preview.29` (SHA-256 geprüft) und prüft nach V3-Installation, Start, Deinstallation und
+  Neuinstallation, dass Pros Dateien, Daten, „Öffnen mit“ und Deinstallationseintrag unverändert sind.
+- Lokal grün: `windows/engine/test.mjs` (91), `protocol-test.mjs`, Drift-Guard, `test:native-web`. Der echte
+  Windows-Bau läuft nur auf GitHub (windows-latest) und ist noch zu beobachten. W4–W6 offen.
+
 ## Grenzen ehrlich nennen
 
 Unsigniert: Windows SmartScreen warnt beim ersten Start („Weitere Informationen → Trotzdem ausführen“). Kein echter

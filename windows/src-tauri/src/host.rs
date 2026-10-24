@@ -124,7 +124,7 @@ impl Host {
         let initialization=format!("Object.defineProperty(window,'__PB_DIALOG_SESSION',{{value:{},configurable:true}});",serde_json::to_string(&self.session).unwrap());
         self.app.run_on_main_thread(move||{
             let result=WebviewWindowBuilder::new(&app,"native-dialog",WebviewUrl::App("windows/dialog/index.html".into()))
-                .title("Private Brain Pro").inner_size(480.,620.).min_inner_size(360.,420.)
+                .title("Private Brain V3").inner_size(480.,620.).min_inner_size(360.,420.)
                 .use_https_scheme(true).devtools(cfg!(feature="messprobe"))
                 .additional_browser_args(BROWSER_ARGS)
                 .initialization_script(initialization)

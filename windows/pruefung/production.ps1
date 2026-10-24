@@ -4,8 +4,8 @@ Remove-Item Env:PB_WINDOWS_TEST_FOLDER -ErrorAction SilentlyContinue
 Remove-Item Env:PB_WINDOWS_TEST_SAVE_FOLDER -ErrorAction SilentlyContinue
 $setup = (Get-ChildItem windows/src-tauri/target/release/bundle/nsis -Filter '*-setup.exe' | Select-Object -First 1).FullName
 if ((Get-AuthenticodeSignature -LiteralPath $setup).Status -ne 'NotSigned') { throw 'Expected the explicitly chosen unsigned installer.' }
-$appDir = Join-Path $env:LOCALAPPDATA 'Private Brain Pro'
-$exe = Join-Path $appDir 'private-brain-pro.exe'
+$appDir = Join-Path $env:LOCALAPPDATA 'Private Brain V3'
+$exe = Join-Path $appDir 'private-brain-v3.exe'
 . (Join-Path $PSScriptRoot 'uninstall.ps1')
 function Install($path) {
   $process = Start-Process -FilePath $path -ArgumentList '/S' -PassThru
@@ -35,10 +35,10 @@ try {
   if ($children.Count -ne 1) { throw 'Production native core is missing.' }
   Write-Output 'PASS unsigned production installer starts the window and its ready native core without a debugging endpoint'
 } finally {
-  Get-Process private-brain-pro -ErrorAction SilentlyContinue | Stop-Process -Force
+  Get-Process private-brain-v3 -ErrorAction SilentlyContinue | Stop-Process -Force
   Start-Sleep -Seconds 3
 }
 Install (Join-Path $appDir 'uninstall.exe')
 Wait-ApplicationRemoval
-if (!(Test-Path (Join-Path $env:LOCALAPPDATA 'de.familyprojekt.privatebrain.pro'))) { throw 'Uninstall removed app data.' }
+if (!(Test-Path (Join-Path $env:LOCALAPPDATA 'de.familyprojekt.privatebrain.v3'))) { throw 'Uninstall removed app data.' }
 Write-Output 'PASS production uninstall removes binaries and registration, preserving app data'

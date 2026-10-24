@@ -12,7 +12,7 @@ for(const path of ['assets/schutz-init.js','kimboard/assets/schutz-init.js','kim
   await writeFile(file,text.replace(origin,'var ALLOWED_ORIGINS = ["https://lausiklauskn-png.github.io", "https://localhost", "https://tauri.localhost", "https://pbtool.localhost"];'));
 }
 await mkdir(join(dist,'windows'),{recursive:true});
-await writeFile(join(dist,'windows/start.html'),'<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src \'none\'"><title>Private Brain Pro</title>');
+await writeFile(join(dist,'windows/start.html'),'<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src \'none\'"><title>Private Brain V3</title>');
 await cp(join(windows,'dialog'),join(dist,'windows/dialog'),{recursive:true});
 await cp(join(windows,'runtime/windows-licenses.html'),join(dist,'windows/licenses.html'));
 await cp(join(windows,'bridge/tool-client.js'),join(dist,'windows/tool-client.js'));
@@ -21,7 +21,7 @@ for(const name of ['kimboard','kimseek']){
   text=text.replace('<script src="../tool-gate.js"></script>','<script src="../tool-gate.js"></script><script src="../windows/tool-client.js"></script>');
   await writeFile(path,text);
 }
-await cp(join(root,'icon-512.png'),join(dist,'windows/icon.png'));
+await cp(join(root,'icon-v3-windows-512.png'),join(dist,'windows/icon.png'));
 let html=await readFile(join(dist,'index.html'),'utf8');
 // The same app CSP plus Tauri's private IPC transport; no remotely loaded app.
 html=html.replace("connect-src 'self' https:","connect-src 'self' ipc: http://ipc.localhost https://ipc.localhost https:");

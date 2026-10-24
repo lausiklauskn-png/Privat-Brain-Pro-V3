@@ -198,16 +198,20 @@ public final class EngineTests {
     static void updatesAndExports(Path root,DesktopState state)throws Exception {
         ok("ort-wasm-simd.wasm".equals(BundledRoutes.file(BundledRoutes.PREFIX+"/dist/ort-wasm-simd.wasm"))&&"transformers.min.js".equals(BundledRoutes.file(BundledRoutes.PREFIX+"/dist/transformers.min.js?cache=1")),"actual model library and WASM URLs use Android's shared local routing rules");
         ok(BundledRoutes.file(BundledRoutes.PREFIX+"-foreign/dist/transformers.min.js")==null&&BundledRoutes.modelPath(BundledRoutes.MODEL_PREFIX+"../secrets")==null,"similar CDN packages and traversing model paths are never mapped to local files");
-        String version="1.0.0-preview.30",tag="windows-v"+version,name="Private-Brain-Pro-Windows-"+version+"-x64-setup.exe";
-        String url="https://github.com/"+UpdatePolicy.REPOSITORY+"/releases/download/"+tag+"/"+name;
+        String version="3.0.0-preview.2",tag="v3-windows-"+version,name="Private-Brain-V3-Windows-"+version+"-x64-setup.exe";
+        String url="https://github.com/"+DesktopUpdates.REPOSITORY+"/releases/download/"+tag+"/"+name;
         JSONObject asset=new JSONObject().put("name",name).put("browser_download_url",url).put("state","uploaded").put("size",100);
         JSONObject release=new JSONObject().put("tag_name",tag).put("draft",false).put("prerelease",true).put("assets",new JSONArray().put(asset));
-        JSONObject available=DesktopUpdates.select(new JSONArray().put(release),"1.0.0-preview.29");
+        JSONObject available=DesktopUpdates.select(new JSONArray().put(release),"3.0.0-preview.1");
         ok(available.getString("status").equals("available")&&available.getString("url").equals(url),"Windows update selects only a canonical newer installer in its own channel");
         JSONObject android=new JSONObject(release.toString()).put("tag_name","v"+version);
         JSONObject foreign=new JSONObject(release.toString());foreign.getJSONArray("assets").getJSONObject(0).put("browser_download_url","https://example.org/setup.exe");
         JSONObject draft=new JSONObject(release.toString()).put("draft",true);
-        ok(DesktopUpdates.select(new JSONArray().put(android).put(foreign).put(draft),"1.0.0-preview.29").getString("status").equals("current"),"Android releases, drafts and foreign download URLs never enter the Windows channel");
+        ok(DesktopUpdates.select(new JSONArray().put(android).put(foreign).put(draft),"3.0.0-preview.1").getString("status").equals("current"),"Android releases, drafts and foreign download URLs never enter the Windows channel");
+        String proName="Private-Brain-Pro-Windows-"+version+"-x64-setup.exe",proTag="windows-v"+version;
+        JSONObject pro=new JSONObject().put("tag_name",proTag).put("draft",false).put("prerelease",true).put("assets",new JSONArray().put(new JSONObject().put("name",proName).put("browser_download_url","https://github.com/lausiklauskn-png/Privat-Brain-Pro/releases/download/"+proTag+"/"+proName).put("state","uploaded").put("size",100)));
+        JSONObject proHere=new JSONObject(pro.toString());proHere.getJSONArray("assets").getJSONObject(0).put("browser_download_url","https://github.com/"+DesktopUpdates.REPOSITORY+"/releases/download/"+proTag+"/"+proName);
+        ok(!DesktopUpdates.REPOSITORY.equals(UpdatePolicy.REPOSITORY)&&DesktopUpdates.select(new JSONArray().put(pro).put(proHere),"3.0.0-preview.1").getString("status").equals("current"),"Private Brain Pro's Windows releases never update a V3 installation");
         fails("UPDATE_NOT_CHECKED",()->new DesktopUpdates().download());
         Path source=root.resolve("export-original.txt");Files.writeString(source,"read-only source bytes");
         Path staged=new DesktopExports(state).stage(source.toFile(),"Ж".repeat(140)+".pdf");
