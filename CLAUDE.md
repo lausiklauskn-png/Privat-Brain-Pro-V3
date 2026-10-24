@@ -1,5 +1,8 @@
 # Private Brain Pro V3 — Sitzungs-Anker
 
+**Nächste Sitzung (Klaus 2026-10-24): Standard-Thema Klar, V3 als eigene App, Kontaktfotos a (Adressbuch) und b (von Hand).**
+[Start-Brief](BRIEF_NACHFOLGE_2026-10-24_V3-START.md) mit Aufgaben S1–S4 in Reihenfolge.
+
 **V3 (Klaus 2026-10-24):** 1:1-Kopie von Privat-Brain-Pro main `30c11ea`, hier baut **Claude** das neue Design
 eigenständig. **Pro ist Codex' Repo, dort nicht am Code bauen.** Neue Funktionen aus Pro von Zeit zu Zeit herüberholen.
 Ohne `signing/` und ohne Release-/Signier-Abläufe: V3 veröffentlicht nichts in Pros Update-Kanal.
