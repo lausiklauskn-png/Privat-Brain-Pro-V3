@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Google binds its Android sign-in client to package name + SHA-1 of the signing certificate. Private Brain V3 Pro
+         (de.familyprojekt.privatebrain.v3…) has no such client yet, so Gmail stays honestly "noch nicht eingerichtet"
+         and the app never opens Google's account picker. Switch to true only after Klaus has created the Android client
+         (docs/V3-IDENTITAET.md). -->
+    <bool name="gmail_android_client_ready">false</bool>
+</resources>

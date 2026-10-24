@@ -20,14 +20,27 @@ public class UpdatePolicyTest {
         assertNull(UpdatePolicy.version("v999999999999999999999.0.0", false));
     }
 
-    @Test public void onlyExpectedApksFromTheFixedRepositoryCanOpen() {
-        String expected = "https://github.com/lausiklauskn-png/Privat-Brain-Pro/releases/download/v0.1.0-preview.3/";
-        assertEquals(expected + "Private-Brain-Pro.apk", UpdatePolicy.downloadUrl("v0.1.0-preview.3", "Private-Brain-Pro.apk", true));
-        assertEquals(expected + "Private-Brain-Pro-0.1.0-preview.3.apk", UpdatePolicy.downloadUrl("v0.1.0-preview.3", "Private-Brain-Pro-0.1.0-preview.3.apk", true));
-        for (String name : new String[] {"../Private-Brain-Pro.apk", "https://example.com/app.apk", "other.apk", "Private-Brain-Pro-0.1.0-preview.2.apk"}) {
+    @Test public void onlyV3ApksFromTheV3RepositoryCanOpen() {
+        String tag = "v3-android-3.0.0-preview.2";
+        String expected = "https://github.com/lausiklauskn-png/Privat-Brain-Pro-V3/releases/download/" + tag + "/";
+        assertEquals("v3.0.0-preview.2", UpdatePolicy.commonTag(tag));
+        assertEquals(expected + "Private-Brain-V3-Pro-3.0.0-preview.2.apk", UpdatePolicy.downloadUrl(tag, "Private-Brain-V3-Pro-3.0.0-preview.2.apk", true));
+        for (String name : new String[] {"../Private-Brain-V3-Pro-3.0.0-preview.2.apk", "https://example.com/app.apk", "other.apk",
+                "Private-Brain-V3-Pro-3.0.0-preview.1.apk", "Private-Brain-Pro-3.0.0-preview.2.apk", "Private-Brain-Pro.apk"}) {
             try {
-                UpdatePolicy.downloadUrl("v0.1.0-preview.3", name, true);
+                UpdatePolicy.downloadUrl(tag, name, true);
                 fail("Unexpected file accepted: " + name);
+            } catch (IllegalArgumentException expectedError) { }
+        }
+    }
+
+    @Test public void privateBrainProReleasesNeverReachV3() {
+        assertNotEquals("lausiklauskn-png/Privat-Brain-Pro", UpdatePolicy.REPOSITORY);
+        for (String tag : new String[] {"v1.0.0-preview.29", "v9.0.0-preview.1", "windows-v1.0.0-preview.29", "v3-windows-3.0.0-preview.2"}) {
+            assertNull(UpdatePolicy.commonTag(tag));
+            try {
+                UpdatePolicy.downloadUrl(tag, "Private-Brain-Pro-" + tag.substring(tag.indexOf('v') + 1) + ".apk", true);
+                fail("Foreign release accepted: " + tag);
             } catch (IllegalArgumentException expectedError) { }
         }
     }

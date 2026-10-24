@@ -1,14 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
+    // V3 (Klaus 2026-10-24): own app "Private Brain V3 Pro" next to Private Brain Pro. Only the applicationId changes;
+    // the Java namespace stays "…pro" (code name shared with the Windows mail engine), see docs/V3-IDENTITAET.md.
     namespace = "de.familyprojekt.privatebrain.pro"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "de.familyprojekt.privatebrain.pro"
+        applicationId "de.familyprojekt.privatebrain.v3"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 29
-        versionName "1.0.0-preview.29"
+        versionCode 1
+        versionName "3.0.0-preview.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,14 +18,14 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
-    // Keys are supplied only at build time; never commit them.
+    // V3's own key is supplied only at build time by .github/workflows/v3-android-release.yml; never commit it.
     signingConfigs {
         external {
-            if (System.getenv('PB_KEYSTORE_FILE')) {
-                storeFile file(System.getenv('PB_KEYSTORE_FILE'))
-                storePassword System.getenv('PB_KEYSTORE_PASSWORD')
-                keyAlias System.getenv('PB_KEY_ALIAS')
-                keyPassword System.getenv('PB_KEY_PASSWORD')
+            if (System.getenv('V3_KEYSTORE_FILE')) {
+                storeFile file(System.getenv('V3_KEYSTORE_FILE'))
+                storePassword System.getenv('V3_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('V3_KEY_ALIAS')
+                keyPassword System.getenv('V3_KEY_PASSWORD')
             }
         }
     }
@@ -38,7 +40,7 @@ android {
             matchingFallbacks = ['release']
         }
         release {
-            if (System.getenv('PB_KEYSTORE_FILE')) signingConfig signingConfigs.external
+            if (System.getenv('V3_KEYSTORE_FILE')) signingConfig signingConfigs.external
             // A production APK requires externally managed signing credentials.
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

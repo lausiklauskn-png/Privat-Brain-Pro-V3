@@ -19,7 +19,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-/** User-initiated public version check. No tokens, arbitrary URLs or APK installer. */
+/** User-initiated public version check. No tokens, arbitrary URLs or APK installer.
+ *  Private Brain V3 Pro asks only its own repository and tags "v3-android-…" (UpdatePolicy), never Pro's channel. */
 @CapacitorPlugin(name = "ProUpdates")
 public class ProUpdatesPlugin extends Plugin {
     private final ExecutorService worker = Executors.newSingleThreadExecutor();
@@ -36,8 +37,8 @@ public class ProUpdatesPlugin extends Plugin {
             try {
                 AppNetwork.check();
                 String appId = getContext().getPackageName();
-                boolean preview = appId.equals("de.familyprojekt.privatebrain.pro.preview");
-                if (!preview && !appId.equals("de.familyprojekt.privatebrain.pro")) {
+                boolean preview = appId.equals("de.familyprojekt.privatebrain.v3.preview");
+                if (!preview && !appId.equals("de.familyprojekt.privatebrain.v3")) {
                     JSObject result = new JSObject();
                     result.put("status", "unsupported");
                     call.resolve(result);
@@ -54,7 +55,8 @@ public class ProUpdatesPlugin extends Plugin {
                     if (release.optBoolean("draft", true) || !release.has("prerelease") ||
                             release.getBoolean("prerelease") != preview) continue;
                     String tag = release.optString("tag_name", "");
-                    if (!UpdatePolicy.newer(tag, bestTag, preview)) continue;
+                    String common = UpdatePolicy.commonTag(tag);
+                    if (common == null || !UpdatePolicy.newer(common, bestTag, preview)) continue;
                     JSONArray assets = release.optJSONArray("assets");
                     if (assets == null) continue;
                     for (int j = 0; j < assets.length(); j++) {
@@ -62,7 +64,7 @@ public class ProUpdatesPlugin extends Plugin {
                         if (!asset.optString("state").equals("uploaded") || asset.optLong("size", 0) <= 0) continue;
                         try {
                             bestUrl = UpdatePolicy.downloadUrl(tag, asset.optString("name"), preview);
-                            bestTag = tag;
+                            bestTag = common;
                             break;
                         } catch (IllegalArgumentException ignored) { /* Not an installable app asset. */ }
                     }
@@ -91,7 +93,7 @@ public class ProUpdatesPlugin extends Plugin {
         connection.setInstanceFollowRedirects(false);
         connection.setRequestProperty("Accept", "application/vnd.github+json");
         connection.setRequestProperty("X-GitHub-Api-Version", "2022-11-28");
-        connection.setRequestProperty("User-Agent", "Private-Brain-Pro-Android");
+        connection.setRequestProperty("User-Agent", "Private-Brain-V3-Android");
         try {
             if (connection.getResponseCode() != 200) throw new IllegalStateException("Release catalog unavailable");
             try (InputStream input = connection.getInputStream(); ByteArrayOutputStream body = new ByteArrayOutputStream()) {

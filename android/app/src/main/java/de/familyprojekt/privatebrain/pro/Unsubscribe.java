@@ -52,7 +52,7 @@ final class Unsubscribe {
             request.setRequestMethod("POST");
             request.setDoOutput(true);
             request.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            request.setRequestProperty("User-Agent", "Private Brain Pro");
+            request.setRequestProperty("User-Agent", "Private Brain V3 Pro");
             request.setFixedLengthStreamingMode(BODY.length);
             try (OutputStream out = request.getOutputStream()) { out.write(BODY); }
             int status = request.getResponseCode();

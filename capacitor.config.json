@@ -1,6 +1,6 @@
 {
-  "appId": "de.familyprojekt.privatebrain.pro",
-  "appName": "Private Brain Pro",
+  "appId": "de.familyprojekt.privatebrain.v3",
+  "appName": "Private Brain V3 Pro",
   "webDir": "www",
   "loggingBehavior": "none",
   "server": { "androidScheme": "https" },

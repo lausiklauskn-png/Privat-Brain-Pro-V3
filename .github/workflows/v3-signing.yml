@@ -1,0 +1,60 @@
+name: V3-Signierschlüssel (Private Brain V3 Pro)
+# Eigener Android-Schlüssel für Private Brain V3 Pro (Klaus 2026-10-24). Nie Pros Schlüssel, nie Pros Geheimnis.
+# create: einmalig einen neuen Schlüssel in Actions erzeugen, nur verschlüsselt als Artefakt ausgeben.
+# check:  das eingecheckte Paket signing/v3-android-release.enc.json öffnen und prüfen.
+# Voraussetzung: Repo-Geheimnis V3_SIGNING_UNLOCK (langes Passwort, Klaus bewahrt es in seinem Tresor auf).
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: create = neuen V3-Schlüssel erzeugen (nur einmal) · check = vorhandenes Paket prüfen
+        required: true
+        type: choice
+        default: check
+        options: [create, check]
+permissions:
+  contents: read
+concurrency:
+  group: v3-signing
+  cancel-in-progress: false
+jobs:
+  identity:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v6.1.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Nie einen vorhandenen V3-Schlüssel ersetzen
+        if: inputs.operation == 'create'
+        run: |
+          if [[ -e signing/v3-android-release.enc.json || -e signing/v3-android-certificate.json ]]; then
+            echo '::error title=V3-Signierung::Die V3-Signieridentität ist schon im Repo. Sie wird nie ersetzt; „check“ wählen.'
+            exit 1
+          fi
+      - name: Neuen Schlüssel in Actions erzeugen und verschlüsseln
+        if: inputs.operation == 'create'
+        env:
+          V3_SIGNING_UNLOCK: ${{ secrets.V3_SIGNING_UNLOCK }}
+          TMPDIR: ${{ runner.temp }}
+        run: node tools/signing-v3/cli.mjs create
+      - name: Paket öffnen, Zertifikat und privaten Schlüssel prüfen
+        env:
+          V3_SIGNING_UNLOCK: ${{ secrets.V3_SIGNING_UNLOCK }}
+          TMPDIR: ${{ runner.temp }}
+        run: node tools/signing-v3/cli.mjs check
+      - name: Nur verschlüsseltes Paket und öffentliches Zertifikat aufbewahren
+        if: inputs.operation == 'create' && success()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: v3-signierpaket
+          path: |
+            signing/v3-android-release.enc.json
+            signing/v3-android-certificate.json
+          if-no-files-found: error
+          retention-days: 30

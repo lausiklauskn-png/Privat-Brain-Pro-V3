@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Private Brain Pro</string>
-    <string name="title_activity_main">Private Brain Pro</string>
-    <string name="package_name">de.familyprojekt.privatebrain.pro</string>
-    <string name="custom_url_scheme">de.familyprojekt.privatebrain.pro</string>
+    <string name="app_name">Private Brain V3 Pro</string>
+    <string name="title_activity_main">Private Brain V3 Pro</string>
+    <string name="package_name">de.familyprojekt.privatebrain.v3</string>
+    <string name="custom_url_scheme">de.familyprojekt.privatebrain.v3</string>
 </resources>

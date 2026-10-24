@@ -8,7 +8,7 @@ android {
         targetSdk 36
         versionCode 1
         versionName '1'
-        manifestPlaceholders = [probeTarget: project.findProperty('probeTarget') ?: 'de.familyprojekt.privatebrain.pro.preview']
+        manifestPlaceholders = [probeTarget: project.findProperty('probeTarget') ?: 'de.familyprojekt.privatebrain.v3.preview']
     }
     signingConfigs {
         preview {
