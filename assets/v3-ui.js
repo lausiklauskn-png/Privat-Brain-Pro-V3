@@ -101,12 +101,12 @@
   }
   const GENERIC = '#panel-search button, #panel-search label > span, #panel-explorer .explorer-toolbar button, #panel-explorer .explorer-toolbar label > span, #panel-intake button, #panel-intake h3, #panel-settings h3';
   function firstText(el) { for (const n of el.childNodes) { if (n.nodeType === 3) { if (n.nodeValue.trim()) return n; } else return null; } return null; }
-  // Schutz gegen Endlosschleifen: schreibt fremder Code denselben Knopf immer wieder neu, hört V3 dort auf.
+  // Schutz gegen Endlosschleifen: schreibt fremder Code denselben Knopf immer wieder neu, hört V3 dort auf (200 in 2 s; eine echte Schleife macht Tausende, Fortschrittsanzeigen nur Dutzende).
   const seen = new WeakMap();
   function tooOften(el) {
     const now = Date.now(), s = seen.get(el) || { t: now, n: 0 };
     if (now - s.t > 2000) { s.t = now; s.n = 0; }
-    s.n++; seen.set(el, s); return s.n > 20;
+    s.n++; seen.set(el, s); return s.n > 200;
   }
   function decorateGeneric(el) {
     const t = firstText(el); if (!t) return;
