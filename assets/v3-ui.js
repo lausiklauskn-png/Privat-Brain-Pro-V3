@@ -171,6 +171,57 @@
     const drop = document.getElementById('drop'); if (drop) helpButton(drop, b => drop.append(b));
   }
 
+  // ---------- Sprech-Sprache (Klaus 2026-10-24: „welche Sprache sprichst du“, unabhängig von der Gerätesprache) ----------
+  const SPEECH = [['de-DE','DE','Deutsch'],['en-US','EN','English'],['ru-RU','RU','Русский'],['pl-PL','PL','Polski'],['uk-UA','UK','Українська'],
+    ['tr-TR','TR','Türkçe'],['fr-FR','FR','Français'],['it-IT','IT','Italiano'],['es-ES','ES','Español']];
+  const SPEECH_KEY = 'pb-speech-lang';
+  const ASK = { de: 'Welche Sprache sprichst du?', en: 'Which language do you speak?', ru: 'На каком языке вы говорите?', pl: 'W jakim języku mówisz?' };
+  const SPOKEN = { de: 'Sprech-Sprache', en: 'Spoken language', ru: 'Язык речи', pl: 'Język mowy' };
+  const speechLang = () => { try { const v = localStorage.getItem(SPEECH_KEY); return SPEECH.some(x => x[0] === v) ? v : null; } catch { return null; } };
+  window.PBSpeechLang = speechLang;
+  function speechPicker(anchor, after) {
+    document.getElementById('v3SpeechMenu')?.remove();
+    const menu = document.createElement('div'); menu.id = 'v3SpeechMenu'; menu.className = 'pb-look-menu'; menu.setAttribute('role', 'menu');
+    const h = document.createElement('h3'); h.textContent = ASK[document.documentElement.lang] || ASK.de; menu.append(h);
+    const cur = speechLang();
+    for (const [code, short, name] of SPEECH) {
+      const item = document.createElement('button'); item.type = 'button'; item.className = 'pb-look-item'; item.dataset.speech = code;
+      item.setAttribute('role', 'menuitemradio'); item.setAttribute('aria-checked', String(cur === code));
+      const tag = document.createElement('span'); tag.className = 'v3-speech-code'; tag.textContent = short;
+      const label = document.createElement('span'); label.textContent = name; item.append(tag, label);
+      item.addEventListener('click', () => { try { localStorage.setItem(SPEECH_KEY, code); } catch {} menu.remove(); syncSpeech(); after?.(); });
+      menu.append(item);
+    }
+    document.body.append(menu);
+    const r = anchor.getBoundingClientRect(), m = menu.getBoundingClientRect();
+    menu.style.left = Math.max(8, Math.min(innerWidth - m.width - 8, r.right - m.width)) + 'px';
+    menu.style.top = Math.max(8, Math.min(innerHeight - m.height - 8, r.bottom + 6)) + 'px';
+    setTimeout(() => document.addEventListener('click', function off(e) { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', off, true); } }, true));
+    menu.querySelector('[aria-checked="true"]')?.focus() || menu.querySelector('.pb-look-item')?.focus();
+  }
+  function syncSpeech() {
+    const chip = document.getElementById('v3SpeechChip'); if (!chip) return;
+    const cur = SPEECH.find(x => x[0] === speechLang());
+    chip.textContent = cur ? cur[1] : '?';
+    const w = (SPOKEN[document.documentElement.lang] || SPOKEN.de) + (cur ? ': ' + cur[2] : '');
+    chip.title = w; chip.setAttribute('aria-label', w);
+  }
+  function speechChip() {
+    const mic = document.getElementById('mic'); if (!mic || document.getElementById('v3SpeechChip')) return;
+    const chip = document.createElement('button'); chip.type = 'button'; chip.id = 'v3SpeechChip'; chip.className = 'ghost v3-speech-chip';
+    chip.addEventListener('click', e => { e.stopPropagation(); speechPicker(chip); });
+    mic.after(chip); syncSpeech();
+    new MutationObserver(syncSpeech).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    // Erster Tipp aufs Mikrofon ohne gewählte Sprache: erst fragen, dann zuhören.
+    // Am Fenster (nicht am Dokument), damit es vor dem Abfänger von native-speech.js läuft.
+    window.addEventListener('click', e => {
+      const target = e.target.closest?.('#mic, .pb-dictate');
+      if (!target || speechLang()) return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      speechPicker(target, () => target.click());
+    }, true);
+  }
+
   function start() {
     document.documentElement.classList.add('v3');
     decorate(document);
@@ -185,7 +236,7 @@
       }
     }).observe(document.body, { childList: true, subtree: true, characterData: true });
     placeNav(); wide.addEventListener('change', placeNav);
-    quietSearch(); filterToggle(); helpButtons();
+    quietSearch(); filterToggle(); helpButtons(); speechChip();
   }
   // Nach den Skripten am Ende von <body> (dort baut native-toolbar.js die Leiste).
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
