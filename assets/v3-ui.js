@@ -93,8 +93,11 @@
     if (!header || !row) return;
     if (!home) { home = document.createComment('v3-nav-home'); row.before(home); }
     const brand = header.querySelector('.brand');
-    if (wide.matches) { if (row.parentElement !== header) (brand || header.firstChild).after(row); header.classList.add('v3-one-row'); }
-    else { if (row.parentElement === header) home.after(row); header.classList.remove('v3-one-row'); }
+    let moved = false;
+    if (wide.matches) { if (row.parentElement !== header) { (brand || header.firstChild).after(row); moved = true; } header.classList.add('v3-one-row'); }
+    else { if (row.parentElement === header) { home.after(row); moved = true; } header.classList.remove('v3-one-row'); }
+    // Das Siegel (Modul 17) misst die Kopfleiste bei „resize“. Fand das vor dem Umsetzen statt, stünde es an der alten Stelle.
+    if (moved) requestAnimationFrame(() => dispatchEvent(new Event('resize')));
   }
 
   function start() {

@@ -92,6 +92,10 @@ try{
   }
   await page.setViewportSize({width:1280,height:800});await page.waitForTimeout(300);
   ok('Back to wide: navigation returns into the header',(await oneRow()).inside);
+  // Wechsel breit → schmal: das Siegel misst neu und liegt nicht über dem Inhalt (vorher blieb es zu tief stehen).
+  await page.setViewportSize({width:320,height:640});await page.waitForTimeout(500);
+  ok('320px after wide: the Siegel sits in the header again, not over the content',await page.evaluate(()=>{const s=document.querySelector('#sbkim-widget')?.getBoundingClientRect(),h=document.querySelector('header.top').getBoundingClientRect();return !s||s.bottom<=h.bottom+8;}));
+  await page.setViewportSize({width:1280,height:800});await page.waitForTimeout(500);
   ok('No unhandled runtime errors',errors.length===0);
   console.log(`${count} V3 interface checks passed.`);
 }finally{await browser?.close();server.close();}

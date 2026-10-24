@@ -91,7 +91,7 @@ try{
   const mail=page.locator('#mailWorkspace'), panel=mail.locator('#pb-mail-all');
   await mail.locator('[data-live-text=connect]').click();
   await page.waitForFunction(()=>!document.querySelector('.live-mail').hidden&&document.querySelector('.live-mail [data-mail-all=open]'));
-  ok('"Alle Konten" is the first entry of the folder bar',await mail.locator('.live-mail .mail-folders > :first-child').getAttribute('data-mail-all')==='open'&&(await mail.locator('[data-mail-all=open]').textContent()).startsWith('👥 Alle Konten'));
+  ok('"Alle Konten" is the first entry of the folder bar, with a V3 line symbol instead of 👥',await mail.locator('.live-mail .mail-folders > :first-child').getAttribute('data-mail-all')==='open'&&(await mail.locator('[data-mail-all=open]').textContent()).startsWith('Alle Konten')&&await mail.locator('[data-mail-all=open] > svg.v3-icon').count()===1);
   await mail.locator('[data-mail-all=open]').click();
   await capture(page,'1-erster-abruf');
   ok('First view explains reading only, 12 months and no attachments',(await panel.textContent()).includes('12 Monate')&&(await panel.textContent()).includes('Anhänge werden nicht geladen'));
@@ -244,7 +244,7 @@ try{
   await mail.locator('.live-mail [data-mail-all=open]').click();
   await panel.locator('[data-mail-all=list]').click();
   const head=await page.evaluate(()=>{const h=document.querySelector('#pb-mail-all .mail-all-head'),kids=[...h.children].filter(x=>!x.hidden);const mids=kids.map(x=>{const r=x.getBoundingClientRect();return r.top+r.height/2;});return {rows:Math.max(...mids)-Math.min(...mids)<6?1:2,back:h.querySelector('.mail-back').textContent,refresh:h.querySelector('[data-mail-all=refresh]')?.textContent.trim(),label:h.querySelector('[data-mail-all=refresh]')?.getAttribute('aria-label'),options:[...h.querySelector('[data-mail-all=account]').options].map(o=>o.textContent)};});
-  ok('Header is one row: "← Zurück", account choice, refresh symbol without text',head.rows===1&&head.back==='← Zurück'&&head.refresh===''&&head.label==='Jetzt aktualisieren'&&JSON.stringify(head.options)===JSON.stringify(['Alle Konten','klaus@example.invalid','zweit@example.invalid']));
+  ok('Header is one row: "← Zurück", account choice, refresh symbol without text',head.rows===1&&head.back==='← Zurück'&&head.refresh===''&&head.label==='Jetzt aktualisieren'&&JSON.stringify(head.options)===JSON.stringify(['Alle Konten','Example · klaus','Example · zweit']));
   await panel.locator('[data-mail-all=account]').selectOption('22222222-2222-4222-8222-222222222222');
   const only=await page.evaluate(()=>[...document.querySelectorAll('#pb-mail-all [data-mail-all-id]')].map(b=>CATALOG.find(r=>r.hash===b.dataset.mailAllId)).every(r=>r.mailRemotes.some(l=>l.account==='22222222-2222-4222-8222-222222222222'))&&document.querySelectorAll('#pb-mail-all [data-mail-all-id]').length>0);
   ok('Choosing one account shows only its mails, the header names it',only&&await panel.locator('[data-mail-all=account] option:checked').textContent()==='Example · zweit'&&await panel.locator('[data-mail-all=account] option:checked').getAttribute('title')==='zweit@example.invalid');

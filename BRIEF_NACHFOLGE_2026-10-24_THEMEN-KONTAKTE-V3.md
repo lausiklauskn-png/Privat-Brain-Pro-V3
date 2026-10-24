@@ -138,3 +138,8 @@ Reihenfolge: T1 → T2 → K1/K2 (eigener Bauabschnitt nach der Musterseite) →
 - **Übergänge abwarten:** `body` blendet seinen Hintergrund in 0,4 s über; gleich danach gemessen zeigte er noch die alte Farbe.
 - **Eine gleich starke Regel weiter unten überschreibt still:** Eine allgemeine `:root[data-look]`-Zeile am Ende hätte den
   Verlauf der Themen wieder abgeschaltet.
+- **Wer Elemente zwischen Containern umsetzt, muss Nachbarn neu messen lassen:** Beim Wechsel breit → schmal maß das
+  Siegel die Kopfleiste, während die Navigation noch darin steckte, und blieb danach über dem Inhalt stehen. Gefunden hat
+  es `test-compact-network` (Klick abgefangen). Jetzt meldet `v3-ui.js` nach dem Umsetzen ein `resize`; Probe in `test-v3-ui`.
+- **Die App schreibt bei Sprachwechsel in `firstChild`** (z. B. „Alle Konten“). Wer dort ein Symbol einfügt, friert den
+  Namen in der alten Sprache ein. Symbole deshalb hinten anhängen und per CSS nach vorn ziehen.
