@@ -3,6 +3,13 @@
 **Nächste Sitzung (Klaus 2026-10-24): Standard-Thema Klar, V3 als eigene App, Kontaktfotos a (Adressbuch) und b (von Hand).**
 [Start-Brief](BRIEF_NACHFOLGE_2026-10-24_V3-START.md) mit Aufgaben S1–S4 in Reihenfolge.
 
+**V3 im Browser (Klaus 2026-10-24):** https://lausiklauskn-png.github.io/Privat-Brain-Pro-V3/ ist installierbar
+(Knopf oben, Name und Text unter dem Symbol „Private Brain V3“, Symbol mit „V3“: `icon-v3-*.png` aus
+`tools/native/icon/make-v3-icon.py`). Gebaut von `tools/native/prepare-pages.mjs` nach `build:web`, nur für Pages; Probe
+`tools/native/test-pages.mjs`. Service Worker lädt zuerst aus dem Netz, eigener Vorrat `pbv3-web-` (nie `private-brain-`
+anfassen, das gehört der alten PWA am selben Ursprung). Pages-Quelle steht auf „GitHub Actions“; vorher überschrieb die
+Zweig-Veröffentlichung V3 mit der rohen index.html (alter Name, Emojis, schmal).
+
 **V3 (Klaus 2026-10-24):** 1:1-Kopie von Privat-Brain-Pro main `30c11ea`, hier baut **Claude** das neue Design
 eigenständig. **Pro ist Codex' Repo, dort nicht am Code bauen.** Neue Funktionen aus Pro von Zeit zu Zeit herüberholen.
 Ohne `signing/` und ohne Release-/Signier-Abläufe: V3 veröffentlicht nichts in Pros Update-Kanal.
