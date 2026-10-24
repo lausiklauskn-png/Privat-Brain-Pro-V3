@@ -183,6 +183,7 @@ public class ProMailPlugin extends Plugin {
             int language = ArraysIndex.language(call.getString("language", "de"));
             String[] t = WORDS[language];
             boolean dark = call.getBoolean("dark", false);
+            boolean gmailReady = gmailReady(activity);
             ContextThemeWrapper context = new ContextThemeWrapper(activity, dark ?
                 androidx.appcompat.R.style.Theme_AppCompat_Dialog_Alert : androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
             LinearLayout form = new LinearLayout(context); form.setOrientation(LinearLayout.VERTICAL);
@@ -221,8 +222,8 @@ public class ProMailPlugin extends Plugin {
                         imap.setText(preset.imap);
                         smtp.setText(preset.smtp);
                         imap.setEnabled(preset.editable);smtp.setEnabled(preset.editable);
-                        help.setText(preset.help(language));
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setText(!preset.ready()?MailProvider.setupLabel(language):gmail?GOOGLE_SIGN_IN[language]:t[4]);
+                        help.setText(gmail&&!gmailReady?GMAIL_NOT_SET_UP[language]:preset.help(language));
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setText(!preset.ready()||(gmail&&!gmailReady)?MailProvider.setupLabel(language):gmail?GOOGLE_SIGN_IN[language]:t[4]);
                     }
                 });
                 GradientDrawable background = new GradientDrawable(); background.setColor(Color.parseColor(dark ? "#171d25" : "#faf6f0"));
@@ -232,6 +233,12 @@ public class ProMailPlugin extends Plugin {
                     MailProvider preset=MailProvider.values()[provider.getSelectedItemPosition()];
                     if(!preset.ready()){
                         new AlertDialog.Builder(context).setTitle(preset.label).setMessage(MailProvider.microsoftPlan(language))
+                            .setPositiveButton(android.R.string.ok,(info,which)->{}).show();
+                        return;
+                    }
+                    if(preset==MailProvider.GOOGLE&&!gmailReady){
+                        // V3 has no Google Android client yet: say so, never open Google's account picker.
+                        new AlertDialog.Builder(context).setTitle(preset.label).setMessage(GMAIL_NOT_SET_UP[language])
                             .setPositiveButton(android.R.string.ok,(info,which)->{}).show();
                         return;
                     }
@@ -269,6 +276,14 @@ public class ProMailPlugin extends Plugin {
             dialog.show();
         });
     }
+    /** Private Brain V3 Pro: Google's Android client (package + SHA-1 of the signing certificate) does not exist yet. */
+    static boolean gmailReady(android.content.Context context) { return context.getResources().getBoolean(R.bool.gmail_android_client_ready); }
+    static final String[] GMAIL_NOT_SET_UP = {
+        "Google / Gmail ist in Private Brain V3 Pro noch nicht eingerichtet. Google muss diese App (eigener Paketname und eigenes Zertifikat) erst kennen; das richtet der Herausgeber einmal ein. Bis dahin funktionieren Telekom, WEB.DE, GMX, Yahoo, IONOS und Hetzner. Es wird kein Google-Konto verbunden.",
+        "Google / Gmail is not set up in Private Brain V3 Pro yet. Google first has to know this app (its own package name and certificate); the publisher sets this up once. Until then Telekom, WEB.DE, GMX, Yahoo, IONOS and Hetzner work. No Google account is connected.",
+        "Google / Gmail в Private Brain V3 Pro ещё не настроен. Сначала Google должен узнать это приложение (собственное имя пакета и сертификат); издатель настроит это один раз. До тех пор работают Telekom, WEB.DE, GMX, Yahoo, IONOS и Hetzner. Аккаунт Google не подключается.",
+        "Google / Gmail nie jest jeszcze skonfigurowany w Private Brain V3 Pro. Google musi najpierw poznać tę aplikację (własna nazwa pakietu i certyfikat); wydawca skonfiguruje to raz. Do tego czasu działają Telekom, WEB.DE, GMX, Yahoo, IONOS i Hetzner. Konto Google nie jest łączone."
+    };
     private static final String[] GOOGLE_SIGN_IN = {"Mit Google anmelden", "Sign in with Google", "Войти через Google", "Zaloguj się przez Google"};
     private static String googleError(String code, int language) { return GmailMessages.error(code,language); }
     private static void showField(EditText field, boolean visible) {

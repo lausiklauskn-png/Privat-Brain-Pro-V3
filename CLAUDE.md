@@ -1,7 +1,16 @@
 # Private Brain Pro V3 — Sitzungs-Anker
 
-**Nächste Sitzung (Klaus 2026-10-24): V3 als Windows-Version, selbe Methode wie bei Pro.**
-[Windows-Brief](BRIEF_NACHFOLGE_2026-10-25_V3-WINDOWS.md) (Achtung: `windows/` trägt noch Pros Namen und Kennung).
+**Nächste Sitzung (Klaus 2026-10-24): Werbefilm und Handbuchvideo neu aufnehmen im neuen Design – mit Private Brain Pro
+(Codex' neu gestaltete Fassung, dort laufen die E-Mails), nicht mit V3.** [Brief](BRIEF_NACHFOLGE_2026-10-25_V3-ANDROID.md).
+
+**V3 als eigene Android-App (S2, 2026-10-24):** „Private Brain V3 Pro“, Paket `de.familyprojekt.privatebrain.v3`
+(+ `.preview`/`.preview.debug`), Version `3.0.0-preview.1`, V3-Logo als Symbol, Updates nur `v3-android-…` aus diesem Repo,
+Gmail ehrlich „noch nicht eingerichtet“. Eigener Signierschlüssel vorbereitet (`v3-signing.yml`, Geheimnis
+`V3_SIGNING_UNLOCK`, noch nicht angelegt), Pros Signierwerkzeuge entfernt. Alles an einer Stelle:
+[V3-Identität](docs/V3-IDENTITAET.md), Wächter `tools/native/test-v3-identity.mjs`.
+
+**V3 für Windows (2026-10-24):** W1–W3 erledigt (eigene Kennung, Name „Private Brain V3 Pro“), W4–W6 offen:
+[Windows-Brief](BRIEF_NACHFOLGE_2026-10-25_V3-WINDOWS.md).
 Danach/daneben der [Start-Brief](BRIEF_NACHFOLGE_2026-10-24_V3-START.md) S1–S5 (Klar als Standard, eigene App, Kontaktfotos).
 Stand heute: [Abschlussbrief](BRIEF_ABSCHLUSS_2026-10-24_V3.md), Erkenntnisse: [Forschung](docs/FORSCHUNG-2026-10-24.md).
 Suche: ein Schalter „Bedeutung“, Sprachkürzel neben dem Mikrofon; Spaltenbreiten in Postfach/Explorer ziehbar;

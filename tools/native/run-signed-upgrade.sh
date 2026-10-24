@@ -5,7 +5,7 @@ test "$#" -eq 3
 old_apk=$1
 new_apk=$2
 probe_apk=$3
-package=${PB_UPGRADE_TEST_PACKAGE:-de.familyprojekt.privatebrain.pro.preview}
+package=${PB_UPGRADE_TEST_PACKAGE:-de.familyprojekt.privatebrain.v3.preview}
 component=de.familyprojekt.privatebrain.upgradeprobe/.UpgradeProbe
 mkdir -p upgrade-results
 # Capture the disposable emulator before the runner shuts it down. Preserve the

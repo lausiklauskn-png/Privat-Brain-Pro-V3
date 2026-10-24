@@ -211,7 +211,7 @@ public final class EngineTests {
         String proName="Private-Brain-Pro-Windows-"+version+"-x64-setup.exe",proTag="windows-v"+version;
         JSONObject pro=new JSONObject().put("tag_name",proTag).put("draft",false).put("prerelease",true).put("assets",new JSONArray().put(new JSONObject().put("name",proName).put("browser_download_url","https://github.com/lausiklauskn-png/Privat-Brain-Pro/releases/download/"+proTag+"/"+proName).put("state","uploaded").put("size",100)));
         JSONObject proHere=new JSONObject(pro.toString());proHere.getJSONArray("assets").getJSONObject(0).put("browser_download_url","https://github.com/"+DesktopUpdates.REPOSITORY+"/releases/download/"+proTag+"/"+proName);
-        ok(!DesktopUpdates.REPOSITORY.equals(UpdatePolicy.REPOSITORY)&&DesktopUpdates.select(new JSONArray().put(pro).put(proHere),"3.0.0-preview.1").getString("status").equals("current"),"Private Brain Pro's Windows releases never update a V3 installation");
+        ok(!DesktopUpdates.TAG_PREFIX.equals(UpdatePolicy.TAG_PREFIX)&&UpdatePolicy.commonTag(proTag)==null&&DesktopUpdates.select(new JSONArray().put(pro).put(proHere),"3.0.0-preview.1").getString("status").equals("current"),"Private Brain Pro's Windows releases never update a V3 installation");
         fails("UPDATE_NOT_CHECKED",()->new DesktopUpdates().download());
         Path source=root.resolve("export-original.txt");Files.writeString(source,"read-only source bytes");
         Path staged=new DesktopExports(state).stage(source.toFile(),"Ж".repeat(140)+".pdf");

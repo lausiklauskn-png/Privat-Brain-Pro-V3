@@ -37,6 +37,9 @@ dort nicht am Code bauen. Vorgeschichte, Codex-Abgleich und Gesamtplan:
 - Ist-Bilder in `docs/design/v3-2026-10-24/` neu machen (`PB_CAPTURE_DESIGN=1 node tools/native/test-v3-ui.mjs`).
 
 ### S2 Eigene App (V3 neben Pro installierbar)
+**Stand 2026-10-24: gebaut** (Name auf Klaus' Wunsch „Private Brain V3 Pro“), offen sind nur Klaus' einmalige Schritte
+(Signier-Geheimnis, Google-Client): [docs/V3-IDENTITAET.md](docs/V3-IDENTITAET.md).
+
 Alles, was V3 von Pro trennt, an **einer** Stelle festhalten (z. B. `docs/V3-IDENTITAET.md`) und mit einer Probe bewachen.
 
 | Was | Pro (heute auch in V3) | V3 neu (Vorschlag, Klaus bestätigt) |

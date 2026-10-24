@@ -3,9 +3,13 @@ package de.familyprojekt.privatebrain.pro;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/** Fixed repository, separate installation channels, canonical numeric versions. */
+/** Fixed repository, separate installation channels, canonical numeric versions.
+ *  Private Brain V3 Pro (Klaus 2026-10-24) asks only its own repository and only tags "v3-android-…", so a release of
+ *  Private Brain Pro (lausiklauskn-png/Privat-Brain-Pro, tags "v1.0.0-preview.N") never reaches a V3 installation. */
 final class UpdatePolicy {
-    static final String REPOSITORY = "lausiklauskn-png/Privat-Brain-Pro";
+    static final String REPOSITORY = "lausiklauskn-png/Privat-Brain-Pro-V3";
+    static final String TAG_PREFIX = "v3-android-";
+    static final String APK_PREFIX = "Private-Brain-V3-Pro-";
     private static final String NUMBER = "(0|[1-9][0-9]{0,8})";
     private static final Pattern TAG = Pattern.compile("^v" + NUMBER + "\\." + NUMBER + "\\." + NUMBER + "(?:-preview\\." + NUMBER + ")?$");
 
@@ -25,11 +29,17 @@ final class UpdatePolicy {
         return false;
     }
 
-    static String downloadUrl(String tag, String filename, boolean preview) {
-        if (version(tag, preview) == null || !(filename.equals("Private-Brain-Pro.apk") ||
-                filename.equals("Private-Brain-Pro-" + tag.substring(1) + ".apk"))) {
+    /** "v3-android-3.0.0-preview.2" → "v3.0.0-preview.2"; any other tag (also Pro's) → null. */
+    static String commonTag(String releaseTag) {
+        if (releaseTag == null || !releaseTag.startsWith(TAG_PREFIX)) return null;
+        return "v" + releaseTag.substring(TAG_PREFIX.length());
+    }
+
+    static String downloadUrl(String releaseTag, String filename, boolean preview) {
+        String common = commonTag(releaseTag);
+        if (common == null || version(common, preview) == null || !filename.equals(APK_PREFIX + common.substring(1) + ".apk")) {
             throw new IllegalArgumentException("Unsupported release asset");
         }
-        return "https://github.com/" + REPOSITORY + "/releases/download/" + tag + "/" + filename;
+        return "https://github.com/" + REPOSITORY + "/releases/download/" + releaseTag + "/" + filename;
     }
 }

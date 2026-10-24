@@ -80,6 +80,11 @@ jobs:
           npm run sync:android
           npm run test:native-web
       - run: npm test --prefix mail-service
+      - name: V3-Identität (Gegenprobe) und V3-Signierwerkzeuge mit Wegwerf-Schlüssel prüfen
+        run: |
+          set -euo pipefail
+          node tools/native/gegenprobe-v3-identity.mjs
+          node tools/signing-v3/test-v3-identity.mjs
       - run: ./gradlew --no-daemon --max-workers=2 testDebugUnitTest assembleDebug lintDebug
         working-directory: android
       - uses: actions/upload-artifact@v7.0.2
@@ -147,7 +152,7 @@ jobs:
           exec > >(tee "$RUNNER_TEMP/probe-build.log") 2>&1
           ./android/gradlew --no-daemon --max-workers=2 -p android assembleDebug
           python3 tools/native/test-signing-key.py
-          ./android/gradlew --no-daemon --max-workers=2 -p tools/native/upgrade-probe -PprobeTarget=de.familyprojekt.privatebrain.pro.preview.debug assembleDebug
+          ./android/gradlew --no-daemon --max-workers=2 -p tools/native/upgrade-probe -PprobeTarget=de.familyprojekt.privatebrain.v3.preview.debug assembleDebug
       - name: KVM aktivieren
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -161,7 +166,7 @@ jobs:
           profile: pixel_2
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
-          script: PB_UPGRADE_RECREATE=1 PB_UPGRADE_TEST_PACKAGE=de.familyprojekt.privatebrain.pro.preview.debug bash tools/native/run-signed-upgrade.sh android/app/build/outputs/apk/debug/app-debug.apk android/app/build/outputs/apk/debug/app-debug.apk tools/native/upgrade-probe/build/outputs/apk/debug/*.apk
+          script: PB_UPGRADE_RECREATE=1 PB_UPGRADE_TEST_PACKAGE=de.familyprojekt.privatebrain.v3.preview.debug bash tools/native/run-signed-upgrade.sh android/app/build/outputs/apk/debug/app-debug.apk android/app/build/outputs/apk/debug/app-debug.apk tools/native/upgrade-probe/build/outputs/apk/debug/*.apk
       - name: Fehler der Probe auch als API-lesbare Annotation ausgeben
         if: failure()
         run: |

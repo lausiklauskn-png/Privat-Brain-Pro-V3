@@ -110,7 +110,8 @@ public class NativeStartupTest {
     @Test public void bundledSearchAndNativeBridgeWork() throws Exception {
         try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
             awaitTrue(scenario, "Boolean(window.PBWorkspace && document.querySelector('#q') && document.querySelectorAll('.main-pages .tab').length === 4)");
-            scenario.onActivity(activity -> assertEquals("Private Brain Pro",
+            scenario.onActivity(activity -> assertEquals("de.familyprojekt.privatebrain.v3.preview.debug", activity.getPackageName()));
+            scenario.onActivity(activity -> assertEquals("Private Brain V3 Pro",
                 activity.getApplicationInfo().loadLabel(activity.getPackageManager()).toString()));
             // Since .28 a small version tag (v1.0.28) stands next to the name (Klaus 2026-10-22).
             assertEquals("\"Private Brain V3\"", evaluate(scenario, "[...document.querySelector('.brand h1').childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim()"));
@@ -225,21 +226,31 @@ public class NativeStartupTest {
         } finally { instrumentation.removeMonitor(monitor); }
     }
 
-    @Test public void googleChoiceUsesConsentAndHidesPasswordFields() throws Exception {
+    private static boolean gmailReady(){
+        return ProMailPlugin.gmailReady(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+    }
+
+    // V3 (Klaus 2026-10-24): without Google's Android client for de.familyprojekt.privatebrain.v3 Gmail says
+    // "noch nicht eingerichtet"; once gmail_android_client_ready is true the original consent checks apply again.
+    @Test public void googleChoiceIsHonestAboutSetupAndHidesPasswordFields() throws Exception {
         try(ActivityScenario<MainActivity> scenario=ActivityScenario.launch(MainActivity.class)) {
             awaitTrue(scenario,"Boolean(window.PBMailDevice)");
             evaluate(scenario,"window.__googleCancelled=false;PBMailDevice.addAccount().then(value=>window.__googleCancelled=value===null);true");
             onView(androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom(android.widget.Spinner.class)).inRoot(isDialog()).perform(click());
             androidx.test.espresso.Espresso.onData(org.hamcrest.Matchers.equalTo("Google / Gmail"))
                 .inRoot(androidx.test.espresso.matcher.RootMatchers.isPlatformPopup()).perform(click());
-            onView(withText("Mit Google anmelden")).inRoot(isDialog()).check(matches(isDisplayed()));
+            if(gmailReady()) onView(withText("Mit Google anmelden")).inRoot(isDialog()).check(matches(isDisplayed()));
+            else {
+                onView(withText(MailProvider.setupLabel(0))).inRoot(isDialog()).check(matches(isDisplayed()));
+                onView(withText(ProMailPlugin.GMAIL_NOT_SET_UP[0])).inRoot(isDialog()).perform(androidx.test.espresso.action.ViewActions.scrollTo()).check(matches(isDisplayed()));
+            }
             onView(withText("Passwort für E-Mail-Programme")).inRoot(isDialog()).check(matches(org.hamcrest.Matchers.not(isDisplayed())));
             onView(withText("Abbrechen")).inRoot(isDialog()).perform(click());
             awaitTrue(scenario,"window.__googleCancelled===true");
         }
     }
 
-    @Test public void googleAccountPickerCancellationCanRetryWithoutChangingAccounts() throws Exception {
+    @Test public void googleAccountPickerIsNeverOpenedBeforeSetupOrCanRetryWithoutChangingAccounts() throws Exception {
         var instrumentation=androidx.test.platform.app.InstrumentationRegistry.getInstrumentation();
         var picked=new java.util.concurrent.CopyOnWriteArrayList<android.content.Intent>();
         var monitor=new android.app.Instrumentation.ActivityMonitor(){
@@ -257,12 +268,20 @@ public class NativeStartupTest {
             evaluate(scenario,"window.__pickerDone=false;PBMailDevice.accounts().then(items=>window.__beforePicker=items.length);PBMailDevice.addAccount().then(value=>window.__pickerDone=value===null);true");
             onView(androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom(android.widget.Spinner.class)).inRoot(isDialog()).perform(click());
             androidx.test.espresso.Espresso.onData(org.hamcrest.Matchers.equalTo("Google / Gmail")).inRoot(androidx.test.espresso.matcher.RootMatchers.isPlatformPopup()).perform(click());
-            for(int attempt=1;attempt<=2;attempt++){
+            if(gmailReady()) for(int attempt=1;attempt<=2;attempt++){
                 onView(withText("Mit Google anmelden")).inRoot(isDialog()).perform(click());
                 instrumentation.waitForIdleSync();
                 onView(withText(org.hamcrest.Matchers.containsString("(CANCELLED)"))).inRoot(isDialog()).check(matches(isDisplayed()));
                 assertEquals(attempt,picked.size());
                 assertArrayEquals(new String[]{"com.google"},picked.get(attempt-1).getStringArrayExtra("allowableAccountTypes"));
+            } else for(int attempt=1;attempt<=2;attempt++){
+                // Not set up: an honest note, and Google's account picker is never started.
+                onView(withText(MailProvider.setupLabel(0))).inRoot(isDialog()).perform(click());
+                instrumentation.waitForIdleSync();
+                onView(withText(ProMailPlugin.GMAIL_NOT_SET_UP[0])).inRoot(isDialog()).check(matches(isDisplayed()));
+                pressBackUnconditionally();
+                instrumentation.waitForIdleSync();
+                assertEquals(0,picked.size());
             }
             onView(withText("Abbrechen")).inRoot(isDialog()).perform(click());
             awaitTrue(scenario,"window.__pickerDone===true");
