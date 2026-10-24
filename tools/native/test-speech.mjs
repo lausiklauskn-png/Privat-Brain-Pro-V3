@@ -23,6 +23,7 @@ try{
   });
   await page.goto(url);await page.waitForFunction(()=>window.PBWorkspace&&document.getElementById('mic'));
   const mic=page.locator('#mic');
+  ok('Before choosing, the chip already names a language (the app language, paler), never "?"',await page.locator('#v3SpeechChip').textContent()==='DE'&&await page.locator('#v3SpeechChip').evaluate(c=>c.classList.contains('v3-speech-unset')&&c.title.includes('noch nicht gewählt')));
   await mic.click();
   ok('V3: the first tap asks "Welche Sprache sprichst du?" before listening',await page.locator('#v3SpeechMenu h3').textContent()==='Welche Sprache sprichst du?'&&await page.evaluate(()=>speechCalls.length===0));
   await page.locator('#v3SpeechMenu [data-speech="en-US"]').click();
@@ -31,7 +32,7 @@ try{
   ok('Afterwards the mic button shows its line symbol again (V3), not an empty button',await mic.evaluate(m=>!!m.querySelector('svg.v3-icon')));
   ok('The recognized words land in the search field',await page.locator('#q').inputValue()==='Rechnung Zahnarzt');
   ok('Android listens in the chosen spoken language (English), the prompt stays in the app language',await page.evaluate(()=>speechCalls.length===1&&speechCalls[0].language==='en-US'&&speechCalls[0].prompt==='Sprechen Sie jetzt'));
-  ok('The chip next to the mic shows the spoken language',await page.locator('#v3SpeechChip').textContent()==='EN');
+  ok('The chip next to the mic shows the spoken language',await page.locator('#v3SpeechChip').textContent()==='EN'&&!(await page.locator('#v3SpeechChip').evaluate(c=>c.classList.contains('v3-speech-unset'))));
   ok('The old "Dein Browser kann keine Sprach-Eingabe" message does not appear',!(await page.locator('#toast').textContent()).includes('Dein Browser'));
   await page.evaluate(()=>{document.documentElement.lang='pl';speechAnswer={cancelled:true,text:''};});await page.locator('#q').fill('bleibt');
   await mic.click();await page.waitForFunction(()=>speechCalls.length===2&&document.getElementById('mic').getAttribute('aria-busy')===null);

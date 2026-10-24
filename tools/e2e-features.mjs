@@ -57,7 +57,7 @@ ok('Katalog unverändert bei 2 (keine Datei gelöscht)', (await page.textContent
 
 // Bedeutungssuche findet die verbliebene Rechnung weiterhin
 await page.click('.tab[data-tab="search"]');
-await page.click('#mode button[data-m="mean"]'); await page.fill('#q','rechnung montage betrag'); await page.waitForTimeout(120);
+await page.evaluate(()=>{ if (MODE!=='mean') document.querySelector('#mode button[data-m="mean"]').click(); }); /* V3: ein Schalter, ein Tipp auf das eingeschaltete „Bedeutung“ schaltet aus */ await page.fill('#q','rechnung montage betrag'); await page.waitForTimeout(120);
 const hits = await page.$$eval('#results .card .fname', els=>els.map(e=>e.textContent.trim()));
 ok('Verbliebene Rechnung weiter auffindbar', hits.some(t=>/rechnung_arbeitsplatz_A/.test(t)), `[${hits.join(' | ')}]`);
 

@@ -173,8 +173,7 @@
     label(); place(b);
   }
   function helpButtons() {
-    const search = document.getElementById('panel-search'), box = search?.querySelector('.searchbox');
-    if (box) helpButton(search, b => box.append(b));
+    // Suche: kein „?“ mehr (Klaus 2026-10-24: „das erklärt sich selber“); ihre Erklärtexte bleiben verborgen.
     const lib = document.querySelector('#panel-intake .library-setup'); if (lib) helpButton(lib, b => lib.append(b));
     const drop = document.getElementById('drop'); if (drop) helpButton(drop, b => drop.append(b));
   }
@@ -207,13 +206,20 @@
     setTimeout(() => document.addEventListener('click', function off(e) { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', off, true); } }, true));
     menu.querySelector('[aria-checked="true"]')?.focus() || menu.querySelector('.pb-look-item')?.focus();
   }
+  // Klaus 2026-10-24: im Knopf immer die Sprache als Kürzel (DE, EN, RU …), nie „?“. Noch nicht gewählt: die Sprache
+  // der App, blasser; der erste Tipp aufs Mikrofon fragt dann nach (die Gerätesprache ist oft eine andere).
+  const APP_SPEECH = { de: 'de-DE', en: 'en-US', ru: 'ru-RU', pl: 'pl-PL' };
   function syncSpeech() {
     const chip = document.getElementById('v3SpeechChip'); if (!chip) return;
-    const cur = SPEECH.find(x => x[0] === speechLang());
-    chip.textContent = cur ? cur[1] : '?';
-    const w = (SPOKEN[document.documentElement.lang] || SPOKEN.de) + (cur ? ': ' + cur[2] : '');
+    const chosen = SPEECH.find(x => x[0] === speechLang());
+    const shown = chosen || SPEECH.find(x => x[0] === APP_SPEECH[document.documentElement.lang]) || SPEECH[0];
+    chip.textContent = shown[1];
+    chip.classList.toggle('v3-speech-unset', !chosen);
+    const spoken = SPOKEN[document.documentElement.lang] || SPOKEN.de;
+    const w = spoken + ': ' + shown[2] + (chosen ? '' : ' (' + (UNSET[document.documentElement.lang] || UNSET.de) + ')');
     chip.title = w; chip.setAttribute('aria-label', w);
   }
+  const UNSET = { de: 'noch nicht gewählt', en: 'not chosen yet', ru: 'ещё не выбран', pl: 'jeszcze nie wybrano' };
   function speechChip() {
     const mic = document.getElementById('mic'); if (!mic || document.getElementById('v3SpeechChip')) return;
     const chip = document.createElement('button'); chip.type = 'button'; chip.id = 'v3SpeechChip'; chip.className = 'ghost v3-speech-chip';
@@ -230,6 +236,99 @@
     }, true);
   }
 
+  // ---------- Bedeutung an/aus (Klaus 2026-10-24) ----------
+  // „Namenssuche“ entfällt; ein Schalter „Bedeutung“ mit Lupe dahinter. An: wie bisher hervorgehoben. Aus: sichtbar aus,
+  // dann sucht die App wie vorher über die Namen (MODE "name"). Fehlt in der App das Modell, führt der Knopf weiter zum
+  // Laden (native-semantic.js) und schaltet nicht aus.
+  const MEAN = { de: 'Bedeutung', en: 'Meaning', ru: 'По смыслу', pl: 'Znaczenie' };
+  const MEAN_TIP = {
+    de: ['Bedeutungssuche an. Tippen schaltet aus (dann Suche nach Namen).', 'Bedeutungssuche aus (Suche nach Namen). Tippen schaltet ein.'],
+    en: ['Meaning search on. Tap to switch off (then search by name).', 'Meaning search off (search by name). Tap to switch on.'],
+    ru: ['Поиск по смыслу включён. Нажмите, чтобы выключить (поиск по имени).', 'Поиск по смыслу выключен (поиск по имени). Нажмите, чтобы включить.'],
+    pl: ['Wyszukiwanie po znaczeniu włączone. Dotknij, aby wyłączyć (szukanie po nazwie).', 'Wyszukiwanie po znaczeniu wyłączone (szukanie po nazwie). Dotknij, aby włączyć.'] };
+  function meaningToggle() {
+    const mean = document.querySelector('#mode [data-m="mean"]'), name = document.querySelector('#mode [data-m="name"]');
+    if (!mean || !name || mean.dataset.v3Toggle) return;
+    mean.dataset.v3Toggle = '1'; mean.removeAttribute('data-i18n'); mean.type = 'button';
+    const label = document.createElement('span'); label.className = 'v3-mean-label';
+    const icon = svg('search'); icon.classList.add('v3-after');
+    mean.replaceChildren(label, icon);
+    const lang = () => document.documentElement.lang;
+    const sync = () => {
+      const on = mean.classList.contains('on');
+      label.textContent = MEAN[lang()] || MEAN.de;
+      mean.setAttribute('aria-pressed', String(on));
+      if (!mean.dataset.semanticMissing) mean.title = (MEAN_TIP[lang()] || MEAN_TIP.de)[on ? 0 : 1];
+    };
+    window.addEventListener('click', e => {
+      if (!e.target.closest?.('#mode [data-m="mean"]')) return;
+      if (!mean.classList.contains('on') || mean.dataset.semanticMissing) return;   // einschalten bzw. Modell laden: wie bisher
+      e.stopImmediatePropagation(); e.preventDefault();
+      name.click();                                                                    // ausschalten = Suche nach Namen
+    }, true);
+    new MutationObserver(sync).observe(mean, { attributes: true, attributeFilter: ['class', 'data-semantic-missing'] });
+    new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    sync();
+  }
+
+  // ---------- Spaltenbreiten verstellen (Klaus 2026-10-24: „Maus dahin, Pfeil rechts links, Größe verändern“) ----------
+  // Postfach (Ordner | Liste | Lesen) und Explorer (Baum | Dateien): Trennlinie mit der Maus oder dem Finger ziehen,
+  // mit Pfeiltasten in 16-px-Schritten, Doppelklick stellt zurück. Die Breiten bleiben gespeichert (je Gerät).
+  const SPLITS = [
+    { sel: '#mailWorkspace .mail-layout', key: 'pb-cols-mail', cols: ['.mail-folders', '.mail-list'], vars: ['--v3-col-a', '--v3-col-b'], min: [110, 180], rest: 320, media: '(min-width: 901px)' },
+    { sel: '#panel-explorer .explorer-layout', key: 'pb-cols-explorer', cols: ['#explorerTree'], vars: ['--v3-col-a'], min: [140], rest: 280, media: '(min-width: 651px)' }
+  ];
+  const SPLIT_TIP = { de: 'Breite ändern: ziehen oder Pfeiltasten · Doppelklick: zurücksetzen', en: 'Change width: drag or arrow keys · double-click: reset',
+    ru: 'Изменить ширину: перетащите или стрелки · двойной щелчок: сброс', pl: 'Zmień szerokość: przeciągnij lub strzałki · dwuklik: reset' };
+  function splitLayout(layout, set) {
+    if (layout.dataset.v3Split) return; layout.dataset.v3Split = '1'; layout.classList.add('v3-split');
+    const mq = matchMedia(set.media);
+    let saved = {}; try { saved = JSON.parse(localStorage.getItem(set.key) || '{}') || {}; } catch {}
+    set.vars.forEach(v => { if (saved[v] > 0) layout.style.setProperty(v, saved[v] + 'px'); });
+    const col = i => layout.querySelector(':scope>' + set.cols[i]);
+    const handles = set.cols.map((_, i) => {
+      const h = document.createElement('div'); h.className = 'v3-splitter'; h.tabIndex = 0;
+      h.setAttribute('role', 'separator'); h.setAttribute('aria-orientation', 'vertical');
+      layout.append(h); return h;
+    });
+    const place = () => handles.forEach((h, i) => {
+      const c = col(i), on = mq.matches && c && c.offsetParent !== null && getComputedStyle(layout).display === 'grid';
+      h.hidden = !on; if (!on) return;
+      const gap = parseFloat(getComputedStyle(layout).columnGap) || 0;
+      h.style.left = (c.offsetLeft + c.offsetWidth + gap / 2 - 5) + 'px';
+      const tip = SPLIT_TIP[document.documentElement.lang] || SPLIT_TIP.de; h.title = tip; h.setAttribute('aria-label', tip);
+      h.setAttribute('aria-valuenow', String(Math.round(c.offsetWidth)));
+    });
+    const save = () => { const o = {}; set.vars.forEach(v => { const n = parseFloat(layout.style.getPropertyValue(v)); if (n > 0) o[v] = Math.round(n); });
+      try { localStorage.setItem(set.key, JSON.stringify(o)); } catch {} };
+    const resize = (i, width) => {
+      const others = set.cols.reduce((sum, _, j) => j === i ? sum : sum + (col(j)?.offsetWidth || 0), 0);
+      const max = Math.max(set.min[i], layout.clientWidth - others - set.rest);
+      layout.style.setProperty(set.vars[i], Math.round(Math.min(max, Math.max(set.min[i], width))) + 'px'); place();
+    };
+    handles.forEach((h, i) => {
+      h.addEventListener('pointerdown', e => {
+        const c = col(i); if (!c) return; e.preventDefault(); h.setPointerCapture(e.pointerId); h.classList.add('v3-dragging');
+        document.documentElement.classList.add('v3-resizing');
+        const x0 = e.clientX, w0 = c.getBoundingClientRect().width;
+        const move = ev => resize(i, w0 + ev.clientX - x0);
+        const up = () => { h.removeEventListener('pointermove', move); h.classList.remove('v3-dragging'); document.documentElement.classList.remove('v3-resizing'); save(); };
+        h.addEventListener('pointermove', move); h.addEventListener('pointerup', up, { once: true }); h.addEventListener('pointercancel', up, { once: true });
+      });
+      h.addEventListener('keydown', e => {
+        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return; e.preventDefault();
+        resize(i, (col(i)?.offsetWidth || 0) + (e.key === 'ArrowRight' ? 16 : -16)); save();
+      });
+      h.addEventListener('dblclick', () => { layout.style.removeProperty(set.vars[i]); place(); save(); });
+    });
+    new ResizeObserver(place).observe(layout);
+    new MutationObserver(place).observe(layout, { childList: true, subtree: false, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
+    mq.addEventListener('change', place); place();
+  }
+  function columnSplitters(root = document) {
+    for (const set of SPLITS) root.querySelectorAll?.(set.sel).forEach(l => splitLayout(l, set));
+  }
+
   function start() {
     document.documentElement.classList.add('v3');
     decorate(document);
@@ -244,7 +343,8 @@
       }
     }).observe(document.body, { childList: true, subtree: true, characterData: true });
     placeNav(); wide.addEventListener('change', placeNav);
-    quietSearch(); filterToggle(); helpButtons(); speechChip();
+    quietSearch(); filterToggle(); helpButtons(); speechChip(); meaningToggle(); columnSplitters();
+    new MutationObserver(() => columnSplitters()).observe(document.body, { childList: true, subtree: true });
   }
   // Nach den Skripten am Ende von <body> (dort baut native-toolbar.js die Leiste).
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();

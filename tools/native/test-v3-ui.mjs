@@ -68,12 +68,16 @@ try{
   // Emulator-Starttest hing, weil „Alle prüfen“ und das Symbol sich ständig gegenseitig neu schrieben (2026-10-24).
   ok('The page is quiet when idle: no endless rewrite loop between app code and line symbols',await page.evaluate(()=>new Promise(res=>{let c=0;const o=new MutationObserver(m=>c+=m.length);o.observe(document.body,{subtree:true,childList:true,characterData:true});setTimeout(()=>{o.disconnect();res(c<100);},2000);})));
   ok('Old emojis replaced by line symbols on the search page (mic, remember, checked, related)',await page.evaluate(()=>['#mic','#fSave','.pb-check-all-button','[data-i18n=combine]'].every(s=>{const n=document.querySelector('#panel-search '+s);return n&&n.querySelector('svg.v3-icon')&&!/[🎤💾🛡🔗]/u.test(n.textContent);})));
-  const help=page.locator('#panel-search .v3-help');
-  await help.click();
-  ok('"?" in the search box shows the explanation …',await page.locator('#panel-search .search-welcome').evaluate(e=>getComputedStyle(e).display!=='none')&&await help.getAttribute('aria-expanded')==='true'&&await help.getAttribute('aria-label')==='Erklärung ausblenden');
-  await help.click();
-  ok('… and a second tap hides it again',await page.locator('#panel-search .search-welcome').evaluate(e=>getComputedStyle(e).display==='none')&&await help.getAttribute('aria-label')==='Erklärung zeigen');
-  ok('"Bedeutungssuche" stays on one line',await page.locator('#mode [data-m=mean]').evaluate(b=>b.getBoundingClientRect().height<40));
+  // Klaus 2026-10-24: kein „?“ in der Suche, keine Namenssuche; ein Schalter „Bedeutung“ mit Lupe dahinter.
+  ok('No "?" in the search box, its explanation stays hidden',await page.locator('#panel-search .v3-help').count()===0&&await page.locator('#panel-search .search-welcome').evaluate(e=>getComputedStyle(e).display==='none'));
+  const mean=page.locator('#mode [data-m=mean]');
+  ok('No name search button, only "Bedeutung" with the magnifier behind it',!(await page.locator('#mode [data-m=name]').isVisible())&&(await mean.textContent()).trim()==='Bedeutung'&&await mean.evaluate(b=>{const i=b.querySelector('svg.v3-icon'),t=b.querySelector('.v3-mean-label');return !!i&&i.getBoundingClientRect().left>t.getBoundingClientRect().right-1;}));
+  ok('Switched on: highlighted as before, pressed',await mean.evaluate(b=>b.classList.contains('on')&&b.getAttribute('aria-pressed')==='true'&&getComputedStyle(b).borderStyle!=='dashed'));
+  ok('"Bedeutung" stays on one line',await mean.evaluate(b=>b.getBoundingClientRect().height<40));
+  await mean.click();
+  ok('A tap switches it off, visibly (dashed, crossed out) and the search goes by name',await mean.evaluate(b=>!b.classList.contains('on')&&b.getAttribute('aria-pressed')==='false'&&getComputedStyle(b).borderTopStyle==='dashed'&&getComputedStyle(b.querySelector('.v3-mean-label')).textDecorationLine.includes('line-through'))&&await page.evaluate(()=>MODE==='name'));
+  await mean.click();
+  ok('Another tap switches meaning search on again',await mean.evaluate(b=>b.classList.contains('on'))&&await page.evaluate(()=>MODE==='mean'));
   await page.locator('[data-tab="mail"]').click();
   const connect=page.locator('#mailWorkspace [data-live-text="connect"]');if(await connect.isVisible().catch(()=>false))await connect.click();
   await page.locator('#mailWorkspace [data-live-uid="99"]').waitFor({state:'visible',timeout:15000});
@@ -95,6 +99,31 @@ try{
       await page.evaluate(()=>document.documentElement.setAttribute('data-theme','dunkel'));await page.waitForTimeout(450);await page.screenshot({path:`${shots}/${look}-dunkel-1280.png`});
       await page.evaluate(()=>document.documentElement.removeAttribute('data-theme'));}
   }
+  // Klaus 2026-10-24: Spaltenbreiten mit der Maus verstellen (Postfach und Explorer), ↔-Zeiger an der Trennlinie.
+  const live='#mailWorkspace .live-mail .mail-layout';
+  const split=page.locator(live+' > .v3-splitter').first();
+  ok('Mail: a divider with the ↔ pointer sits between folders and list',await split.isVisible()&&await split.evaluate(h=>getComputedStyle(h).cursor==='col-resize'));
+  const fw=()=>page.locator(live+' > .mail-folders').evaluate(e=>e.getBoundingClientRect().width);
+  const w0=await fw(),hb=await split.boundingBox();
+  await page.mouse.move(hb.x+hb.width/2,hb.y+40);await page.mouse.down();await page.mouse.move(hb.x+hb.width/2+60,hb.y+40,{steps:6});await page.mouse.up();
+  const w1=await fw();
+  ok('Mail: dragging the divider makes the folder column wider',Math.abs(w1-w0-60)<=3);
+  ok('Mail: the width is kept for the next start',await page.evaluate(()=>JSON.parse(localStorage.getItem('pb-cols-mail')||'{}')['--v3-col-a']>0));
+  const lw=()=>page.locator(live+' > .mail-list').evaluate(e=>e.getBoundingClientRect().width);
+  const l0=await lw();await page.locator(live+' > .v3-splitter').nth(1).focus();await page.keyboard.press('ArrowRight');
+  ok('Mail: arrow keys move the second divider (list column) in 16 px steps',Math.abs(await lw()-l0-16)<=2);
+  await split.dblclick();
+  ok('Mail: double-click resets the column',Math.abs(await fw()-w0)<=3);
+  ok('Mail: the reading pane keeps at least 320 px even when dragged far',await (async()=>{const b=await split.boundingBox();await page.mouse.move(b.x+5,b.y+40);await page.mouse.down();await page.mouse.move(b.x+2000,b.y+40,{steps:4});await page.mouse.up();
+    return page.locator(live+' > .mail-reader').evaluate(e=>e.getBoundingClientRect().width>=318);})());
+  await split.dblclick();
+  await page.locator('[data-tab=explorer]').click();await page.waitForTimeout(300);
+  const tsplit=page.locator('#panel-explorer .explorer-layout > .v3-splitter');
+  const tw=()=>page.locator('#explorerTree').evaluate(e=>e.getBoundingClientRect().width);
+  const t0=await tw(),tb=await tsplit.boundingBox();
+  await page.mouse.move(tb.x+tb.width/2,tb.y+20);await page.mouse.down();await page.mouse.move(tb.x+tb.width/2+80,tb.y+20,{steps:6});await page.mouse.up();
+  ok('Explorer: the folder tree can be made wider with the mouse',Math.abs(await tw()-t0-80)<=3&&await page.evaluate(()=>JSON.parse(localStorage.getItem('pb-cols-explorer')||'{}')['--v3-col-a']>0));
+  await tsplit.dblclick();
   await page.locator('[data-tab=search]').click();await page.setViewportSize({width:412,height:860});await page.waitForTimeout(300);
   ok('412px: search field starts high up, filters hidden behind one "Filter" button',await page.evaluate(()=>document.querySelector('#q').getBoundingClientRect().top<160&&getComputedStyle(document.querySelector('#filterbar')).display==='none'&&!!document.querySelector('#v3FilterToggle')));
   await page.locator('#v3FilterToggle').click();
