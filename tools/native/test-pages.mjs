@@ -39,7 +39,8 @@ try{
   ok('Install button is visible in the header',await page.locator('#installieren').isVisible());
   const cdp=await ctx.newCDPSession(page);const inst=await cdp.send('Page.getInstallabilityErrors');
   ok('Chrome reports no installability errors',inst.installabilityErrors.length===0||console.log(inst.installabilityErrors));
-  ok('Own cache prefix only (pbv3-web-), never the old private-brain- caches',await page.evaluate(async()=>{await new Promise(r=>setTimeout(r,500));const k=await caches.keys();return k.length>0&&k.every(x=>x.startsWith('pbv3-web-'));}));
+  const keys=await page.evaluate(async()=>{for(let i=0;i<100&&!(await caches.keys()).length;i++)await new Promise(r=>setTimeout(r,100));return caches.keys();});
+  ok('Own cache prefix only (pbv3-web-), never the old private-brain- caches',(keys.length>0&&keys.every(x=>x.startsWith('pbv3-web-')))||console.log('caches:',keys));
   version='B';await page.reload();
   ok('With a worker in control, a new version comes from the network first (no old page first)',(await page.title()).endsWith(' B'));
   await ctx.setOffline(true);await page.reload();
