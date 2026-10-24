@@ -67,7 +67,7 @@ try{
   ok('It opens a translation field below the actions; target language defaults to the app language',await panel.isVisible()&&await panel.locator('select').inputValue()==='de'&&await btn.getAttribute('aria-expanded')==='true');
   await panel.locator('select').selectOption('en');
   ok('The chosen target language is remembered',await page.evaluate(()=>localStorage.getItem('pb-translate-to')==='en'));
-  await page.evaluate(()=>{window.mistralCalls=[];window.mistralChat=async(system,user)=>{mistralCalls.push({system,user});return 'EN: '+user.split('\n').slice(1,-1).join('\n');};});
+  await page.evaluate(()=>{for(const k of ['Translator','LanguageDetector'])Object.defineProperty(self,k,{value:undefined,configurable:true,writable:true});window.mistralCalls=[];window.mistralChat=async(system,user)=>{mistralCalls.push({system,user});return 'EN: '+user.split('\n').slice(1,-1).join('\n');};});
   await panel.locator('.mail-primary').click();
   ok('Without a Mistral key nothing is sent and the field says what is needed',await page.evaluate(()=>mistralCalls.length===0)&&(await panel.locator('.v3-translate-status').textContent()).includes('Mistral-Schlüssel'));
   await page.evaluate(()=>{AI.provider='mistral';AI.key='test-key';});
@@ -81,6 +81,16 @@ try{
   ok('The translation comes back with the real address and number',(await panel.locator('.v3-translate-out').textContent()).includes('post@example.invalid')&&(await panel.locator('.v3-translate-out').textContent()).includes('0761 123456'));
   await panel.getByRole('button',{name:'Ausblenden',exact:true}).click();
   ok('"Ausblenden" closes the field again',await panel.count()===0&&await btn.getAttribute('aria-expanded')==='false');
+  // Stufe 1: kann das Gerät selbst übersetzen, geht nichts hinaus, keine Rückfrage.
+  await page.evaluate(()=>{window.localCalls=[];self.LanguageDetector={create:async()=>({detect:async()=>[{detectedLanguage:'de'}]})};
+    self.Translator={availability:async()=>'available',create:async o=>({translate:async x=>{localCalls.push(o);return 'LOCAL '+o.targetLanguage+': '+x;}})};mistralCalls.length=0;});
+  const before=dialogs.length;await btn.click();await panel.locator('.mail-primary').click();
+  await panel.locator('.v3-translate-out').waitFor({state:'visible'});
+  ok('Built-in translation on the device is used first: nothing to Mistral, no confirmation, real text',await page.evaluate(()=>mistralCalls.length===0&&localCalls.length===1&&localCalls[0].sourceLanguage==='de'&&localCalls[0].targetLanguage==='en')&&dialogs.length===before&&(await panel.locator('.v3-translate-out').textContent()).includes('post@example.invalid')&&(await panel.locator('.v3-translate-status').textContent()).includes('Auf dem Gerät'));
+  await page.evaluate(()=>{self.Translator={availability:async()=>'unavailable',create:async()=>{throw new Error('no');}};});
+  await panel.locator('.mail-primary').click();await page.waitForFunction(()=>mistralCalls.length===1);
+  ok('If the device cannot translate this pair, the KI path follows (with confirmation)',dialogs.length===before+1);
+  await panel.getByRole('button',{name:'Ausblenden',exact:true}).click();
   ok('No unhandled runtime errors',errors.length===0);
   console.log(`${count} translation checks passed (Mistral simulated; no network).`);
 }finally{await browser?.close();server.close();}

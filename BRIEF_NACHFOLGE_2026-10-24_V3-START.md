@@ -91,6 +91,26 @@ Symbol und Text, Senden-Symbol Brief mit Pfeil. Vorher/Nachher-Bilder 412 · 768
 
 Danach weiter nach Gesamtplan: T3 (Weg zum Original sichtbar machen), T4 (übrige Seiten), T5 (Emoji-Wächter).
 
+### Schon erledigt nach diesem Brief (2026-10-24, PR #2)
+- **Kompakt:** weniger Leerraum oben, kleinere Kästen/Knöpfe, Erklärtexte der alten Fassung hinter einem „?“ je Kasten
+  (Tipp zeigt, zweiter Tipp blendet aus), Strichsymbole statt alter Emojis (Suche, Explorer-Leiste, Dateien,
+  Einstellungen; Explorer-Baum/Pfad folgen), sichtbarer Name **Private Brain V3**.
+- **Sprech-Sprache:** beim ersten Mikrofon-Tipp „Welche Sprache sprichst du?“, Kürzel neben dem Mikrofon; gilt für
+  Suche und Diktat, unabhängig von der Gerätesprache (`PBSpeechLang`, `pb-speech-lang`).
+- **Übersetzen beim Lesen:** Knopf neben Antworten/Weiterleiten, Feld mit Zielsprache (`assets/v3-translate.js`).
+  Stufe 1 eingebaute Übersetzung des Geräts (Chrome Translator/LanguageDetector), nichts geht hinaus;
+  Stufe 3 Mistral (EU) mit Verdecken (Modul 25), KI-Anweisungs-Halt und Bestätigung; ohne Schlüssel kopieren.
+
+### S5 Übersetzung weiter ausbauen (Klaus 2026-10-24: „wie bei Mein Rezeptbuch, notfalls kleines LLM, sonst KI-Weg oder integrierte Übersetzung“)
+- „Mein Rezeptbuch“ übersetzt per eigenem Claude-Schlüssel (Haiku), ohne Verdecken (Rezepte sind nicht persönlich).
+  Für E-Mails gilt deshalb die Reihenfolge: zuerst auf dem Gerät, dann KI-Weg nur verdeckt.
+- **Android-App:** Google **ML Kit On-Device Translation** als Plugin (`ProTranslate`), Sprachpakete einmal laden, dann
+  offline; Stufe 1 in der App statt Chrome-API (die WebView hat sie nicht).
+- **Stufe 2 kleines Modell:** transformers.js 2.17.2 ist schon gebündelt (Bedeutungssuche). Opus-MT-Modelle
+  (`Xenova/opus-mt-de-en` usw., je Richtung ca. 75–100 MB) per Schalter laden wie das e5-Modell, mit SHA-256 in einer
+  Liste wie `semantic-model.json`; nur gängige Paare (de↔en, de↔ru, de↔pl, de↔uk, de↔tr …).
+- Optional wie Rezeptbuch: Claude-Schlüssel als zweiter KI-Anbieter neben Mistral, gleiche Verdeckung.
+
 ## Arbeitsweise und Fallen (aus der Vorsitzung)
 
 - Proben laufen mit `export CB_CHROMIUM=/opt/pw-browsers/chromium-1243/chrome-linux64/chrome` (Pfad im Container prüfen).

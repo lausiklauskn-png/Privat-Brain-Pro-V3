@@ -9,22 +9,22 @@
   const TARGETS = [['de', 'Deutsch'], ['en', 'English'], ['ru', 'Русский'], ['pl', 'Polski'], ['uk', 'Українська'],
     ['tr', 'Türkçe'], ['fr', 'Français'], ['it', 'Italiano'], ['es', 'Español']];
   const W = {
-    de: { button: 'Übersetzen', head: 'Übersetzung', to: 'in', go: 'Übersetzen', copy: 'Für eigenes Abo kopieren', hide: 'Ausblenden',
+    de: { device: 'Auf dem Gerät übersetzt, nichts ging ins Internet.', button: 'Übersetzen', head: 'Übersetzung', to: 'in', go: 'Übersetzen', copy: 'Für eigenes Abo kopieren', hide: 'Ausblenden',
       needKey: 'Für die Übersetzung braucht es den Mistral-Schlüssel (Einstellungen → KI). Ohne Schlüssel: kopieren und im eigenen Abo übersetzen lassen.',
       offline: 'Die App ist vom Internet getrennt. Nichts gesendet.', waiting: 'Wird übersetzt …', failed: 'Übersetzung hat nicht geklappt: ',
       leak: 'Etwas Persönliches wäre nicht verdeckt worden. Nichts gesendet.', empty: 'Kein Text zum Übersetzen.', copied: 'Kopiert, nur die verdeckte Fassung.',
       confirm: n => 'Der Mailtext geht zur Übersetzung an Mistral (EU). ' + n + ' Namen, Adressen und Nummern werden vorher verdeckt. Senden?' },
-    en: { button: 'Translate', head: 'Translation', to: 'into', go: 'Translate', copy: 'Copy for your own AI', hide: 'Hide',
+    en: { device: 'Translated on this device, nothing left it.', button: 'Translate', head: 'Translation', to: 'into', go: 'Translate', copy: 'Copy for your own AI', hide: 'Hide',
       needKey: 'Translation needs the Mistral key (Settings → AI). Without a key: copy and translate with your own AI subscription.',
       offline: 'The app is disconnected from the internet. Nothing sent.', waiting: 'Translating …', failed: 'Translation failed: ',
       leak: 'Something personal would not have been hidden. Nothing sent.', empty: 'No text to translate.', copied: 'Copied, only the masked version.',
       confirm: n => 'The mail text goes to Mistral (EU) for translation. ' + n + ' names, addresses and numbers are hidden first. Send?' },
-    ru: { button: 'Перевести', head: 'Перевод', to: 'на', go: 'Перевести', copy: 'Копировать для своей подписки', hide: 'Скрыть',
+    ru: { device: 'Переведено на устройстве, ничего не ушло в интернет.', button: 'Перевести', head: 'Перевод', to: 'на', go: 'Перевести', copy: 'Копировать для своей подписки', hide: 'Скрыть',
       needKey: 'Для перевода нужен ключ Mistral (Настройки → ИИ). Без ключа: скопируйте и переведите в своей подписке.',
       offline: 'Приложение отключено от интернета. Ничего не отправлено.', waiting: 'Перевод …', failed: 'Перевод не удался: ',
       leak: 'Что-то личное осталось бы открытым. Ничего не отправлено.', empty: 'Нет текста для перевода.', copied: 'Скопировано, только скрытая версия.',
       confirm: n => 'Текст письма уйдёт в Mistral (ЕС) для перевода. ' + n + ' имён, адресов и номеров будут скрыты. Отправить?' },
-    pl: { button: 'Przetłumacz', head: 'Tłumaczenie', to: 'na', go: 'Przetłumacz', copy: 'Kopiuj do własnej subskrypcji', hide: 'Ukryj',
+    pl: { device: 'Przetłumaczono na urządzeniu, nic nie wyszło do internetu.', button: 'Przetłumacz', head: 'Tłumaczenie', to: 'na', go: 'Przetłumacz', copy: 'Kopiuj do własnej subskrypcji', hide: 'Ukryj',
       needKey: 'Tłumaczenie wymaga klucza Mistral (Ustawienia → AI). Bez klucza: skopiuj i przetłumacz we własnej subskrypcji.',
       offline: 'Aplikacja jest odłączona od internetu. Nic nie wysłano.', waiting: 'Tłumaczenie …', failed: 'Tłumaczenie nie powiodło się: ',
       leak: 'Coś osobistego nie zostałoby ukryte. Nic nie wysłano.', empty: 'Brak tekstu do tłumaczenia.', copied: 'Skopiowano, tylko ukrytą wersję.',
@@ -48,6 +48,21 @@
     for (const m of text.match(EMAIL) || []) add(m);
     for (const m of text.match(PHONE) || []) add(m);
     return names;
+  }
+
+  // Stufe 1: eingebaute Übersetzung des Browsers/Geräts (z. B. Chrome Translator API). Text bleibt auf dem Gerät.
+  async function onDevice(text, to) {
+    try {
+      if (!self.Translator?.create || !self.LanguageDetector?.create) return null;
+      const detector = await self.LanguageDetector.create();
+      const from = (await detector.detect(text.slice(0, 2000)))?.[0]?.detectedLanguage;
+      if (!from || from === 'und') return null;
+      if (from === to) return text;
+      const state = await self.Translator.availability({ sourceLanguage: from, targetLanguage: to });
+      if (state === 'unavailable') return null;
+      const tr = await self.Translator.create({ sourceLanguage: from, targetLanguage: to });
+      return await tr.translate(text);
+    } catch { return null; }
   }
 
   function attach(actions, reader, mail) {
@@ -93,6 +108,13 @@
       return m;
     }
     go.onclick = async () => {
+      if (!text) { status.textContent = t.empty; return; }
+      go.disabled = true; status.textContent = t.waiting;
+      const local = await onDevice((mail.subject ? mail.subject + '\n\n' : '') + text, pick.value);
+      go.disabled = false;
+      if (local != null) { out.textContent = local; out.hidden = false; status.textContent = t.device; return; }
+      status.textContent = '';
+      // Stufe 3: vorhandener KI-Weg (Mistral, EU), verdeckt und nur nach Bestätigung.
       const key = ai();
       if (!key?.key || key.provider !== 'mistral') { status.textContent = t.needKey; return; }
       if (window.PBNetwork?.offline) { status.textContent = t.offline; return; }
