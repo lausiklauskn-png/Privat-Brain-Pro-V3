@@ -28,7 +28,7 @@ final class DesktopState {
     File getNoBackupFilesDir() { return directory.toFile(); }
     File getFilesDir() { return directory.toFile(); }
     File getCacheDir() { return directory.resolve("cache").toFile(); }
-    String getPackageName() { return "de.familyprojekt.privatebrain.pro"; }
+    String getPackageName() { return "de.familyprojekt.privatebrain.v3"; }
     synchronized Preferences getSharedPreferences(String name, int mode) {
         if (!name.matches("[a-z0-9-]{1,80}")) throw new IllegalArgumentException("INVALID_INPUT");
         return preferences.computeIfAbsent(name, n -> new Preferences(n));

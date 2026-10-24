@@ -10,9 +10,9 @@ dependencies = json.loads((root / 'windows/engine/dependencies.json').read_text(
 parts = ['<!doctype html><html lang="de"><meta charset="utf-8">',
          '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'; base-uri \'none\'">',
          '<meta name="viewport" content="width=device-width,initial-scale=1">',
-         '<title>Private Brain Pro · Lizenzen / Licenses</title>',
+         '<title>Private Brain V3 Pro · Lizenzen / Licenses</title>',
          '<style>body{font:16px system-ui;max-width:70rem;margin:2rem auto;padding:1rem}pre{white-space:pre-wrap;overflow-wrap:anywhere}summary{cursor:pointer;padding:1rem 0}code{overflow-wrap:anywhere}</style>',
-         '<a href="../index.html">← Private Brain Pro</a><h1>Lizenzen / Licenses</h1>',
+         '<a href="../index.html">← Private Brain V3 Pro</a><h1>Lizenzen / Licenses</h1>',
          '<p>Unveränderte Hinweise der Bibliotheken und der mitgelieferten Java-Laufzeit. Quellen und Prüfsummen stehen bei jedem Paket. / Original notices of the libraries and bundled Java runtime. Source locations and fingerprints are listed with each package.</p>']
 
 def text(value):

@@ -39,7 +39,7 @@ fn main(){
         .setup(|app|{
             let host=Host::new(app.handle().clone()).map_err(std::io::Error::other)?;host.start().map_err(std::io::Error::other)?;app.manage(host.clone());
             let window=WebviewWindowBuilder::new(app,"main",WebviewUrl::App("windows/start.html".into()))
-                .title("Private Brain Pro").inner_size(1280.,900.).min_inner_size(360.,480.).use_https_scheme(true)
+                .title("Private Brain V3 Pro").inner_size(1280.,900.).min_inner_size(360.,480.).use_https_scheme(true)
                 .devtools(cfg!(feature="messprobe")).disable_drag_drop_handler()
                 .additional_browser_args(host::BROWSER_ARGS)
                 .initialization_script_for_all_frames(include_str!("../../bridge/network-frames.js"))
