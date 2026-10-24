@@ -253,7 +253,7 @@
       let b = spot.querySelector(':scope > .pb-check-all-button');
       if (!b) { b = make('button', '', 'ghost pb-check-all-button'); b.type = 'button'; b.onclick = () => checkAll(b); spot.append(b); }
       const m = missingOnes().length;
-      if (!allBusy) { const text = n ? t('all') + t('allOpen').replace('{n}', n) : m ? t('standButton').replace('{n}', m) : t('allNone'); if (b.textContent !== text) b.textContent = text; if (b.disabled !== !n) b.disabled = !n; }
+      if (!allBusy) { const text = n ? t('all') + t('allOpen').replace('{n}', n) : m ? t('standButton').replace('{n}', m) : t('allNone'); if (b.dataset.text !== text) { b.dataset.text = text; b.textContent = text; } if (b.disabled !== !n) b.disabled = !n; }
       // Without anything to check the button still opens the honest status of all files.
       if (!n && !allBusy) { b.disabled = false; b.onclick = () => showStand(); } else if (!allBusy) b.onclick = () => checkAll(b);
     }

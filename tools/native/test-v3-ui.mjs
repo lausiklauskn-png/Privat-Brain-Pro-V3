@@ -65,6 +65,8 @@ try{
   // Kompakt (Klaus 2026-10-24): keine Erklärtexte der alten Fassung, kein Wortbruch, Suchfeld weit oben.
   ok('Search page: no welcome text, no counters, no empty-state explanation',await page.evaluate(()=>['.search-welcome','.search-totals','#searchEmpty'].every(s=>{const n=document.querySelector('#panel-search '+s)||document.querySelector(s);return !n||getComputedStyle(n).display==='none';})));
   ok('Search page: the help sentence is quiet until there is a result',await page.locator('#searchInfo').evaluate(e=>getComputedStyle(e).display==='none'));
+  // Emulator-Starttest hing, weil „Alle prüfen“ und das Symbol sich ständig gegenseitig neu schrieben (2026-10-24).
+  ok('The page is quiet when idle: no endless rewrite loop between app code and line symbols',await page.evaluate(()=>new Promise(res=>{let c=0;const o=new MutationObserver(m=>c+=m.length);o.observe(document.body,{subtree:true,childList:true,characterData:true});setTimeout(()=>{o.disconnect();res(c<100);},2000);})));
   ok('Old emojis replaced by line symbols on the search page (mic, remember, checked, related)',await page.evaluate(()=>['#mic','#fSave','.pb-check-all-button','[data-i18n=combine]'].every(s=>{const n=document.querySelector('#panel-search '+s);return n&&n.querySelector('svg.v3-icon')&&!/[🎤💾🛡🔗]/u.test(n.textContent);})));
   const help=page.locator('#panel-search .v3-help');
   await help.click();

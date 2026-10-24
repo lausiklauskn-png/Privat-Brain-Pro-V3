@@ -101,8 +101,16 @@
   }
   const GENERIC = '#panel-search button, #panel-search label > span, #panel-explorer .explorer-toolbar button, #panel-explorer .explorer-toolbar label > span, #panel-intake button, #panel-intake h3, #panel-settings h3';
   function firstText(el) { for (const n of el.childNodes) { if (n.nodeType === 3) { if (n.nodeValue.trim()) return n; } else return null; } return null; }
+  // Schutz gegen Endlosschleifen: schreibt fremder Code denselben Knopf immer wieder neu, hört V3 dort auf.
+  const seen = new WeakMap();
+  function tooOften(el) {
+    const now = Date.now(), s = seen.get(el) || { t: now, n: 0 };
+    if (now - s.t > 2000) { s.t = now; s.n = 0; }
+    s.n++; seen.set(el, s); return s.n > 20;
+  }
   function decorateGeneric(el) {
     const t = firstText(el); if (!t) return;
+    if (tooOften(el)) return;
     const m = t.nodeValue.match(/^\s*(\p{Extended_Pictographic})\uFE0F?\s*/u);
     if (!m || !EMOJI[m[1]]) return;
     t.nodeValue = t.nodeValue.slice(m[0].length);
