@@ -1,0 +1,149 @@
+/* Vier wählbare Themen (Klaus 2026-10-24): Klar, Petrol warm, Schiefer kompakt, Weich und luftig.
+   Ohne data-look bleibt das bisherige Aussehen. Jedes Thema hat Hell und Dunkel (data-theme="dunkel").
+   Nur Farben, Rundungen, Schatten und Schrift; Aufbau und Funktionen bleiben gleich.
+   Entwürfe: docs/design/entwuerfe-2026-10-24/mail-entwuerfe.html · V3: assets/themes.css, direkt in index.html */
+
+/* ---------- 1 Klar: helle Flächen, Blau nur für Hauptknopf und Aktives ---------- */
+:root[data-look="klar"]{
+  --bg:#f2f3f5; --bg2:#e9ecf0; --card:#ffffff; --card2:#f5f6f8; --field:#f5f6f8;
+  --line:#e1e4e8; --ink:#1c2026; --mut:#5f6873; --mut2:#868e98;
+  --acc:#2b62c4; --acc2:#1e55b3; --gold:#2b62c4;
+  --good:#1d7442; --warn:#a86400; --bad:#c0392b;
+  --radius:10px; --radius-sm:6px;
+  --shadow-xs:0 1px 2px rgba(20,30,50,.08);
+  --shadow-sm:0 1px 2px rgba(20,30,50,.06),0 4px 12px rgba(20,30,50,.06);
+  --shadow:0 2px 4px rgba(20,30,50,.06),0 10px 28px rgba(20,30,50,.10);
+  --grad:linear-gradient(180deg,#3b74d6,#2453a8);
+  --rainbow:linear-gradient(90deg,#2b62c4,#5b95f2,#2b62c4);
+  --sans:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --head:var(--sans);
+  --look-mail-accent:#2b62c4; --look-mail-soft:#e7effb; --look-mail-h1:#3b74d6; --look-mail-h2:#2453a8;
+}
+:root[data-look="klar"][data-theme="dunkel"]{
+  --bg:#15171b; --bg2:#1a1d21; --card:#1e2125; --card2:#24282d; --field:#24282d;
+  --line:#30353c; --ink:#e8eaed; --mut:#9aa3ae; --mut2:#6f7781;
+  --acc:#5b95f2; --acc2:#93b9f7; --gold:#5b95f2;
+  --good:#6ccf95; --warn:#e3a64a; --bad:#ef7d72;
+  --shadow-xs:0 1px 2px rgba(0,0,0,.4);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.35),0 4px 12px rgba(0,0,0,.3);
+  --shadow:0 2px 4px rgba(0,0,0,.35),0 10px 28px rgba(0,0,0,.45);
+  --grad:linear-gradient(180deg,#3b78e0,#2a5cb8);
+  --look-mail-accent:#6aa0f5; --look-mail-soft:#1c2b43; --look-mail-h1:#3b78e0; --look-mail-h2:#2a5cb8;
+}
+
+/* ---------- 2 Petrol warm: Sand und Petrol, sanfter Verlauf ---------- */
+:root[data-look="petrol"]{
+  --bg:#f6f1ea; --bg2:#efe6d9; --card:#fffdf9; --card2:#f6f0e7; --field:#f7f2ea;
+  --line:#e5dacb; --ink:#2a2622; --mut:#74695d; --mut2:#998d7f;
+  --acc:#0e6b6b; --acc2:#0b5d5d; --gold:#0e6b6b;
+  --good:#2b7a4b; --warn:#a8670e; --bad:#b4434f;
+  --radius:16px; --radius-sm:11px;
+  --shadow-xs:0 2px 6px -3px rgba(90,65,30,.18);
+  --shadow-sm:0 3px 12px rgba(90,65,30,.10);
+  --shadow:0 6px 22px rgba(90,65,30,.12);
+  --grad:linear-gradient(180deg,#188585,#0b5d5d);
+  --rainbow:linear-gradient(90deg,#0e6b6b,#3fb4a8,#c9a26b,#0e6b6b);
+  --look-bg-image:linear-gradient(180deg,#efe6d9 0,#f6f1ea 260px,#faf8f4 100%);
+  --look-mail-accent:#0e6b6b; --look-mail-soft:#dcefeb; --look-mail-h1:#188585; --look-mail-h2:#0b5d5d;
+}
+:root[data-look="petrol"][data-theme="dunkel"]{
+  --bg:#0f1918; --bg2:#132221; --card:#172524; --card2:#1e2e2d; --field:#1d2d2c;
+  --line:#2a3e3c; --ink:#ede7dd; --mut:#a3b1ab; --mut2:#73827c;
+  --acc:#3fb4a8; --acc2:#80d8ce; --gold:#3fb4a8;
+  --good:#72d09a; --warn:#e0a94d; --bad:#e8818b;
+  --shadow-xs:0 2px 6px -3px rgba(0,0,0,.5);
+  --shadow-sm:0 3px 12px rgba(0,0,0,.35);
+  --shadow:0 6px 22px rgba(0,0,0,.45);
+  --grad:linear-gradient(180deg,#2fa196,#1b7a72);
+  --look-bg-image:linear-gradient(180deg,#132221 0,#0f1918 260px,#0d1514 100%);
+  --look-mail-accent:#3fb4a8; --look-mail-soft:#1c3b38; --look-mail-h1:#2fa196; --look-mail-h2:#1b7a72;
+}
+
+/* ---------- 3 Schiefer kompakt: sachlich, Orange als einziger Akzent ---------- */
+:root[data-look="schiefer"]{
+  --bg:#eceef1; --bg2:#e3e6ea; --card:#fbfbfc; --card2:#f1f3f5; --field:#f1f3f5;
+  --line:#d8dce2; --ink:#1a1d22; --mut:#58606b; --mut2:#808893;
+  --acc:#c24e14; --acc2:#a8420c; --gold:#c24e14;
+  --good:#1f7444; --warn:#9a6200; --bad:#b83a3a;
+  --radius:8px; --radius-sm:5px;
+  --shadow-xs:0 1px 1px rgba(0,0,0,.06);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08);
+  --shadow:0 2px 8px rgba(0,0,0,.10);
+  --grad:linear-gradient(180deg,#d0571a,#a8420c);
+  --rainbow:linear-gradient(90deg,#c24e14,#e08a4f,#c24e14);
+  --sans:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+  --head:var(--sans);
+  --look-mail-accent:#c24e14; --look-mail-soft:#fbe9de; --look-mail-h1:#d0571a; --look-mail-h2:#a8420c;
+}
+:root[data-look="schiefer"][data-theme="dunkel"]{
+  --bg:#111215; --bg2:#16181b; --card:#18191d; --card2:#202328; --field:#1f2126;
+  --line:#2c3036; --ink:#e3e5e8; --mut:#8f97a1; --mut2:#666d76;
+  --acc:#f07a36; --acc2:#ffa66f; --gold:#f07a36;
+  --good:#6dcd93; --warn:#e6ad55; --bad:#ef7d7d;
+  --shadow-xs:0 1px 1px rgba(0,0,0,.5);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.5);
+  --shadow:0 2px 8px rgba(0,0,0,.55);
+  --grad:linear-gradient(180deg,#c95a1c,#9c4210);
+  --look-mail-accent:#f07a36; --look-mail-soft:#36231a; --look-mail-h1:#c95a1c; --look-mail-h2:#9c4210;
+}
+
+/* ---------- 4 Weich und luftig: Karten, Verlauf, Beeren-Ton ---------- */
+:root[data-look="weich"]{
+  --bg:#f7f4f7; --bg2:#f1ebf0; --card:#ffffff; --card2:#faf6f9; --field:#f7f3f6;
+  --line:#ece3e9; --ink:#2a2229; --mut:#76697a; --mut2:#9c8f99;
+  --acc:#a63a6a; --acc2:#8f2f5d; --gold:#a63a6a;
+  --good:#227547; --warn:#a2650c; --bad:#b8384f;
+  --radius:20px; --radius-sm:14px;
+  --shadow-xs:0 2px 6px rgba(70,30,55,.08);
+  --shadow-sm:0 6px 18px rgba(70,30,55,.08);
+  --shadow:0 10px 30px rgba(70,30,55,.12);
+  --grad:linear-gradient(135deg,#c64d84,#8f2f5d);
+  --rainbow:linear-gradient(90deg,#c64d84,#8e7ad6,#c64d84);
+  --look-bg-image:radial-gradient(900px 520px at 0 0,#f9e3ec 0,rgba(249,227,236,0) 60%),radial-gradient(800px 520px at 100% 0,#ebe6f8 0,rgba(235,230,248,0) 55%);
+  --look-mail-accent:#a63a6a; --look-mail-soft:#f8e3ec; --look-mail-h1:#c64d84; --look-mail-h2:#8f2f5d;
+}
+:root[data-look="weich"][data-theme="dunkel"]{
+  --bg:#141115; --bg2:#1a151a; --card:#1f1a1f; --card2:#272027; --field:#272027;
+  --line:#362b34; --ink:#f0e7ed; --mut:#b19fab; --mut2:#7f707a;
+  --acc:#e47fab; --acc2:#f3a8c8; --gold:#e47fab;
+  --good:#74d39c; --warn:#e6ad55; --bad:#f08a9e;
+  --shadow-xs:0 2px 6px rgba(0,0,0,.45);
+  --shadow-sm:0 6px 18px rgba(0,0,0,.4);
+  --shadow:0 10px 30px rgba(0,0,0,.5);
+  --grad:linear-gradient(135deg,#d3598f,#9a3466);
+  --look-bg-image:radial-gradient(900px 520px at 0 0,#3a1a2b 0,rgba(58,26,43,0) 60%),radial-gradient(800px 520px at 100% 0,#231f3a 0,rgba(35,31,58,0) 55%);
+  --look-mail-accent:#e47fab; --look-mail-soft:#3b2131; --look-mail-h1:#d3598f; --look-mail-h2:#9a3466;
+}
+
+/* ---------- Gemeinsam für alle vier Themen ---------- */
+:root[data-look] body{ background-color:var(--bg); background-image:var(--look-bg-image,none); background-attachment:fixed; }
+/* Die Mail-Seite setzt eigene Petrol-Werte auf .mail-app; die Themen überschreiben sie. */
+:root[data-look] .mail-app{
+  --mail-accent:var(--look-mail-accent); --mail-soft:var(--look-mail-soft);
+  --mail-h1:var(--look-mail-h1); --mail-h2:var(--look-mail-h2);
+  border-radius:var(--radius);
+}
+/* Flache Knöpfe (Leitplanke 2026-10-21): kein Glas, nur Fläche und feine Linie. Vollton nur für den Hauptknopf. */
+:root[data-look] .mail-app .mail-button{ background:var(--card); box-shadow:none; }
+:root[data-look] .mail-app .mail-primary{ background:var(--grad); color:#fff; border-color:transparent; box-shadow:var(--shadow-xs); }
+:root[data-look] .mail-avatar{ background:var(--mail-soft); color:var(--mail-accent); }
+:root[data-look="weich"] .mail-avatar,:root[data-look="petrol"] .mail-avatar{ background:var(--grad); color:#fff; }
+:root[data-look="schiefer"] .mail-item button{ min-height:62px; padding-block:6px; }
+:root[data-look="weich"] .mail-app{ box-shadow:var(--shadow-sm); border-color:transparent; }
+:root[data-look="klar"] .mail-app{ box-shadow:var(--shadow-sm); }
+
+/* ---------- Knopf oben und Auswahl ---------- */
+.pb-look-btn{ position:relative; }
+.pb-look-btn .compact-icon{ width:18px; height:18px; }
+.pb-look-menu{ position:fixed; z-index:2147483000; min-width:230px; max-width:calc(100vw - 16px); padding:6px;
+  background:var(--card); color:var(--ink); border:1px solid var(--line); border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,.18); font:500 .9rem/1.3 var(--sans); }
+.pb-look-menu[hidden]{ display:none; }
+.pb-look-menu h3{ margin:4px 8px 6px; font-size:.75rem; letter-spacing:.06em; text-transform:uppercase; color:var(--mut); font-weight:600; }
+.pb-look-item{ display:flex; align-items:center; gap:10px; width:100%; min-height:36px; padding:6px 8px; border:0; border-radius:8px;
+  background:transparent; color:var(--ink); text-align:left; font:inherit; cursor:pointer; box-shadow:none; white-space:nowrap; }
+.pb-look-item:hover,.pb-look-item:focus-visible{ background:var(--card2); outline:none; }
+.pb-look-item[aria-checked="true"]{ font-weight:700; }
+.pb-look-swatch{ flex:none; width:26px; height:18px; border-radius:6px; border:1px solid rgba(0,0,0,.12); }
+.pb-look-check{ margin-left:auto; width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; visibility:hidden; }
+.pb-look-item[aria-checked="true"] .pb-look-check{ visibility:visible; }
