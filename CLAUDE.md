@@ -1,4 +1,13 @@
-# Private Brain Pro — Sitzungs-Anker
+# Private Brain Pro V3 — Sitzungs-Anker
+
+**V3 (Klaus 2026-10-24):** 1:1-Kopie von Privat-Brain-Pro main `30c11ea`, hier baut **Claude** das neue Design
+eigenständig. **Pro ist Codex' Repo, dort nicht am Code bauen.** Neue Funktionen aus Pro von Zeit zu Zeit herüberholen.
+Ohne `signing/` und ohne Release-/Signier-Abläufe: V3 veröffentlicht nichts in Pros Update-Kanal.
+Plan, Codex-Abgleich, Kontakte/WhatsApp: [BRIEF_NACHFOLGE_2026-10-24_THEMEN-KONTAKTE-V3.md](BRIEF_NACHFOLGE_2026-10-24_THEMEN-KONTAKTE-V3.md).
+Themen: `assets/themes.css`/`.js` (Knopf hinter dem Zahnrad), Probe `tools/native/test-themes.mjs`.
+Entwürfe: `docs/design/entwuerfe-2026-10-24/` (Claude `mail-entwuerfe.html`, Codex `vorschau.html`).
+
+Alles ab hier ist der übernommene Pro-Anker und beschreibt Pros Geschichte.
 
 **Nächste Sitzung (Klaus 2026-10-24): modernes Design wie Outlook**, Linien-Symbole statt Emojis, flache Knöpfe bleiben.
 [Brief](BRIEF_NACHFOLGE_2026-10-24_DESIGN.md) mit Ist-Bildern (`docs/design/ist-2026-10-24/`), Vorbildern und Ablauf.

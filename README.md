@@ -1,3 +1,13 @@
+# Private Brain Pro V3
+
+Eigenständige Design-Variante von [Private Brain Pro](https://github.com/lausiklauskn-png/Privat-Brain-Pro):
+gleiche Funktionen, neues Design mit vier wählbaren Themen (Klar, Petrol warm, Schiefer kompakt, Weich und luftig),
+Strichsymbolen und ruhigen Karten. Stand und Plan:
+[Nachfolgebrief](BRIEF_NACHFOLGE_2026-10-24_THEMEN-KONTAKTE-V3.md) ·
+[Entwürfe](docs/design/entwuerfe-2026-10-24/mail-entwuerfe.html).
+
+---
+
 # Private Brain Pro
 
 Eigenständige Pro-App mit lokaler Suche, Dateiimport, Katalog und Postfach.

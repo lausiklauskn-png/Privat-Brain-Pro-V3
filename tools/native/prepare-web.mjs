@@ -49,7 +49,10 @@ const start = 'initEmbedding();  // echtes Bedeutungs-Modell laden';
 if (!html.includes(start)) throw new Error('Review native model start after source changes');
 // The model starts only through the switch (native-semantic.js): when loaded, checked and not after a crash.
 html = html.replace(start, '(window.PBSemantic ? PBSemantic.start(initEmbedding) : initEmbedding());  // Bedeutungs-Modell über den Schalter');
-html = html.replace('</head>', '<link rel="stylesheet" href="native.css">\n</head>');
+// Native styles go before the V3 themes so a chosen design wins.
+const themesLink = '<link rel="stylesheet" href="assets/themes.css">';
+if (!html.includes(themesLink)) throw new Error('Review V3 themes link after source changes');
+html = html.replace(themesLink, '<link rel="stylesheet" href="native.css">\n' + themesLink);
 html = adaptRecovery(html);
 html = html.replace('</body>', '<script src="native-recovery.js"></script>\n<script src="native-originals.js"></script>\n<script src="native-folders.js"></script>\n<script src="native-vault.js"></script>\n<script src="native-protect.js"></script>\n<script src="native-categories.js"></script>\n<script src="native-mycel.js"></script>\n<script src="native-mail-expiry.js"></script>\n<script src="native-unsubscribe.js"></script>\n<script src="native-mail-index.js"></script>\n<script src="native-mail-ai.js"></script>\n<script src="native-keys.js"></script>\n<script src="native-check.js"></script>\n<script src="native-license.js"></script>\n<script src="native-tools.js"></script>\n<script src="native-pdf.js"></script>\n<script src="native-speech.js"></script>\n<script src="native-share.js"></script>\n<script src="native-navigation.js"></script>\n<script src="native.js"></script>\n<script src="native-toolbar.js"></script>\n</body>');
 if (!html.includes('<script src="assets/live-mail.js')) throw new Error('Review native mail adapter injection after source changes');
