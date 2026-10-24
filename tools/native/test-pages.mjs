@@ -39,8 +39,9 @@ try{
   ok('Install button is visible in the header',await page.locator('#installieren').isVisible());
   const cdp=await ctx.newCDPSession(page);const inst=await cdp.send('Page.getInstallabilityErrors');
   ok('Chrome reports no installability errors',inst.installabilityErrors.length===0||console.log(inst.installabilityErrors));
-  const keys=await page.evaluate(async()=>{for(let i=0;i<100&&!(await caches.keys()).length;i++)await new Promise(r=>setTimeout(r,100));return caches.keys();});
-  ok('Own cache prefix only (pbv3-web-), never the old private-brain- caches',(keys.length>0&&keys.every(x=>x.startsWith('pbv3-web-')))||console.log('caches:',keys));
+  const keys=await page.evaluate(async()=>{for(let i=0;i<100&&!(await caches.keys()).some(k=>k.startsWith('pbv3-web-'));i++)await new Promise(r=>setTimeout(r,100));return caches.keys();});
+  // Weitere eigene Vorräte sind erlaubt (z. B. „transformers-cache“ der Bedeutungssuche); nur nie „private-brain-“.
+  ok('The page keeps its own store (pbv3-web-) and never creates the old private-brain- store',(keys.some(x=>x.startsWith('pbv3-web-'))&&!keys.some(x=>x.startsWith('private-brain-')))||console.log('caches:',keys));
   version='B';await page.reload();
   ok('With a worker in control, a new version comes from the network first (no old page first)',(await page.title()).endsWith(' B'));
   await ctx.setOffline(true);await page.reload();
