@@ -25,7 +25,9 @@ Installer) nur, wenn Klaus sie ausdrücklich will; den Download-Link danach wie 
 
 W1 **Eigene Identität:** `productName "Private Brain V3"`, `identifier "de.familyprojekt.privatebrain.v3"`, eigene
    Versionsreihe (`3.0.0-preview.1`), Fenstertitel, Startmenü- und Installer-Namen „Private Brain V3“, eigener
-   Datenordner. Symbol mit V3-Schild aus `icon-v3-512.png` (Tauri-Symbole neu erzeugen). Gleiche Kennung wie die künftige
+   Datenordner. **Symbol (Klaus 2026-10-24):** dasselbe Logo, oben rechts vier geteilte blaue Quadrate mit „V3“ in Weiß,
+   stilisiert, ohne das Wort „Windows“: `icon-v3-windows-512.png`/`-192.png`/`.ico` aus
+   `tools/native/icon/make-v3-windows-icon.py` (daraus die Tauri-Symbole erzeugen, `npx tauri icon`). Gleiche Kennung wie die künftige
    Android-V3-App (Start-Brief S2), damit beide zusammenpassen.
 W2 **V3-Oberfläche im Fenster:** prüfen, dass `windows/` die V3-Dateien bündelt (themes, v3-ui, v3-translate, Strichsymbole,
    Spaltenbreiten, Sortierfeld), nicht nur die Pro-Teile. `windows/engine/build/shared-source.json` neu erzeugen.
