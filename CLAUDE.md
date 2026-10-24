@@ -8,8 +8,8 @@ Suche: ein Schalter „Bedeutung“, Sprachkürzel neben dem Mikrofon; Spaltenbr
 Explorer sortiert über ein Feld; Design „Bisher“ heißt „Erdton“.
 
 **V3 im Browser (Klaus 2026-10-24):** https://lausiklauskn-png.github.io/Privat-Brain-Pro-V3/ ist installierbar
-(Knopf oben, Name und Text unter dem Symbol „Private Brain V3“, Symbol mit „V3“: `icon-v3-*.png` aus
-`tools/native/icon/make-v3-icon.py`). Gebaut von `tools/native/prepare-pages.mjs` nach `build:web`, nur für Pages; Probe
+(Knopf oben, Name und Text unter dem Symbol „Private Brain V3“, Symbol: großes leuchtendes „V3“ über der dicken Kugel, `icon-v3-*.png` aus
+`tools/native/icon/make-v3-icons.py`). Gebaut von `tools/native/prepare-pages.mjs` nach `build:web`, nur für Pages; Probe
 `tools/native/test-pages.mjs`. Service Worker lädt zuerst aus dem Netz, eigener Vorrat `pbv3-web-` (nie `private-brain-`
 anfassen, das gehört der alten PWA am selben Ursprung). Pages-Quelle steht auf „GitHub Actions“; vorher überschrieb die
 Zweig-Veröffentlichung V3 mit der rohen index.html (alter Name, Emojis, schmal).
