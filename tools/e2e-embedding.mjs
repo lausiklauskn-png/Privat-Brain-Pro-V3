@@ -69,7 +69,7 @@ await page.waitForTimeout(400);
 // CONTROL: lexical/synonym path cannot bridge "vehicle" -> "Wagen".
 // Prove it by turning the stub OFF would be complex; instead assert the semantic
 // hit AND that its reason cites the model (only the evec path produces that).
-await page.click('#mode button[data-m="mean"]');
+await page.evaluate(()=>{ if (MODE!=='mean') document.querySelector('#mode button[data-m="mean"]').click(); }); /* V3: ein Schalter, ein Tipp auf das eingeschaltete „Bedeutung“ schaltet aus */
 await page.fill('#q','vehicle'); await page.waitForTimeout(300);
 const hits = await page.$$eval('#results .card .fname', els=>els.map(e=>e.textContent.trim()));
 ok('Cross-Language-Bedeutung: „vehicle" findet den „Wagen"-Akt', hits.some(t=>/akte_4499/.test(t)), `[${hits.join(' | ')}]`);

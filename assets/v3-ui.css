@@ -130,3 +130,4 @@ html.v3 #panel-search #mode,html.v3 #panel-search #mode [data-m="mean"],html.v3 
   html.v3 #panel-search .searchbox>input[type=search]+*~*{margin-top:0}
   html.v3 #panel-search .searchbox::after{content:"";order:2;flex-basis:100%;height:0}
 }
+html.v3 .v3-speech-chip.v3-speech-unset{opacity:.6;font-weight:500}

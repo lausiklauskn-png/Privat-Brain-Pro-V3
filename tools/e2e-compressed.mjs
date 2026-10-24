@@ -83,7 +83,7 @@ await page.setInputFiles('#fileInput', files);
 await page.waitForFunction(()=>document.querySelector('#stFiles')&&document.querySelector('#stFiles').textContent==='2',{timeout:15000});
 ok('2 komprimierte Dateien signiert', (await page.textContent('#stFiles'))==='2');
 
-async function mean(q){ await page.click('#mode button[data-m="mean"]'); await page.fill('#q',q); await page.waitForTimeout(120);
+async function mean(q){ await page.evaluate(()=>{ if (MODE!=='mean') document.querySelector('#mode button[data-m="mean"]').click(); }); /* V3: ein Schalter, ein Tipp auf das eingeschaltete „Bedeutung“ schaltet aus */ await page.fill('#q',q); await page.waitForTimeout(120);
   return page.$$eval('#results .card .fname', els=>els.map(e=>e.textContent.trim())); }
 
 const p1 = await mean('mietvertrag laufzeit kaltmiete');

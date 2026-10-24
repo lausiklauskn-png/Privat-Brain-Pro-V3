@@ -206,14 +206,20 @@
     setTimeout(() => document.addEventListener('click', function off(e) { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', off, true); } }, true));
     menu.querySelector('[aria-checked="true"]')?.focus() || menu.querySelector('.pb-look-item')?.focus();
   }
+  // Klaus 2026-10-24: im Knopf immer die Sprache als Kürzel (DE, EN, RU …), nie „?“. Noch nicht gewählt: die Sprache
+  // der App, blasser; der erste Tipp aufs Mikrofon fragt dann nach (die Gerätesprache ist oft eine andere).
+  const APP_SPEECH = { de: 'de-DE', en: 'en-US', ru: 'ru-RU', pl: 'pl-PL' };
   function syncSpeech() {
     const chip = document.getElementById('v3SpeechChip'); if (!chip) return;
-    const cur = SPEECH.find(x => x[0] === speechLang());
-    // Ohne gewählte Sprache eine Weltkugel statt „?“ (ein „?“ sah aus wie ein Hilfe-Knopf).
-    if (cur) chip.textContent = cur[1]; else chip.replaceChildren(svg('globe'));
-    const w = (SPOKEN[document.documentElement.lang] || SPOKEN.de) + (cur ? ': ' + cur[2] : '');
+    const chosen = SPEECH.find(x => x[0] === speechLang());
+    const shown = chosen || SPEECH.find(x => x[0] === APP_SPEECH[document.documentElement.lang]) || SPEECH[0];
+    chip.textContent = shown[1];
+    chip.classList.toggle('v3-speech-unset', !chosen);
+    const spoken = SPOKEN[document.documentElement.lang] || SPOKEN.de;
+    const w = spoken + ': ' + shown[2] + (chosen ? '' : ' (' + (UNSET[document.documentElement.lang] || UNSET.de) + ')');
     chip.title = w; chip.setAttribute('aria-label', w);
   }
+  const UNSET = { de: 'noch nicht gewählt', en: 'not chosen yet', ru: 'ещё не выбран', pl: 'jeszcze nie wybrano' };
   function speechChip() {
     const mic = document.getElementById('mic'); if (!mic || document.getElementById('v3SpeechChip')) return;
     const chip = document.createElement('button'); chip.type = 'button'; chip.id = 'v3SpeechChip'; chip.className = 'ghost v3-speech-chip';

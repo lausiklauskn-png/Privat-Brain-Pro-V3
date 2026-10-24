@@ -76,7 +76,7 @@ await page.setInputFiles('#importInput', savePath);
 await page.waitForFunction(()=>document.querySelector('#stFiles')&&document.querySelector('#stFiles').textContent==='3',{timeout:8000});
 ok('Zusammenführen bringt 3 Einträge vom anderen Rechner', (await page.textContent('#stFiles'))==='3');
 await page.click('.tab[data-tab="search"]');
-await page.click('#mode button[data-m="mean"]'); await page.fill('#q','rechnung montage betrag'); await page.waitForTimeout(150);
+await page.evaluate(()=>{ if (MODE!=='mean') document.querySelector('#mode button[data-m="mean"]').click(); }); /* V3: ein Schalter, ein Tipp auf das eingeschaltete „Bedeutung“ schaltet aus */ await page.fill('#q','rechnung montage betrag'); await page.waitForTimeout(150);
 const merged = await page.$$eval('#results .card .fname', els=>els.map(e=>e.textContent.trim()));
 ok('Importierte Einträge sind auffindbar', merged.some(t=>/rechnung_2026/.test(t)), `[${merged.join(' | ')}]`);
 const origin = await page.$$eval('#results .origin', els=>els.length);
