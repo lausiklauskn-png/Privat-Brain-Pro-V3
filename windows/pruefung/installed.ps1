@@ -1,6 +1,6 @@
 $ErrorActionPreference = 'Stop'
 if ($env:GITHUB_ACTIONS -ne 'true') { throw 'This installation probe is intended for an isolated GitHub Windows runner.' }
-$appDir = Join-Path $env:LOCALAPPDATA 'Private Brain V3'
+$appDir = Join-Path $env:LOCALAPPDATA 'Private Brain V3 Pro'
 $exe = Join-Path $appDir 'private-brain-v3.exe'
 . (Join-Path $PSScriptRoot 'uninstall.ps1')
 . (Join-Path $PSScriptRoot 'coexist.ps1')

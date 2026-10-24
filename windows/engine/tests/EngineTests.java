@@ -198,7 +198,7 @@ public final class EngineTests {
     static void updatesAndExports(Path root,DesktopState state)throws Exception {
         ok("ort-wasm-simd.wasm".equals(BundledRoutes.file(BundledRoutes.PREFIX+"/dist/ort-wasm-simd.wasm"))&&"transformers.min.js".equals(BundledRoutes.file(BundledRoutes.PREFIX+"/dist/transformers.min.js?cache=1")),"actual model library and WASM URLs use Android's shared local routing rules");
         ok(BundledRoutes.file(BundledRoutes.PREFIX+"-foreign/dist/transformers.min.js")==null&&BundledRoutes.modelPath(BundledRoutes.MODEL_PREFIX+"../secrets")==null,"similar CDN packages and traversing model paths are never mapped to local files");
-        String version="3.0.0-preview.2",tag="v3-windows-"+version,name="Private-Brain-V3-Windows-"+version+"-x64-setup.exe";
+        String version="3.0.0-preview.2",tag="v3-windows-"+version,name="Private-Brain-V3-Pro-Windows-"+version+"-x64-setup.exe";
         String url="https://github.com/"+DesktopUpdates.REPOSITORY+"/releases/download/"+tag+"/"+name;
         JSONObject asset=new JSONObject().put("name",name).put("browser_download_url",url).put("state","uploaded").put("size",100);
         JSONObject release=new JSONObject().put("tag_name",tag).put("draft",false).put("prerelease",true).put("assets",new JSONArray().put(asset));

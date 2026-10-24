@@ -45,13 +45,19 @@ W6 **Herausgeber-Studio:** in der App (Android oder Windows) Schlüssel erzeugen
 
 ## Stand 2026-10-24 (W1–W3 gebaut, CI auf GitHub steht aus)
 
-- **W1 erledigt:** `tauri.conf.json` heißt „Private Brain V3“, Kennung `de.familyprojekt.privatebrain.v3`, Version
-  `3.0.0-preview.1`, Programm `private-brain-v3.exe`, Herausgeber „Private Brain V3“. Damit eigener Installationsordner
-  (`%LOCALAPPDATA%\Private Brain V3`), eigener Datenordner (`%LOCALAPPDATA%\de.familyprojekt.privatebrain.v3`), eigener
+- **W1 erledigt:** `tauri.conf.json` heißt „Private Brain V3 Pro“, Kennung `de.familyprojekt.privatebrain.v3`, Version
+  `3.0.0-preview.1`, Programm `private-brain-v3.exe`, Herausgeber „Private Brain V3 Pro“. Damit eigener Installationsordner
+  (`%LOCALAPPDATA%\Private Brain V3 Pro`), eigener Datenordner (`%LOCALAPPDATA%\de.familyprojekt.privatebrain.v3`), eigener
   Deinstallationseintrag und eigenes „Öffnen mit“. Fenstertitel, Startfehler, Passwortfenster, Lizenzseite, Gmail-Antwortseite,
-  DPAPI-Zusatz (`private-brain-v3-windows|…`) und Installername `Private-Brain-V3-Windows-…-x64-setup.exe` auf V3.
+  DPAPI-Zusatz (`private-brain-v3-windows|…`) und Installername `Private-Brain-V3-Pro-Windows-…-x64-setup.exe` auf V3.
   Updates sucht V3 nur in `lausiklauskn-png/Privat-Brain-Pro-V3` unter Tags `v3-windows-3.0.0-preview.N` (Pros Kanal
   nie; eigene Kernprobe). Symbol: `icon-v3-windows.ico` (16–256 px) wird unverändert zu `src-tauri/icons/icon.ico`.
+- **Name der nativen App (Klaus 2026-10-24): „Private Brain V3 Pro“.** Gilt für Windows (Produktname, Herausgeber,
+  Fenstertitel, Startmenü, Installer `Private-Brain-V3-Pro-Windows-…-x64-setup.exe`, Ordner
+  `%LOCALAPPDATA%\Private Brain V3 Pro`) und die gemeinsamen nativen Sätze („Zurück zu …“, Speicherort-Hilfe). Die Webfassung
+  (Pages) und die Überschrift in der Oberfläche bleiben „Private Brain V3“. Kennung, Programmname, DPAPI-Zusatz, Version und
+  Update-Kanal unverändert. Weil „Private Brain Pro“ und „Private Brain V3 Pro“ dieselben Wörter tragen, vergleicht
+  `coexist.ps1` Deinstallationseinträge nur exakt (`-ceq`), nie mit Platzhalter oder Anfang.
 - **Bleibt absichtlich „pro“:** das Java-Paket `de.familyprojekt.privatebrain.pro` der Mail-Maschine (sie wird aus den
   gemeinsamen Android-Quellen übersetzt, nur ein Code-Name), die Bridge-Namen `ProMail`/`ProVault`…, das Sicherungsformat
   `app:'private-brain-pro'` (eine Pro-Sicherung bleibt in V3 lesbar) und `gmail-desktop.json` (W4).

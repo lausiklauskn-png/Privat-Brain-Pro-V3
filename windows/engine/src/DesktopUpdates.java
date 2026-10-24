@@ -6,12 +6,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.json.*;
 
-/** Separate Windows channel of Private Brain V3. A checked download opens only in the browser.
+/** Separate Windows channel of Private Brain V3 Pro. A checked download opens only in the browser.
  *  V3 has its own repository and tag series, so Pro's Windows releases never reach a V3 install. */
 final class DesktopUpdates {
     static final String REPOSITORY="lausiklauskn-png/Privat-Brain-Pro-V3";
     static final String TAG_PREFIX="v3-windows-";
-    static final String INSTALLER_PREFIX="Private-Brain-V3-Windows-";
+    static final String INSTALLER_PREFIX="Private-Brain-V3-Pro-Windows-";
     private final AtomicBoolean checking=new AtomicBoolean();
     private volatile String download;
     interface Fetch { JSONArray releases()throws Exception; }

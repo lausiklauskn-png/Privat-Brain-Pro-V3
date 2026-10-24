@@ -3,7 +3,7 @@ use std::path::Path;
 #[cfg(windows)]
 pub fn startup_error(){
     use windows::{core::HSTRING,Win32::UI::WindowsAndMessaging::{MessageBoxW,MB_OK,MB_ICONERROR}};
-    unsafe{MessageBoxW(None,&HSTRING::from("Private Brain V3 konnte nicht starten. Ihre Daten wurden nicht zurückgesetzt. Bitte die Installation und den verfügbaren Speicher prüfen.\n\nPrivate Brain V3 could not start. Your data was not reset. Please check the installation and available storage.\n\nAPP_START_FAILED"),&HSTRING::from("Private Brain V3"),MB_OK|MB_ICONERROR);}
+    unsafe{MessageBoxW(None,&HSTRING::from("Private Brain V3 Pro konnte nicht starten. Ihre Daten wurden nicht zurückgesetzt. Bitte die Installation und den verfügbaren Speicher prüfen.\n\nPrivate Brain V3 Pro could not start. Your data was not reset. Please check the installation and available storage.\n\nAPP_START_FAILED"),&HSTRING::from("Private Brain V3 Pro"),MB_OK|MB_ICONERROR);}
 }
 #[cfg(not(windows))]
 pub fn startup_error(){}

@@ -1,8 +1,8 @@
-# Private Brain V3 für Windows
+# Private Brain V3 Pro für Windows
 
-**Eigene Identität (2026-10-24):** Name „Private Brain V3“, Kennung
+**Eigene Identität (2026-10-24):** Name „Private Brain V3 Pro“, Kennung
 `de.familyprojekt.privatebrain.v3`, Programm `private-brain-v3.exe`, Versionsreihe
-`3.0.0-preview.N`. Installiert wird nach `%LOCALAPPDATA%\Private Brain V3`, die Daten
+`3.0.0-preview.N`. Installiert wird nach `%LOCALAPPDATA%\Private Brain V3 Pro`, die Daten
 liegen in `%LOCALAPPDATA%\de.familyprojekt.privatebrain.v3`. Eine vorhandene
 Private Brain Pro (`…privatebrain.pro`) bleibt unberührt; `pruefung/coexist.ps1`
 installiert in der CI den echten Pro-Installer daneben und prüft das. Updates sucht

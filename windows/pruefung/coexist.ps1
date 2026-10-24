@@ -11,10 +11,14 @@ $proData = Join-Path $env:LOCALAPPDATA 'de.familyprojekt.privatebrain.pro'
 $proSentinel = Join-Path $proData 'v3-nachbar-probe.txt'
 $proOpenWith = 'HKCU:\Software\Classes\Applications\private-brain-pro.exe\shell\open\command'
 $v3Data = Join-Path $env:LOCALAPPDATA 'de.familyprojekt.privatebrain.v3'
+# Exact display names: "Private Brain V3 Pro" and "Private Brain Pro" share words,
+# so no prefix or wildcard match may ever decide which installation is meant.
+$proDisplayName = 'Private Brain Pro'
+$v3DisplayName = 'Private Brain V3 Pro'
 
 function Get-ProUninstallKeys {
   @(Get-ChildItem 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall' -ErrorAction SilentlyContinue |
-    Where-Object { (Get-ItemProperty $_.PSPath -ErrorAction SilentlyContinue).DisplayName -like 'Private Brain Pro*' } |
+    Where-Object { (Get-ItemProperty $_.PSPath -ErrorAction SilentlyContinue).DisplayName -ceq $proDisplayName } |
     ForEach-Object { $_.PSChildName })
 }
 function Get-ProSnapshot {
@@ -51,7 +55,7 @@ function Assert-ProNeighbourUntouched($when) {
 function Assert-V3OwnIdentity {
   if (!(Test-Path $v3Data)) { throw 'V3 did not create its own data folder.' }
   $v3Keys = @(Get-ChildItem 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall' -ErrorAction SilentlyContinue |
-    Where-Object { (Get-ItemProperty $_.PSPath -ErrorAction SilentlyContinue).DisplayName -like 'Private Brain V3*' })
+    Where-Object { (Get-ItemProperty $_.PSPath -ErrorAction SilentlyContinue).DisplayName -ceq $v3DisplayName })
   if ($v3Keys.Count -ne 1) { throw 'V3 has no separate uninstall entry.' }
   Write-Output 'PASS V3 uses its own folder, data folder and uninstall entry beside Pro'
 }

@@ -4,7 +4,7 @@ Remove-Item Env:PB_WINDOWS_TEST_FOLDER -ErrorAction SilentlyContinue
 Remove-Item Env:PB_WINDOWS_TEST_SAVE_FOLDER -ErrorAction SilentlyContinue
 $setup = (Get-ChildItem windows/src-tauri/target/release/bundle/nsis -Filter '*-setup.exe' | Select-Object -First 1).FullName
 if ((Get-AuthenticodeSignature -LiteralPath $setup).Status -ne 'NotSigned') { throw 'Expected the explicitly chosen unsigned installer.' }
-$appDir = Join-Path $env:LOCALAPPDATA 'Private Brain V3'
+$appDir = Join-Path $env:LOCALAPPDATA 'Private Brain V3 Pro'
 $exe = Join-Path $appDir 'private-brain-v3.exe'
 . (Join-Path $PSScriptRoot 'uninstall.ps1')
 function Install($path) {

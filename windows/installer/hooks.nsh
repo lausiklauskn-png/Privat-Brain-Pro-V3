@@ -1,6 +1,6 @@
 ; Per-user "Open with" registration. Does not change any default association.
 !macro NSIS_HOOK_POSTINSTALL
-  WriteRegStr HKCU "Software\Classes\Applications\private-brain-v3.exe" "FriendlyAppName" "Private Brain V3"
+  WriteRegStr HKCU "Software\Classes\Applications\private-brain-v3.exe" "FriendlyAppName" "Private Brain V3 Pro"
   WriteRegStr HKCU "Software\Classes\Applications\private-brain-v3.exe\shell\open\command" "" '$\"$INSTDIR\private-brain-v3.exe$\" $\"%1$\"'
   WriteRegStr HKCU "Software\Classes\Applications\private-brain-v3.exe\DefaultIcon" "" '$\"$INSTDIR\private-brain-v3.exe$\",0'
   WriteRegStr HKCU "Software\Classes\Applications\private-brain-v3.exe\SupportedTypes" ".pdf" ""

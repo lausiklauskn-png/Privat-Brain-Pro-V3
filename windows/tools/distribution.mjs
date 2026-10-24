@@ -11,7 +11,7 @@ const input=join(windows,'src-tauri/target/release/bundle/nsis'),out=join(window
 const installers=(await readdir(input)).filter(name=>name.endsWith('-setup.exe'));
 if(installers.length!==1)throw Error('Expected exactly one accepted production installer.');
 await rm(out,{recursive:true,force:true});await mkdir(out,{recursive:true});
-const name=`Private-Brain-V3-Windows-${config.version}-x64-setup.exe`;
+const name=`Private-Brain-V3-Pro-Windows-${config.version}-x64-setup.exe`;
 await copyFile(join(input,installers[0]),join(out,name));
 const bytes=await readFile(join(out,name)),sha256=createHash('sha256').update(bytes).digest('hex');
 await copyFile(join(windows,'engine/build/shared-source.json'),join(out,'shared-source.json'));

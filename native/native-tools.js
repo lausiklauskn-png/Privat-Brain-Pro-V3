@@ -20,7 +20,7 @@
     head: ['🧰 Werkzeuge', '🧰 Tools', '🧰 Инструменты', '🧰 Narzędzia'],
     soon: ['kommt bald', 'coming soon', 'скоро', 'wkrótce'],
     lockedAsk: ['Dieses Werkzeug ist gesperrt. Den Freischalt-Code gibst du in den Einstellungen unter „🔑 Werkzeuge freischalten“ ein.', 'This tool is locked. Enter the unlock code in Settings under "🔑 Unlock tools".', 'Инструмент закрыт. Введите код в настройках: «🔑 Открыть инструменты».', 'Narzędzie zablokowane. Wpisz kod w Ustawieniach: „🔑 Odblokuj narzędzia”.'],
-    back: ['← Zurück zu Private Brain V3', '← Back to Private Brain V3', '← Назад', '← Wróć'],
+    back: ['← Zurück zu Private Brain V3 Pro', '← Back to Private Brain V3 Pro', '← Назад', '← Wróć'],
     take: ['📥 In Private Brain übernehmen', '📥 Add to Private Brain', '📥 В Private Brain', '📥 Do Private Brain'],
     shareIt: ['📤 Teilen', '📤 Share', '📤 Поделиться', '📤 Udostępnij'],
     cancel: ['Abbrechen', 'Cancel', 'Отмена', 'Anuluj'],
