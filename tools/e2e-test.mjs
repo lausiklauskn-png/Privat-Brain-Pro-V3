@@ -69,7 +69,9 @@ ok('4 Dateien signiert', nFiles === '4', `(stFiles=${nFiles})`);
 
 // helper to run a search and read results
 async function doSearch(mode, query) {
-  await page.click(`#mode button[data-m="${mode}"]`);
+  // V3: ein Schalter „Bedeutung“ (an = Bedeutung, aus = Namen); „Namenssuche“ ist ausgeblendet, bleibt aber im DOM.
+  // Nur umschalten, wenn die Suchart wechseln soll: ein Tipp auf das eingeschaltete „Bedeutung“ schaltet es aus.
+  await page.evaluate(m => { if (MODE !== m) document.querySelector(`#mode button[data-m="${m}"]`).click(); }, mode);
   await page.fill('#q', query);
   await page.waitForTimeout(120);
   return page.$$eval('#results .card .fname', els => els.map(e => e.textContent.trim()));

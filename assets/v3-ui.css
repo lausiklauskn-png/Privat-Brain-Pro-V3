@@ -106,3 +106,27 @@ html.v3 .v3-translate-to select{min-height:30px;padding:2px 8px}
 html.v3 .v3-translate-status:empty{display:none}
 html.v3 .v3-translate-out{white-space:pre-wrap;line-height:1.6;margin-top:8px;padding:10px;border-radius:var(--radius-sm);background:var(--card);border:1px solid var(--line)}
 html.v3 .v3-translate-btn .v3-icon{width:16px;height:16px}
+
+/* Bedeutung an/aus (Klaus 2026-10-24): ein Schalter statt „Namenssuche | Bedeutungssuche“, Lupe dahinter. */
+html.v3 #mode [data-m="name"]{display:none!important}
+html.v3 #mode{padding:0;border:0;background:transparent}
+html.v3 #mode [data-m="mean"]{display:inline-flex;align-items:center;gap:6px;border:1px solid transparent}
+html.v3 #mode [data-m="mean"] .v3-after{order:1;opacity:1}
+html.v3 #mode [data-m="mean"]:not(.on){background:transparent;color:var(--mut);border:1px dashed var(--line);font-weight:400}
+html.v3 #mode [data-m="mean"]:not(.on) .v3-mean-label{text-decoration:line-through;text-decoration-thickness:1px}
+html.v3 #mode [data-m="mean"]:not(.on) .v3-after{opacity:.55}
+/* Sprech-Sprache, Bedeutung und Filter bleiben klein, auch am Handy (nicht volle Breite). */
+html.v3 #panel-search .searchbox>#v3SpeechChip{flex:0 0 auto!important;width:auto!important}
+html.v3 #v3SpeechChip .v3-icon{width:16px;height:16px}
+html.v3 #panel-search #mode,html.v3 #panel-search #mode [data-m="mean"],html.v3 #panel-search #v3FilterToggle{flex:0 0 auto!important;width:auto!important}
+/* Am Handy: Suchfeld und Mikrofon in einer Zeile, darunter Sprache, Bedeutung und Filter klein nebeneinander. */
+@media (max-width:650px){
+  html.v3 #panel-search .searchbox{display:flex!important;flex-wrap:wrap;align-items:center}
+  html.v3 #panel-search .searchbox>input[type=search]{flex:1 1 0!important;width:auto!important;min-width:0}
+  html.v3 #panel-search .searchbox>#mic{flex:0 0 auto}
+  html.v3 #panel-search .searchbox>#v3SpeechChip{order:3}
+  html.v3 #panel-search .searchbox>#mode{order:4;grid-column:auto}
+  html.v3 #panel-search .searchbox>#v3FilterToggle{order:5}
+  html.v3 #panel-search .searchbox>input[type=search]+*~*{margin-top:0}
+  html.v3 #panel-search .searchbox::after{content:"";order:2;flex-basis:100%;height:0}
+}

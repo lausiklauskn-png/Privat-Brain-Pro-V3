@@ -173,8 +173,7 @@
     label(); place(b);
   }
   function helpButtons() {
-    const search = document.getElementById('panel-search'), box = search?.querySelector('.searchbox');
-    if (box) helpButton(search, b => box.append(b));
+    // Suche: kein „?“ mehr (Klaus 2026-10-24: „das erklärt sich selber“); ihre Erklärtexte bleiben verborgen.
     const lib = document.querySelector('#panel-intake .library-setup'); if (lib) helpButton(lib, b => lib.append(b));
     const drop = document.getElementById('drop'); if (drop) helpButton(drop, b => drop.append(b));
   }
@@ -210,7 +209,8 @@
   function syncSpeech() {
     const chip = document.getElementById('v3SpeechChip'); if (!chip) return;
     const cur = SPEECH.find(x => x[0] === speechLang());
-    chip.textContent = cur ? cur[1] : '?';
+    // Ohne gewählte Sprache eine Weltkugel statt „?“ (ein „?“ sah aus wie ein Hilfe-Knopf).
+    if (cur) chip.textContent = cur[1]; else chip.replaceChildren(svg('globe'));
     const w = (SPOKEN[document.documentElement.lang] || SPOKEN.de) + (cur ? ': ' + cur[2] : '');
     chip.title = w; chip.setAttribute('aria-label', w);
   }
@@ -230,6 +230,41 @@
     }, true);
   }
 
+  // ---------- Bedeutung an/aus (Klaus 2026-10-24) ----------
+  // „Namenssuche“ entfällt; ein Schalter „Bedeutung“ mit Lupe dahinter. An: wie bisher hervorgehoben. Aus: sichtbar aus,
+  // dann sucht die App wie vorher über die Namen (MODE "name"). Fehlt in der App das Modell, führt der Knopf weiter zum
+  // Laden (native-semantic.js) und schaltet nicht aus.
+  const MEAN = { de: 'Bedeutung', en: 'Meaning', ru: 'По смыслу', pl: 'Znaczenie' };
+  const MEAN_TIP = {
+    de: ['Bedeutungssuche an. Tippen schaltet aus (dann Suche nach Namen).', 'Bedeutungssuche aus (Suche nach Namen). Tippen schaltet ein.'],
+    en: ['Meaning search on. Tap to switch off (then search by name).', 'Meaning search off (search by name). Tap to switch on.'],
+    ru: ['Поиск по смыслу включён. Нажмите, чтобы выключить (поиск по имени).', 'Поиск по смыслу выключен (поиск по имени). Нажмите, чтобы включить.'],
+    pl: ['Wyszukiwanie po znaczeniu włączone. Dotknij, aby wyłączyć (szukanie po nazwie).', 'Wyszukiwanie po znaczeniu wyłączone (szukanie po nazwie). Dotknij, aby włączyć.'] };
+  function meaningToggle() {
+    const mean = document.querySelector('#mode [data-m="mean"]'), name = document.querySelector('#mode [data-m="name"]');
+    if (!mean || !name || mean.dataset.v3Toggle) return;
+    mean.dataset.v3Toggle = '1'; mean.removeAttribute('data-i18n'); mean.type = 'button';
+    const label = document.createElement('span'); label.className = 'v3-mean-label';
+    const icon = svg('search'); icon.classList.add('v3-after');
+    mean.replaceChildren(label, icon);
+    const lang = () => document.documentElement.lang;
+    const sync = () => {
+      const on = mean.classList.contains('on');
+      label.textContent = MEAN[lang()] || MEAN.de;
+      mean.setAttribute('aria-pressed', String(on));
+      if (!mean.dataset.semanticMissing) mean.title = (MEAN_TIP[lang()] || MEAN_TIP.de)[on ? 0 : 1];
+    };
+    window.addEventListener('click', e => {
+      if (!e.target.closest?.('#mode [data-m="mean"]')) return;
+      if (!mean.classList.contains('on') || mean.dataset.semanticMissing) return;   // einschalten bzw. Modell laden: wie bisher
+      e.stopImmediatePropagation(); e.preventDefault();
+      name.click();                                                                    // ausschalten = Suche nach Namen
+    }, true);
+    new MutationObserver(sync).observe(mean, { attributes: true, attributeFilter: ['class', 'data-semantic-missing'] });
+    new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    sync();
+  }
+
   function start() {
     document.documentElement.classList.add('v3');
     decorate(document);
@@ -244,7 +279,7 @@
       }
     }).observe(document.body, { childList: true, subtree: true, characterData: true });
     placeNav(); wide.addEventListener('change', placeNav);
-    quietSearch(); filterToggle(); helpButtons(); speechChip();
+    quietSearch(); filterToggle(); helpButtons(); speechChip(); meaningToggle();
   }
   // Nach den Skripten am Ende von <body> (dort baut native-toolbar.js die Leiste).
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();

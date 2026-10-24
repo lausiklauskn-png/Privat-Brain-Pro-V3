@@ -68,12 +68,16 @@ try{
   // Emulator-Starttest hing, weil „Alle prüfen“ und das Symbol sich ständig gegenseitig neu schrieben (2026-10-24).
   ok('The page is quiet when idle: no endless rewrite loop between app code and line symbols',await page.evaluate(()=>new Promise(res=>{let c=0;const o=new MutationObserver(m=>c+=m.length);o.observe(document.body,{subtree:true,childList:true,characterData:true});setTimeout(()=>{o.disconnect();res(c<100);},2000);})));
   ok('Old emojis replaced by line symbols on the search page (mic, remember, checked, related)',await page.evaluate(()=>['#mic','#fSave','.pb-check-all-button','[data-i18n=combine]'].every(s=>{const n=document.querySelector('#panel-search '+s);return n&&n.querySelector('svg.v3-icon')&&!/[🎤💾🛡🔗]/u.test(n.textContent);})));
-  const help=page.locator('#panel-search .v3-help');
-  await help.click();
-  ok('"?" in the search box shows the explanation …',await page.locator('#panel-search .search-welcome').evaluate(e=>getComputedStyle(e).display!=='none')&&await help.getAttribute('aria-expanded')==='true'&&await help.getAttribute('aria-label')==='Erklärung ausblenden');
-  await help.click();
-  ok('… and a second tap hides it again',await page.locator('#panel-search .search-welcome').evaluate(e=>getComputedStyle(e).display==='none')&&await help.getAttribute('aria-label')==='Erklärung zeigen');
-  ok('"Bedeutungssuche" stays on one line',await page.locator('#mode [data-m=mean]').evaluate(b=>b.getBoundingClientRect().height<40));
+  // Klaus 2026-10-24: kein „?“ in der Suche, keine Namenssuche; ein Schalter „Bedeutung“ mit Lupe dahinter.
+  ok('No "?" in the search box, its explanation stays hidden',await page.locator('#panel-search .v3-help').count()===0&&await page.locator('#panel-search .search-welcome').evaluate(e=>getComputedStyle(e).display==='none'));
+  const mean=page.locator('#mode [data-m=mean]');
+  ok('No name search button, only "Bedeutung" with the magnifier behind it',!(await page.locator('#mode [data-m=name]').isVisible())&&(await mean.textContent()).trim()==='Bedeutung'&&await mean.evaluate(b=>{const i=b.querySelector('svg.v3-icon'),t=b.querySelector('.v3-mean-label');return !!i&&i.getBoundingClientRect().left>t.getBoundingClientRect().right-1;}));
+  ok('Switched on: highlighted as before, pressed',await mean.evaluate(b=>b.classList.contains('on')&&b.getAttribute('aria-pressed')==='true'&&getComputedStyle(b).borderStyle!=='dashed'));
+  ok('"Bedeutung" stays on one line',await mean.evaluate(b=>b.getBoundingClientRect().height<40));
+  await mean.click();
+  ok('A tap switches it off, visibly (dashed, crossed out) and the search goes by name',await mean.evaluate(b=>!b.classList.contains('on')&&b.getAttribute('aria-pressed')==='false'&&getComputedStyle(b).borderTopStyle==='dashed'&&getComputedStyle(b.querySelector('.v3-mean-label')).textDecorationLine.includes('line-through'))&&await page.evaluate(()=>MODE==='name'));
+  await mean.click();
+  ok('Another tap switches meaning search on again',await mean.evaluate(b=>b.classList.contains('on'))&&await page.evaluate(()=>MODE==='mean'));
   await page.locator('[data-tab="mail"]').click();
   const connect=page.locator('#mailWorkspace [data-live-text="connect"]');if(await connect.isVisible().catch(()=>false))await connect.click();
   await page.locator('#mailWorkspace [data-live-uid="99"]').waitFor({state:'visible',timeout:15000});
