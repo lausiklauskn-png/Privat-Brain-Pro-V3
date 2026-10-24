@@ -1,5 +1,6 @@
 # V3 im Browser ansehen: baut das App-Webpaket (www) und legt es auf GitHub Pages.
-# Einmalig nötig: Repo-Einstellungen → Pages → Source „GitHub Actions“.
+# Einmalig nötig: Repo-Einstellungen → Pages → Quelle „GitHub Actions“ (Klaus hat das am 2026-10-24 umgestellt;
+# vorher legte GitHub nach jedem Bau zusätzlich die rohe index.html aus dem Zweig darüber).
 # Ohne Android-Brücke laufen Mailkonten, Speicherort und Teilen dort nicht; Aussehen und Themen schon.
 name: Pages
 on:
@@ -26,6 +27,8 @@ jobs:
           node-version: '22'
       - run: npm ci --ignore-scripts
       - run: npm run build:web
+      # Webfassung: installierbar, Name und Symbol „V3“, Service Worker lädt zuerst aus dem Netz.
+      - run: node tools/native/prepare-pages.mjs www
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

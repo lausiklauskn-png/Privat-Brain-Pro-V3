@@ -51,7 +51,11 @@ try{
     }
   }
   await page.setViewportSize({width:320,height:640});
-  ok('Phone keeps Overview, Catalog, Duplicates and Settings directly visible',await page.locator('.workspace-tools .tab').evaluateAll(nodes=>nodes.length===4&&nodes.every(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>=28&&r.right<=innerWidth&&r.left>=0;})));
+  // V3 setzt die Navigationszeile beim Wechsel breit → schmal per matchMedia-Ereignis zurück (nicht im selben Takt).
+  await page.waitForFunction(()=>!document.querySelector('header.top > .native-toolbar-row'));
+  await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+  const phoneTabs=await page.locator('.workspace-tools .tab').evaluateAll(nodes=>nodes.map(e=>{const r=e.getBoundingClientRect();return {tab:e.dataset.tab,l:Math.round(r.left),r:Math.round(r.right),w:Math.round(r.width),h:Math.round(r.height),iw:innerWidth};}));
+  ok('Phone keeps Overview, Catalog, Duplicates and Settings directly visible',(phoneTabs.length===4&&phoneTabs.every(t=>t.w>0&&t.h>=28&&t.r<=t.iw&&t.l>=0))||console.log('phone tabs:',JSON.stringify(phoneTabs)));
   await page.locator('.native-options>summary').click();await page.keyboard.press('Escape');ok('App menu closes with keyboard Escape and restores focus',await page.locator('.native-options>summary').evaluate(e=>document.activeElement===e)&&!await page.locator('.native-options').evaluate(e=>e.open));
   for(const [lang,word]of [['en','App menu'],['ru','Меню приложения'],['pl','Menu aplikacji'],['de','App-Menü']]){
     await page.locator('.native-options>summary').click();await page.locator(`[data-lang=${lang}]`).click();
