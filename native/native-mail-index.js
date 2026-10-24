@@ -620,7 +620,7 @@
     const back = button(t('close'), () => show(false), 'mail-back'); back.title = t('closeLong'); back.setAttribute('aria-label', t('closeLong'));
     // One row: Zurück · Kontoauswahl (zeigt „Alle Konten“ oder die Adresse) · ⟳ · ⋯
     const accounts = knownAccounts(), pick = el('select', 'mail-all-account'); pick.setAttribute('aria-label', t('chooseAccount')); pick.dataset.mailAll = 'account';
-    pick.append(new Option(t('title'), 'all'), ...[...accounts].map(([id, email]) => new Option(email, id)));
+    pick.append(new Option(t('title'), 'all'), ...[...accounts].map(([id, email]) => (window.PBAccountOption ? PBAccountOption(email, id, [...accounts.values()]) : new Option(email, id))));
     if (view.account !== 'all' && !accounts.has(view.account)) view.account = 'all';
     pick.value = view.account; pick.onchange = () => { view.account = pick.value; selectedSender = null; openRecord = null; store(KEYS.view, view); draw(); };
     const title = el('h2', 'mail-all-title', t('title')); title.hidden = accounts.size > 0;

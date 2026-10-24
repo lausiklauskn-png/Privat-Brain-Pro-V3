@@ -59,7 +59,7 @@ try{
   ok('Null message result cannot leave old UID or falsely successful empty list',await live.locator('[data-live-uid]').count()===0&&!(await live.locator('.mail-list').textContent()).includes('Keine Nachrichten'));
   await page.evaluate(()=>delete window.failures.messages);await mail.locator('[data-live-text=refresh]').click();await settled();
   ok('Refresh recovers Google messages and its own count',await live.locator('[data-live-uid="9"]').isVisible()&&await live.locator('[data-mail-folder=inbox] small').textContent()==='2');
-  ok('Verified Googlemail spelling remains in account selector',(await select.locator('option:checked').textContent())==='fixture@googlemail.com');
+  ok('Verified Googlemail spelling remains: short name "Googlemail", full address as hint',(await select.locator('option:checked').textContent())==='Googlemail'&&(await select.locator('option:checked').getAttribute('title'))==='fixture@googlemail.com');
   await page.evaluate(()=>window.failures.folders='cancel');await mail.locator('[data-live-text=refresh]').click();await settled();
   ok('Failed refresh clears previous messages and catalog actions',await live.locator('[data-live-uid],.mail-reader h3').count()===0&&await mail.locator('[data-live-text=catalog]').isDisabled());
   const adapter=await page.evaluate(async()=>{

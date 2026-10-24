@@ -51,6 +51,27 @@ Abgleich: Wer in V3 weiterbaut, liest zuerst Pros neueste Doku und offene Codex-
   entfernt, weil Pro Codex' Repo ist.
 - **Ungeprüft am Gerät.** In keiner veröffentlichten App (Android .28, Windows .29). Kein Release ohne Klaus' Bitte.
 
+### Erledigt in V3: Musterseite Mail, erster Teil (Schritt T2a)
+
+- **Kopfzeile breit in einer Zeile** (ab 1100 px): Navigation sitzt in der Kopfleiste wie in Codex' Vorschau, Unterzeile
+  „Dein privates zweites Gehirn …“ entfällt, Logo 32 px. Schmaler bleibt die Navigation darunter.
+- **Ordnerliste mit Strichsymbolen** statt Emojis (Posteingang, Entwürfe, Postausgang, Gesendet = Brief mit Pfeil,
+  Archiv, Spam, Papierkorb, Exportiert, Alle Konten, eigene Ordner). Der Textknoten bleibt vorn, weil die App beim
+  Sprachwechsel dort hineinschreibt; ein Emoji wird auch nach dem Wechsel wieder entfernt.
+- **Kurze Kontonamen** überall in der Kontoauswahl (`PBAccountName`, `PBAccountOption`): T-Online, Gmail, Googlemail,
+  WEB.DE, GMX, Yahoo, IONOS, Outlook, iCloud, Posteo, sonst Domain ohne Endung; gleiche Kurznamen → „GMX · erst“.
+  Volle Adresse als Hinweistext.
+- **Zeile „Adresse · Posteingang“ entfällt**; echte Meldungen (z. B. „Ordner nicht verfügbar“, Versandstatus) bleiben.
+- **Absender nur mit Namen** in Liste und Lesebereich („Praxis Dr. Weiß → T-Online“), Adresse als Hinweistext.
+- Dateien: `assets/v3-ui.js`, `assets/v3-ui.css`, kleine Eingriffe in `assets/live-mail.js` und
+  `native/native-mail-index.js`. Probe `tools/native/test-v3-ui.mjs` (17), angepasste Proben in `test-mail-device`,
+  `test-mail-accounts`, `test-mail-index`. Gegenprobe von Hand: alte Wiederholzeile zurück → rot; Symbole weg → rot.
+- Bilder: `docs/design/v3-2026-10-24/` (alle Themen, hell/dunkel, 1280 und 412 px).
+- Vorbestehend, nicht von V3: `tools/e2e-workspace.mjs` bricht beim Neuladen ab („Target page … closed“), genauso in
+  Pro ohne jede Änderung; Ursache offen.
+- **Noch offen in T2:** Bedienleiste der Mail-Liste in eine Zeile oben (Löschen, Archivieren, Verschieben …), Wörter am
+  Handy als Hinweistext, Befund als Marke, Handy-Chips für Konto und Ordner.
+
 ## Abgleich mit Codex (PR #76)
 
 | Thema | Codex | Claude | Ergebnis |
@@ -74,7 +95,7 @@ vier Sprachen, hell und dunkel, alle vier Themen, Breiten 320–1280 ohne Querla
 |---|---|---|
 | T0 ✅ | Themen-Schicht und Knopf | erledigt, siehe oben |
 | T1 | **Ein Symbolsatz** `native/native-icons.js` (`PBIcon(name)`) aus den Pfaden in `native-toolbar.js` und dem Entwurf (u. a. inbox, draft, outbox, sent = Brief mit Pfeil, spam, shield, move, flag, envOpen, users, clip, filter, sort, dicke Punkte ⋯). Tabelle Emoji → Symbol → Wort zum Abhaken. | Tabelle |
-| T2 | **Musterseite Mail umbauen:** Bedienleiste oben in **einer Zeile** (Neue E-Mail als einziger Vollton-Knopf, dann Löschen, Archivieren, Verschieben, Spam, Antworten, Weiterleiten, Gelesen, Kennzeichnen, ⟳, ⋯), keine Wortbrüche (`white-space:nowrap`, Wörter am Handy als Hinweistext), **kurze Kontonamen** (T-Online, Gmail, WEB.DE, GMX, Yahoo, IONOS; Rest: Domain ohne Endung), Zeile „… · Posteingang“ entfällt, Ordnerspalte mit Mindestbreite, Befund als Marke „Symbol + Text“. Am Handy: Konto- und Ordner-Chip, Leiste nur mit Symbolen. | Vorher/Nachher 412 · 768 · 1280, je Thema |
+| T2 | (T2a ✅ in V3, siehe oben) **Musterseite Mail umbauen:** Bedienleiste oben in **einer Zeile** (Neue E-Mail als einziger Vollton-Knopf, dann Löschen, Archivieren, Verschieben, Spam, Antworten, Weiterleiten, Gelesen, Kennzeichnen, ⟳, ⋯), keine Wortbrüche (`white-space:nowrap`, Wörter am Handy als Hinweistext), **kurze Kontonamen** (T-Online, Gmail, WEB.DE, GMX, Yahoo, IONOS; Rest: Domain ohne Endung), Zeile „… · Posteingang“ entfällt, Ordnerspalte mit Mindestbreite, Befund als Marke „Symbol + Text“. Am Handy: Konto- und Ordner-Chip, Leiste nur mit Symbolen. | Vorher/Nachher 412 · 768 · 1280, je Thema |
 | T3 | **Weg zum Original (Codex' Priorität):** in Mail-Anhang, Explorer und Suche klar zeigen „Original da · Original fehlt · nur Katalog/Mailtext · noch nicht geprüft“ als Marken. | Bilder der Marken |
 | T4 | Suche · Explorer · Dateien hinzufügen · Einstellungen (drei Spalten wie die Referenz) · ☰-Menü (eigene Tool-Symbole bleiben) · Dialoge | je Seite Vorher/Nachher |
 | T5 | Emoji-Wächter für umgebaute Dateien, Siegel/Mycel nur per CSS | Probe grün, Gegenprobe gefangen |

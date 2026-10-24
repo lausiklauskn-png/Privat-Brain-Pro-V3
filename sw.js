@@ -17,6 +17,8 @@ const SHELL = [
   "./assets/workspace.css",
   "./assets/themes.css",
   "./assets/themes.js",
+  "./assets/v3-ui.css",
+  "./assets/v3-ui.js",
   "./assets/mail-workspace.js",
   "./assets/live-mail.js",
   "./assets/mail-workspace.css",

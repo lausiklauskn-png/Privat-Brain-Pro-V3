@@ -88,11 +88,11 @@ try{
   await mail.locator('.live-mail [data-live-more]').click();
   ok('Custom provider folder remains unchanged',await mail.locator('.live-mail [data-live-folder=Erledigt]').textContent().then(s=>s.includes('Erledigt')));
   await mail.locator('.live-mail [data-mail-folder=sent]').click();
-  ok('Translated Sent fetches original provider path',await page.evaluate(()=>window.mailCalls.filter(c=>c.method==='messages').at(-1).args.folder==='Sent')&&await mail.locator('.live-mail .mail-notice').textContent().then(s=>s.includes('Gesendet')));
+  ok('Translated Sent fetches original provider path',await page.evaluate(()=>window.mailCalls.filter(c=>c.method==='messages').at(-1).args.folder==='Sent')&&await mail.locator('.live-mail .mail-folder[aria-current=true]').textContent().then(s=>s.includes('Gesendet'))&&await mail.locator('.live-mail .mail-notice').textContent()==='');
   await mail.locator('.live-mail [data-live-folder="@not-virtual"]').click();
   ok('Provider names beginning with @ remain real folders',await page.evaluate(()=>window.mailCalls.filter(c=>c.method==='messages').at(-1).args.folder==='@not-virtual'));
   await mail.locator('.live-mail [data-mail-folder="provider:@outbox"]').click();
-  ok('Custom @outbox cannot collide with native outbox label or counters',await mail.locator('.live-mail .mail-notice').textContent().then(s=>s.endsWith('@outbox'))&&await mail.locator('.live-mail [data-mail-folder="provider:@outbox"] small').textContent()==='3'&&await mail.locator('.live-mail [data-mail-folder=outbox] small').textContent()==='0');
+  ok('Custom @outbox cannot collide with native outbox label or counters',await mail.locator('.live-mail .mail-folder[aria-current=true]').getAttribute('data-mail-folder')==='provider:@outbox'&&await mail.locator('.live-mail [data-mail-folder="provider:@outbox"] small').textContent()==='3'&&await mail.locator('.live-mail [data-mail-folder=outbox] small').textContent()==='0');
   await mail.locator('.live-mail [data-mail-folder=inbox]').click();
   await mail.locator('.live-mail [data-native-selection=all]').click();
   ok('Standard selection toolbar selects provider messages',await mail.locator('.live-mail .mail-count').textContent()==='1 ausgewählt');
@@ -195,7 +195,7 @@ try{
   ok('Outbox shows uncertain attempts without retry',await mail.locator('[data-native-saved="outbox-fixture"]').isVisible()&&await mail.locator('[data-live-text=restore]').count()===0);
   for(const lang of ['en','ru','pl','de']){
     await clickControl(page,`[data-lang="${lang}"]`);
-    ok(`${lang}: connected folders match the local mailbox labels`,await page.evaluate(()=>[...document.querySelectorAll('.live-mail .mail-folders [data-mail-folder]')].slice(0,8).every(b=>b.firstChild.textContent===PBMailUI.icons[b.dataset.mailFolder]+' '+PBMailUI.text(b.dataset.mailFolder))));
+    ok(`${lang}: connected folders match the local mailbox labels, with V3 line symbols instead of emojis`,await page.evaluate(()=>[...document.querySelectorAll('.live-mail .mail-folders [data-mail-folder]')].slice(0,8).every(b=>b.firstChild.textContent===PBMailUI.text(b.dataset.mailFolder)&&!!b.querySelector(':scope>svg.v3-icon'))));
     ok(`${lang}: outbox status follows language selector`,await mail.locator('[data-native-status]').textContent()==={de:'Versand unklar – nicht erneut senden',en:'Send result unclear – do not resend',ru:'Отправка не подтверждена — не отправляйте повторно',pl:'Wynik nieznany — nie wysyłaj ponownie'}[lang]);
   }
   for(const width of [320,768,1280]){

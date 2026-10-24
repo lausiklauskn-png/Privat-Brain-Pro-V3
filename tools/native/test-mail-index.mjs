@@ -247,7 +247,7 @@ try{
   ok('Header is one row: "← Zurück", account choice, refresh symbol without text',head.rows===1&&head.back==='← Zurück'&&head.refresh===''&&head.label==='Jetzt aktualisieren'&&JSON.stringify(head.options)===JSON.stringify(['Alle Konten','klaus@example.invalid','zweit@example.invalid']));
   await panel.locator('[data-mail-all=account]').selectOption('22222222-2222-4222-8222-222222222222');
   const only=await page.evaluate(()=>[...document.querySelectorAll('#pb-mail-all [data-mail-all-id]')].map(b=>CATALOG.find(r=>r.hash===b.dataset.mailAllId)).every(r=>r.mailRemotes.some(l=>l.account==='22222222-2222-4222-8222-222222222222'))&&document.querySelectorAll('#pb-mail-all [data-mail-all-id]').length>0);
-  ok('Choosing one account shows only its mails, the header names it',only&&await panel.locator('[data-mail-all=account] option:checked').textContent()==='zweit@example.invalid');
+  ok('Choosing one account shows only its mails, the header names it',only&&await panel.locator('[data-mail-all=account] option:checked').textContent()==='Example · zweit'&&await panel.locator('[data-mail-all=account] option:checked').getAttribute('title')==='zweit@example.invalid');
   await panel.locator('[data-mail-all=account]').selectOption('all');
   // Slim buttons, larger touch area, grow under the finger
   const touch=await page.evaluate(()=>{const b=document.querySelector('#pb-mail-all [data-mail-all=refresh]'),after=getComputedStyle(b,'::after');return {h:b.getBoundingClientRect().height,top:parseFloat(after.top),bottom:parseFloat(after.bottom)};});

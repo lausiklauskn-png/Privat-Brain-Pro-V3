@@ -1,0 +1,28 @@
+/* V3-Oberfläche (Claude, 2026-10-24): ruhige Karten und eine Kopfzeile, angelehnt an Codex' Vorschau,
+   Farben aus den Themen (assets/themes.css). Knöpfe bleiben flach (~28–32 px). */
+
+/* Kopfzeile: breit eine Zeile mit Navigation; Unterzeile und großes Logo entfallen. */
+html.v3 header.top .brand .sub{display:none}
+html.v3 header.top .logo img{width:32px;height:32px}
+html.v3 header.top.v3-one-row{flex-wrap:nowrap;gap:10px}
+html.v3 header.top.v3-one-row .brand{flex:0 0 auto}
+html.v3 header.top.v3-one-row .brand h1{white-space:nowrap}
+html.v3 header.top.v3-one-row>.native-toolbar-row{flex:1 1 auto;min-width:0;margin:0;padding:0;border:0;background:transparent}
+html.v3 header.top.v3-one-row>.native-toolbar-row .main-pages{position:static;padding:0;background:transparent}
+html.v3 .main-pages .tab[aria-current="page"],html.v3 .main-pages .tab.on{background:var(--card2);color:var(--acc);font-weight:600}
+html.v3 .tabs .tab{white-space:nowrap}
+
+/* Strichsymbole in der Ordnerliste statt Emojis (Symbol steht im DOM hinten, order:-1 zeigt es vorn). */
+html.v3 .v3-icon{order:-1;width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+html.v3 .mail-folder{align-items:center;gap:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal}
+html.v3 .mail-folder small{font-variant-numeric:tabular-nums}
+html.v3 .mail-folder[aria-current="true"] .v3-icon{opacity:1}
+
+/* Ohne Meldung keine leere Zeile (Klaus: „… · Posteingang“ entfällt, der markierte Ordner zeigt es). */
+html.v3 .live-mail .mail-notice:empty{display:none}
+
+/* Karten wie in Codex' Vorschau: Fläche, feine Linie, ruhiger Schatten. */
+html.v3 .mail-app{border-radius:var(--radius);box-shadow:var(--shadow-sm)}
+html.v3 .mail-list .mail-item{border-top-color:var(--line)}
+html.v3 .mail-avatar{font-size:.8rem}
+html.v3 .mail-account-bar select{font-weight:600}

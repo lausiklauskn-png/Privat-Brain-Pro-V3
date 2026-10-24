@@ -466,7 +466,7 @@
   }
   async function accountList() {
     accountSelect.replaceChildren(
-      ...accounts.map((a) => new Option(a.email, a.id)),
+      ...accounts.map((a) => (window.PBAccountOption ? PBAccountOption(a.email, a.id, accounts.map(x => x.email)) : new Option(a.email, a.id))),
     );
     if (!accounts.some((a) => a.id === account))
       account = accounts[0]?.id || "";
@@ -696,10 +696,11 @@
     validity=page.validity;items=more?[...items,...page.items]:page.items;next=page.next;current=null;mail=null;
     selected.clear();filterText='';app.dataset.view='list';
     reader.replaceChildren(...(native?[el('p','mail-muted',S('choose'))]:[]));
-    notice.textContent=accounts.find(a=>a.id===account)?.email+' · '+(native?folderTitle(folder):folder);
+    // V3: Konto und Ordner nicht wiederholen; der markierte Ordner zeigt es (Klaus 2026-10-24).
+    notice.textContent='';
     if(native) {
       if(Number.isSafeInteger(page.total)&&page.total>=0)totals.set(viewKey,page.total);
-      if(!entries.find(entry=>entry.id===viewKey)?.remote&&!['outbox','draft','sent','exported'].includes(viewKey))notice.textContent+=' · '+T('folderUnavailable');
+      if(!entries.find(entry=>entry.id===viewKey)?.remote&&!['outbox','draft','sent','exported'].includes(viewKey))notice.textContent=T('folderUnavailable');
       drawFolders();
     }
     drawList();
@@ -750,7 +751,7 @@
         check.type='checkbox';check.checked=selected.has(item.uid);check.disabled=Boolean(item.local);check.setAttribute('aria-label',item.subject);
         check.onchange=()=>{check.checked?selected.add(item.uid):selected.delete(item.uid);selection();};
         button.type='button';button.dataset.liveUid=item.uid;button.setAttribute('aria-current',String(current?.uid===item.uid));
-        button.append(el('span','mail-avatar',(item.from||item.subject||'?').slice(0,1).toUpperCase()),el('span','mail-subject',(item.flags.includes('\\Flagged')?'★ ':'')+item.subject),el('span','mail-preview',item.from),el('time','mail-date',item.date?new Date(item.date).toLocaleString(document.documentElement.lang,{dateStyle:'short',timeStyle:'short'}):''));
+        const who=window.PBSenderName?PBSenderName(item.from):item.from;button.title=item.from||'';button.append(el('span','mail-avatar',(who||item.subject||'?').slice(0,1).toUpperCase()),el('span','mail-subject',(item.flags.includes('\\Flagged')?'★ ':'')+item.subject),el('span','mail-preview',who),el('time','mail-date',item.date?new Date(item.date).toLocaleString(document.documentElement.lang,{dateStyle:'short',timeStyle:'short'}):''));
         button.onclick=()=>run(async()=>{if(item.local){if(!leave())return;switchMode(false);await shared.openMessage(item.uid);}else{selected.clear();await open(item);}});
         row.append(check,button);rows.append(row);
       }
@@ -934,7 +935,7 @@
         if (leave()) app.dataset.view = "list";
       }),
       el("h3", "", mail.subject),
-      el("p", "mail-muted", mail.from + " → " + mail.to),
+      Object.assign(el("p", "mail-muted", window.PBSenderName ? PBSenderName(mail.from) + " → " + PBAccountName(PBSenderName(mail.to), accounts.map(x => x.email)) : mail.from + " → " + mail.to), { title: mail.from + " → " + mail.to }),
     );
     const actions = el("div", "mail-reader-actions");
     actions.append(
@@ -1200,7 +1201,7 @@
       for(const node of host.querySelectorAll('[data-shared-text]'))node.textContent=S(node.dataset.sharedText);
       updateEntries();drawFolders();drawList();
       if(!current&&!draft&&!reader.querySelector('[data-native-status]')&&!reader.querySelector('[data-live-text=restore]'))reader.replaceChildren(el('p','mail-muted',S('choose')));
-      if(account&&!draft&&!reader.querySelector("[data-native-status]"))notice.textContent=accounts.find(a=>a.id===account)?.email+" · "+folderTitle(folder);
+      if(account&&!draft&&!reader.querySelector("[data-native-status]"))notice.textContent="";
     }
     for (const status of host.querySelectorAll("[data-native-status]")) status.textContent = T(status.dataset.nativeStatus);
   }).observe(document.documentElement, {
@@ -1235,7 +1236,7 @@
         if (!accounts.some((a) => a.id === ref.account)) throw new Error(native.text("ACCOUNT_MISSING"));
         base = native.base; token = "device"; connect.hidden = true;
         switchMode(true);
-        accountSelect.replaceChildren(...accounts.map((a) => new Option(a.email, a.id)));
+        accountSelect.replaceChildren(...accounts.map((a) => (window.PBAccountOption ? PBAccountOption(a.email, a.id, accounts.map(x => x.email)) : new Option(a.email, a.id))));
         account = ref.account; accountSelect.value = account; accountTools.hidden = false;
         await loadFolders();
         const entry = entries.find((e) => e.path === ref.folder);
