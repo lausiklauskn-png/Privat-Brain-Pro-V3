@@ -42,7 +42,7 @@ try{
  await page.click('[data-tab=intake]');
  await page.evaluate(()=>renderFsHint());
  ok('Android folder actions remain visible after the browser fallback runs without showDirectoryPicker',await page.locator('#pickDir').isVisible()&&await page.locator('#chooseLibrary').isVisible()&&await page.evaluate(()=>!('showDirectoryPicker' in window)));
- ok('Import reassurance stays below the drop zone instead of three giant cards',await page.locator('#panel-intake .pillars').count()===0&&await page.locator('.native-import-reassurance').textContent().then(t=>t.includes('Liest nur')&&t.includes('Schlägt vor')&&t.includes('Bewegt nichts'))&&await page.locator('.native-import-reassurance').evaluate(e=>e.previousElementSibling.id==='drop'));
+ ok('V3: no explanation cards on the import page (Klaus 2026-10-24: keine Erklärung, was die App kann)',await page.locator('#panel-intake .pillars').count()===0&&await page.locator('.native-import-reassurance').evaluate(e=>getComputedStyle(e).display==='none')&&await page.locator('#fsHint').evaluate(e=>getComputedStyle(e).display==='none'));
  await page.click('#pickDir');await page.locator('.native-folder-consent').waitFor();await page.getByRole('button',{name:'Abbrechen',exact:true}).click();await page.waitForFunction(()=>!document.querySelector('#pickDir').disabled);
  ok('Cancelling the explanation leaves both folder actions usable',chooseCalls===0&&await page.locator('#chooseLibrary').isEnabled()&&await page.locator('#pickDir').isEnabled());
  await page.click('#pickDir');await page.check('#fsNoShow');await page.click('#fsGo');await page.waitForFunction(()=>CATALOG.length===1&&!signing&&!document.querySelector('#pickDir').disabled);

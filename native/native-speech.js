@@ -20,7 +20,7 @@
   let busy = false;
   async function listen(mic) {
     if (busy) return;
-    busy = true; const was = mic.textContent; mic.textContent = '🔴'; mic.setAttribute('aria-busy', 'true');
+    busy = true; const was = mic.innerHTML; mic.textContent = '🔴'; // V3: innerHTML keeps the line symbol mic.setAttribute('aria-busy', 'true');
     try {
       const result = await plugin.listen({ language: LANG[lang()], prompt: say(0) });
       const text = typeof result?.text === 'string' ? result.text.trim().slice(0, 500) : '';
@@ -30,7 +30,7 @@
       q.value = text; q.dispatchEvent(new Event('input', { bubbles: true })); q.focus();
     } catch (error) {
       note(say(String(error?.code || error?.message || '').includes('UNAVAILABLE') ? 1 : 2));
-    } finally { busy = false; mic.textContent = was; mic.removeAttribute('aria-busy'); }
+    } finally { busy = false; mic.innerHTML = was; mic.removeAttribute('aria-busy'); }
   }
   // Klaus 2026-10-22: "Wenn der Text eingegeben werden kann, dann bitte auch mit Mikrofon". Every larger text
   // field (question to the AI about a file, writing a mail, notes …) gets 🎤; the spoken text goes in at the cursor.

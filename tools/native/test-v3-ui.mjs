@@ -62,6 +62,16 @@ try{
   const oneRow=()=>page.evaluate(()=>{const h=document.querySelector('header.top'),row=document.querySelector('.native-toolbar-row');return {inside:row.parentElement===h,height:h.getBoundingClientRect().height,sub:getComputedStyle(h.querySelector('.brand .sub')).display};});
   let r=await oneRow();
   ok('1280px: navigation sits in the header, one row, no subtitle line',r.inside&&r.height<=64&&r.sub==='none');
+  // Kompakt (Klaus 2026-10-24): keine Erklärtexte der alten Fassung, kein Wortbruch, Suchfeld weit oben.
+  ok('Search page: no welcome text, no counters, no empty-state explanation',await page.evaluate(()=>['.search-welcome','.search-totals','#searchEmpty'].every(s=>{const n=document.querySelector('#panel-search '+s)||document.querySelector(s);return !n||getComputedStyle(n).display==='none';})));
+  ok('Search page: the help sentence is quiet until there is a result',await page.locator('#searchInfo').evaluate(e=>getComputedStyle(e).display==='none'));
+  ok('Old emojis replaced by line symbols on the search page (mic, remember, checked, related)',await page.evaluate(()=>['#mic','#fSave','.pb-check-all-button','[data-i18n=combine]'].every(s=>{const n=document.querySelector('#panel-search '+s);return n&&n.querySelector('svg.v3-icon')&&!/[🎤💾🛡🔗]/u.test(n.textContent);})));
+  const help=page.locator('#panel-search .v3-help');
+  await help.click();
+  ok('"?" in the search box shows the explanation …',await page.locator('#panel-search .search-welcome').evaluate(e=>getComputedStyle(e).display!=='none')&&await help.getAttribute('aria-expanded')==='true'&&await help.getAttribute('aria-label')==='Erklärung ausblenden');
+  await help.click();
+  ok('… and a second tap hides it again',await page.locator('#panel-search .search-welcome').evaluate(e=>getComputedStyle(e).display==='none')&&await help.getAttribute('aria-label')==='Erklärung zeigen');
+  ok('"Bedeutungssuche" stays on one line',await page.locator('#mode [data-m=mean]').evaluate(b=>b.getBoundingClientRect().height<40));
   await page.locator('[data-tab="mail"]').click();
   const connect=page.locator('#mailWorkspace [data-live-text="connect"]');if(await connect.isVisible().catch(()=>false))await connect.click();
   await page.locator('#mailWorkspace [data-live-uid="99"]').waitFor({state:'visible',timeout:15000});
@@ -83,6 +93,18 @@ try{
       await page.evaluate(()=>document.documentElement.setAttribute('data-theme','dunkel'));await page.waitForTimeout(450);await page.screenshot({path:`${shots}/${look}-dunkel-1280.png`});
       await page.evaluate(()=>document.documentElement.removeAttribute('data-theme'));}
   }
+  await page.locator('[data-tab=search]').click();await page.setViewportSize({width:412,height:860});await page.waitForTimeout(300);
+  ok('412px: search field starts high up, filters hidden behind one "Filter" button',await page.evaluate(()=>document.querySelector('#q').getBoundingClientRect().top<160&&getComputedStyle(document.querySelector('#filterbar')).display==='none'&&!!document.querySelector('#v3FilterToggle')));
+  await page.locator('#v3FilterToggle').click();
+  ok('412px: the Filter button opens the five filters',await page.locator('#filterbar').evaluate(e=>getComputedStyle(e).display!=='none'));
+  await page.locator('#v3FilterToggle').click();await page.locator('[data-tab=intake]').click();
+  ok('412px: import page without the three explanation points and hints',await page.evaluate(()=>['.native-import-reassurance','#fsHint','[data-i18n=dropDnd]','[data-ws=libraryHelp]'].every(s=>{const n=document.querySelector(s);return !n||getComputedStyle(n).display==='none';})));
+  await page.locator('#drop .v3-help').click();
+  ok('412px: "?" in the drop box brings the hints and the three points back, and hides them again',await page.locator('.native-import-reassurance').evaluate(e=>getComputedStyle(e).display!=='none')&&await page.locator('#fsHint').evaluate(e=>getComputedStyle(e).display!=='none')&&await (async()=>{await page.locator('#drop .v3-help').click();return page.locator('.native-import-reassurance').evaluate(e=>getComputedStyle(e).display==='none');})());
+  await page.locator('#panel-intake .library-setup .v3-help').click();
+  ok('412px: "?" in the storage box shows its explanation',await page.locator('[data-ws=libraryHelp]').evaluate(e=>getComputedStyle(e).display!=='none'));
+  await page.locator('#panel-intake .library-setup .v3-help').click();
+  await page.locator('[data-tab=mail]').click();await page.setViewportSize({width:1280,height:800});await page.waitForTimeout(300);
   for(const width of [1100,1000,768,412,360]){
     await page.setViewportSize({width,height:860});await page.waitForTimeout(300);
     r=await oneRow();

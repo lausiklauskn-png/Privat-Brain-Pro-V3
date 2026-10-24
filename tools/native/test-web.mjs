@@ -34,8 +34,8 @@ try {
   page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/*',r=>r.request().url().startsWith(url)?r.continue():r.abort());
   await page.goto(url);await page.waitForFunction(()=>window.PBWorkspace && typeof db!=='undefined' && db);
-  ok('Native bundle starts on search',await page.locator('#q').isVisible() && await page.locator('.brand h1').textContent()==='Private Brain Pro' && (await page.title()).startsWith('Private Brain Pro —'));
-  ok('Native limitations visible in settings',await page.locator('.native-status').textContent().then(s=>s.includes('Private Brain Pro') && s.includes('Direkte Mailverbindung')));
+  ok('Native bundle starts on search',await page.locator('#q').isVisible() && await page.locator('.brand h1').textContent()==='Private Brain V3' && (await page.title()).startsWith('Private Brain V3 —'));
+  ok('Native limitations visible in settings',await page.locator('.native-status').textContent().then(s=>s.includes('Private Brain V3') && s.includes('Direkte Mailverbindung')));
   for(const width of [280,320,390,650,768,1000,1280,1920]) {
     await page.setViewportSize({width,height:900});
     for(const tab of ['search','intake','explorer','mail','dash','order','dupes','settings']) {
@@ -67,7 +67,7 @@ try {
   ok('Existing theme toggle works',await page.locator('html').getAttribute('data-theme')!==before);
   for(const lang of ['en','ru','pl','de']) {
     await clickControl(page,`[data-lang="${lang}"]`);
-    ok(`${lang}: native notice follows existing language selector`,await page.locator('.native-status').textContent().then(s=>s.includes('Private Brain Pro') && s.includes({de:'Direkte Mailverbindung',en:'Direct mail',ru:'Прямая почта',pl:'Bezpośrednia poczta'}[lang])));
+    ok(`${lang}: native notice follows existing language selector`,await page.locator('.native-status').textContent().then(s=>s.includes('Private Brain V3') && s.includes({de:'Direkte Mailverbindung',en:'Direct mail',ru:'Прямая почта',pl:'Bezpośrednia poczta'}[lang])));
     await page.setViewportSize({width:320,height:640});
     await page.evaluate(()=>document.documentElement.style.fontSize='20px');
     ok(`${lang}: larger fonts keep all eight names beside icons and inside a narrow window`,await page.locator('.native-toolbar-row .tab').evaluateAll(nodes=>nodes.length===8&&nodes.every(e=>{if(e.classList.contains('compact-icon-only'))return !e.querySelector('.compact-caption')&&e.title.trim()&&['search','settings'].includes(e.dataset.tab);const r=e.getBoundingClientRect(),c=e.querySelector('.compact-caption'),cr=c.getBoundingClientRect(),ir=e.querySelector('.compact-icon').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&cr.left>=ir.right&&Math.abs(cr.top+cr.height/2-ir.top-ir.height/2)<2&&c.scrollWidth<=c.clientWidth+1;})));

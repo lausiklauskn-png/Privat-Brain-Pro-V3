@@ -54,8 +54,26 @@
     spam: 'M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6Z M12 8v5 M12 16.5h.01',
     trash: 'M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7',
     exported: 'M14 3h7v7m0-7L10 14 M10 3H3v18h18v-7',
-    folder: 'M3 7V4h6l2 3h10v13H3Z'
+    folder: 'M3 7V4h6l2 3h10v13H3Z',
+    save: 'M6 3h12v18l-6-4-6 4Z',
+    shield: 'M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6Z m-3.5 9 2.5 2.5 4.5-5',
+    link: 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1 M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1',
+    search: 'M21 21l-5-5 M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0',
+    mic: 'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z M5 11a7 7 0 0 0 14 0 M12 18v3',
+    intake: 'M12 3v12m-4-4 4 4 4-4 M4 14v7h16v-7',
+    lock: 'M5 11h14v10H5Z M8 11V7a4 4 0 0 1 8 0v4',
+    key: 'M15 3a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z M10 13l-7 7 M5 18l2 2 M7 16l2 2',
+    globe: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z M3 12h18 M12 3c3 3 3 15 0 18 M12 3c-3 3-3 15 0 18',
+    mail: 'M3 5h18v14H3Z m0 0 9 7 9-7',
+    filter: 'M4 6h16M7 12h10M10 18h4',
+    dash: 'M4 20V10m8 10V4m8 16v-7',
+    images: 'M3 3h18v18H3Z m1 14 5-6 4 4 3-3 5 5 M8 7h.01',
+    file: 'M6 3h8l4 4v14H6Z M14 3v4h4',
+    clipK: 'M20 11l-8.5 8.5a5 5 0 0 1-7-7L13 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L14 7'
   };
+  // Alte Emojis → Strichsymbol (nur diese; Pfeile wie ↕ ← → bleiben).
+  const EMOJI = { '💾':'save','🛡':'shield','🔗':'link','🔎':'search','🔍':'search','📁':'folder','📂':'folder','🎤':'mic',
+    '📥':'intake','🔐':'lock','🔒':'lock','🔑':'key','🌐':'globe','✉':'mail','📧':'mail','📊':'dash','🖼':'images','📄':'file','📎':'clipK' };
   const NS = 'http://www.w3.org/2000/svg';
   function svg(key) {
     const s = document.createElementNS(NS, 'svg');
@@ -81,8 +99,20 @@
     stripEmoji(button);
     if (!button.querySelector(':scope>svg.v3-icon')) button.append(svg(folderKey(button)));
   }
+  const GENERIC = '#panel-search button, #panel-search label > span, #panel-explorer .explorer-toolbar button, #panel-explorer .explorer-toolbar label > span, #panel-intake button, #panel-intake h3, #panel-settings h3';
+  function firstText(el) { for (const n of el.childNodes) { if (n.nodeType === 3) { if (n.nodeValue.trim()) return n; } else return null; } return null; }
+  function decorateGeneric(el) {
+    const t = firstText(el); if (!t) return;
+    const m = t.nodeValue.match(/^\s*(\p{Extended_Pictographic})\uFE0F?\s*/u);
+    if (!m || !EMOJI[m[1]]) return;
+    t.nodeValue = t.nodeValue.slice(m[0].length);
+    el.dataset.v3Emoji = m[1]; el.classList.add('v3-ic');
+    if (!el.querySelector(':scope>svg.v3-icon')) el.append(svg(EMOJI[m[1]]));
+  }
   function decorate(root) {
     root.querySelectorAll?.('.mail-folders .mail-folder').forEach(decorateFolder);
+    root.querySelectorAll?.(GENERIC).forEach(decorateGeneric);
+    if (root.matches?.(GENERIC)) decorateGeneric(root);
   }
 
   // ---------- Kopfzeile ----------
@@ -100,19 +130,62 @@
     if (moved) requestAnimationFrame(() => dispatchEvent(new Event('resize')));
   }
 
+  // Erklärsätze nur, wenn sie etwas über ein Ergebnis sagen (Klaus: keine Erklärung, was die App kann).
+  function quietSearch() {
+    const q = document.getElementById('q'), info = document.getElementById('searchInfo'), res = document.getElementById('results');
+    if (!q || !info || !res) return;
+    const sync = () => info.classList.toggle('v3-quiet', !q.value.trim() && !res.children.length);
+    q.addEventListener('input', sync); new MutationObserver(sync).observe(res, { childList: true }); new MutationObserver(sync).observe(info, { childList: true, characterData: true, subtree: true });
+    sync();
+  }
+  // Am Handy die fünf Auswahlfelder hinter einem Knopf „Filter“.
+  const FILTER = { de: 'Filter', en: 'Filters', ru: 'Фильтры', pl: 'Filtry' };
+  function filterToggle() {
+    const box = document.querySelector('#panel-search .searchbox'), bar = document.getElementById('filterbar');
+    if (!box || !bar || document.getElementById('v3FilterToggle')) return;
+    const b = document.createElement('button'); b.type = 'button'; b.id = 'v3FilterToggle'; b.className = 'ghost v3-filter-toggle';
+    b.setAttribute('aria-expanded', 'false'); b.setAttribute('aria-controls', 'filterbar');
+    const label = document.createElement('span'); b.append(svg('filter'), label);
+    const text = () => { const w = FILTER[document.documentElement.lang] || FILTER.de; label.textContent = w; b.title = w; };
+    text(); new MutationObserver(text).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    b.addEventListener('click', () => { const open = !document.documentElement.classList.contains('v3-filters-open'); document.documentElement.classList.toggle('v3-filters-open', open); b.setAttribute('aria-expanded', String(open)); });
+    box.append(b);
+  }
+
+  // „?“ im Kasten: Erklärtexte zeigen/verstecken.
+  const HELP = { de: ['Erklärung zeigen', 'Erklärung ausblenden'], en: ['Show explanation', 'Hide explanation'],
+    ru: ['Показать пояснение', 'Скрыть пояснение'], pl: ['Pokaż wyjaśnienie', 'Ukryj wyjaśnienie'] };
+  function helpButton(container, place) {
+    if (!container || container.querySelector(':scope .v3-help')) return;
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'ghost v3-help'; b.textContent = '?';
+    const label = () => { const w = HELP[document.documentElement.lang] || HELP.de, open = container.classList.contains('v3-help-open');
+      b.setAttribute('aria-expanded', String(open)); b.setAttribute('aria-label', w[open ? 1 : 0]); b.title = w[open ? 1 : 0]; };
+    b.addEventListener('click', () => { container.classList.toggle('v3-help-open'); label(); });
+    new MutationObserver(label).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    label(); place(b);
+  }
+  function helpButtons() {
+    const search = document.getElementById('panel-search'), box = search?.querySelector('.searchbox');
+    if (box) helpButton(search, b => box.append(b));
+    const lib = document.querySelector('#panel-intake .library-setup'); if (lib) helpButton(lib, b => lib.append(b));
+    const drop = document.getElementById('drop'); if (drop) helpButton(drop, b => drop.append(b));
+  }
+
   function start() {
     document.documentElement.classList.add('v3');
     decorate(document);
     new MutationObserver(list => {
       for (const m of list) {
-        if (m.type === 'characterData') { const b = m.target.parentElement; if (b?.matches('.mail-folders .mail-folder') && b.firstChild === m.target) stripEmoji(b); continue; }
+        if (m.type === 'characterData') { const b = m.target.parentElement; if (b?.matches('.mail-folders .mail-folder') && b.firstChild === m.target) stripEmoji(b); else if (b?.matches(GENERIC)) decorateGeneric(b); continue; }
         for (const n of m.addedNodes) {
           if (n.nodeType === 1) { if (n.matches?.('.mail-folders .mail-folder')) decorateFolder(n); else decorate(n); }
           else if (n.nodeType === 3 && n.parentElement?.matches('.mail-folders .mail-folder')) stripEmoji(n.parentElement);
+          else if (n.nodeType === 3 && n.parentElement?.matches(GENERIC)) decorateGeneric(n.parentElement);
         }
       }
     }).observe(document.body, { childList: true, subtree: true, characterData: true });
     placeNav(); wide.addEventListener('change', placeNav);
+    quietSearch(); filterToggle(); helpButtons();
   }
   // Nach den Skripten am Ende von <body> (dort baut native-toolbar.js die Leiste).
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();

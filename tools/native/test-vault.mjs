@@ -185,7 +185,7 @@ try{
   const bChoose=folder.calls.find(c=>c.device==='B'&&c.method==='choose');
   ok('Opening uses the generic picker without volume',bChoose.args.volume==='');
   await B.page.evaluate(()=>{document.documentElement.lang='en';});
-  ok('Card follows the language switch',await B.page.locator('#vaultPlace h3').textContent()==='🔐 Storage location and encryption');
+  ok('Card follows the language switch (V3: line symbol instead of emoji)',await B.page.locator('#vaultPlace h3').textContent().then(t=>t.trim()==='Storage location and encryption')&&await B.page.locator('#vaultPlace h3 > svg.v3-icon').count()===1);
   ok('No page errors on device B',B.errors.length===0);
   console.log(`${count} vault simulation checks passed (browser, Android plugins stubbed).`);
 }finally{await browser?.close();}
