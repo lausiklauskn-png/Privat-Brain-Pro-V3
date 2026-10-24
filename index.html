@@ -426,7 +426,7 @@
   <section class="panel" id="panel-mail"><div id="mailWorkspace"></div></section>
   <section class="panel" id="panel-explorer">
     <h2 data-ws="explorer">Explorer</h2>
-    <div class="explorer-toolbar"><button id="explorerUp" class="ghost" data-ws="up">↑ Übergeordneter Ordner</button><button id="explorerHome" class="ghost" data-ws="all">Alle Dateien</button><input id="explorerFilter" type="search" aria-label="Dateiliste filtern" placeholder="Dateiliste filtern"><select id="explorerSort" aria-label="Dateien sortieren"><option value="name" data-ws="byName">Name A–Z</option><option value="date" data-ws="byDate">Neueste zuerst</option><option value="size" data-ws="bySize">Größe</option></select></div>
+    <div class="explorer-toolbar"><button id="explorerUp" class="ghost" data-ws="up">↑ Übergeordneter Ordner</button><button id="explorerHome" class="ghost" data-ws="all">Alle Dateien</button><input id="explorerFilter" type="search" aria-label="Dateiliste filtern" placeholder="Dateiliste filtern"><select id="explorerSort" aria-label="Sortieren nach" title="Sortieren nach"><option value="date" data-ws="sortDate">Datum: neueste zuerst</option><option value="date-r" data-ws="sortDateR">Datum: älteste zuerst</option><option value="name" data-ws="sortName">Name: A → Z</option><option value="name-r" data-ws="sortNameR">Name: Z → A</option><option value="size" data-ws="sortSize">Größe: größte zuerst</option><option value="size-r" data-ws="sortSizeR">Größe: kleinste zuerst</option></select></div>
     <p id="explorerPath" class="hint" aria-live="polite"></p>
     <div class="explorer-layout"><nav id="explorerTree" aria-label="Ordner"></nav><div id="explorerFiles" aria-live="polite"></div></div>
   </section>

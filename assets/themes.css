@@ -147,3 +147,6 @@
 .pb-look-swatch{ flex:none; width:26px; height:18px; border-radius:6px; border:1px solid rgba(0,0,0,.12); }
 .pb-look-check{ margin-left:auto; width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; visibility:hidden; }
 .pb-look-item[aria-checked="true"] .pb-look-check{ visibility:visible; }
+.pb-look-text{ display:flex; flex-direction:column; line-height:1.2; }
+.pb-look-desc{ font-size:.72rem; font-weight:400; color:var(--mut); }
+.pb-look-swatch{ width:28px; height:20px; }

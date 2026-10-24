@@ -67,8 +67,11 @@ try{
   await btn.click();
   const items=page.locator('#pbLookMenu .pb-look-item');
   ok('The button opens a choice of five: previous look plus the four designs',await page.locator('#pbLookMenu').isVisible()&&await items.count()===5);
-  ok('Names in German, no word broken',await items.allTextContents().then(t=>t.join('|')==='Bisher|Klar|Petrol warm|Schiefer kompakt|Weich und luftig')&&await items.evaluateAll(n=>n.every(e=>e.scrollWidth<=e.clientWidth+1&&e.getBoundingClientRect().height<48)));
+  const lookNames=()=>page.locator('#pbLookMenu .pb-look-name').allTextContents();
+  ok('Names in German ("Erdton" instead of "Bisher"), no word broken',await lookNames().then(t=>t.join('|')==='Erdton|Klar|Petrol warm|Schiefer kompakt|Weich und luftig')&&await items.evaluateAll(n=>n.every(e=>e.scrollWidth<=e.clientWidth+1&&e.getBoundingClientRect().height<48)));
   ok('The current look is marked',await page.locator('#pbLookMenu [aria-checked=true]').getAttribute('data-look')==='bisher');
+  ok('Each design names its two colours',await page.locator('#pbLookMenu .pb-look-desc').allTextContents().then(t=>t.join('|')==='Sand und Ocker|Weiß und Blau|Sand und Petrol|Grau und Orange|Rosé und Beere'));
+  ok('Petrol warm: the colour field shows sand and petrol',await page.locator('#pbLookMenu [data-look=petrol] .pb-look-swatch').evaluate(e=>{const b=e.style.background;return /216, 191, 143|d8bf8f/i.test(b)&&/14, 107, 107|0e6b6b/i.test(b);}));
   await page.keyboard.press('Escape');
   ok('Escape closes the choice',await page.locator('#pbLookMenu').isHidden());
 
@@ -103,12 +106,12 @@ try{
   await page.reload();await page.waitForFunction(()=>window.PBLook&&document.querySelector('#pbLookBtn'));
   ok('After a restart the chosen design is back before anything is drawn',await look()==='weich'&&await page.evaluate(()=>!!document.querySelector('link[href="assets/themes.css"]')));
   await page.locator('.native-options>summary').click();await page.locator('[data-lang=en]').click();
-  ok('English: tooltip and names follow the language',await btn.getAttribute('aria-label')==='Choose design'&&await (async()=>{await btn.click();const t=await items.allTextContents();await page.keyboard.press('Escape');return t[4]==='Soft and airy';})());
+  ok('English: tooltip and names follow the language',await btn.getAttribute('aria-label')==='Choose design'&&await (async()=>{await btn.click();const t=await lookNames();await page.keyboard.press('Escape');return t[4]==='Soft and airy'&&t[0]==='Earth tone';})());
   await page.locator('.native-options>summary').click();await page.locator('[data-lang=ru]').click();
   ok('Russian and Polish labels exist',await btn.getAttribute('aria-label')==='Выбрать оформление'&&await (async()=>{await page.locator('.native-options>summary').click();await page.locator('[data-lang=pl]').click();return await btn.getAttribute('aria-label')==='Wybierz wygląd';})());
   await page.locator('.native-options>summary').click();await page.locator('[data-lang=de]').click();
   await btn.click();await page.locator('#pbLookMenu [data-look=bisher]').click();
-  ok('"Bisher" brings back the previous look and forgets the choice',await look()===null&&await acc()==='#b08d57'&&await page.evaluate(()=>localStorage.getItem('pb-look')===null));
+  ok('"Erdton" (formerly "Bisher") brings back the previous look and forgets the choice',await look()===null&&await acc()==='#b08d57'&&await page.evaluate(()=>localStorage.getItem('pb-look')===null));
   await page.evaluate(()=>localStorage.setItem('pb-look','<b>falsch</b>'));await page.reload();await page.waitForFunction(()=>window.PBLook);
   ok('An unknown stored value falls back to the previous look',await look()===null);
   ok('No unhandled runtime errors',errors.length===0);

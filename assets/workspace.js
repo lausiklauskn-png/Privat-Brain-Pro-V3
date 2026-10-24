@@ -10,7 +10,7 @@
     libraryHelp:['Wähle einen separaten Ordner auf deinem Gerät. Neue Dateien werden dort als Kopie gespeichert; die Originale bleiben erhalten. Der Explorer öffnet die Kopien aus diesem Ordner.','Choose a separate folder on your device. New files are saved there as copies; originals are preserved. Explorer opens the copies from that folder.','Выберите отдельную папку на устройстве. Новые файлы сохраняются туда как копии; оригиналы остаются. Проводник открывает копии из этой папки.','Wybierz osobny folder na urządzeniu. Nowe pliki są tam zapisywane jako kopie; oryginały pozostają. Eksplorator otwiera kopie z tego folderu.'],
     choose:['Ablageordner wählen','Choose library folder','Выбрать папку','Wybierz folder'],pause:['Kopieren ausschalten','Turn off copying','Отключить копирование','Wyłącz kopiowanie'],
     copyFolder:['📁 Ordner in Ablage kopieren','📁 Copy folder to library','📁 Копировать папку','📁 Kopiuj folder do biblioteki'],linkFolder:['📁 Ordner verbinden','📁 Connect folder','📁 Подключить папку','📁 Połącz folder'],
-    up:['↑ Übergeordneter Ordner','↑ Parent folder','↑ На уровень выше','↑ Folder nadrzędny'],all:['Alle Dateien','All files','Все файлы','Wszystkie pliki'],byName:['Name','Name','Имя','Nazwa'],byDate:['Datum','Date','Дата','Data'],bySize:['Größe','Size','Размер','Rozmiar'],orderName:['↕ A → Z','↕ A → Z','↕ А → Я','↕ A → Z'],orderNameR:['↕ Z → A','↕ Z → A','↕ Я → А','↕ Z → A'],orderDate:['↕ Neueste oben','↕ Newest first','↕ Сначала новые','↕ Najnowsze u góry'],orderDateR:['↕ Älteste oben','↕ Oldest first','↕ Сначала старые','↕ Najstarsze u góry'],orderSize:['↕ Größte oben','↕ Largest first','↕ Сначала большие','↕ Największe u góry'],orderSizeR:['↕ Kleinste oben','↕ Smallest first','↕ Сначала маленькие','↕ Najmniejsze u góry'],inContent:['🔎 auch im Inhalt','🔎 also in content','🔎 также в содержимом','🔎 także w treści'],
+    up:['↑ Übergeordneter Ordner','↑ Parent folder','↑ На уровень выше','↑ Folder nadrzędny'],all:['Alle Dateien','All files','Все файлы','Wszystkie pliki'],byName:['Name','Name','Имя','Nazwa'],sortBy:['Sortieren nach','Sort by','Сортировать по','Sortuj według'],sortDate:['Datum: neueste zuerst','Date: newest first','Дата: сначала новые','Data: najnowsze najpierw'],sortDateR:['Datum: älteste zuerst','Date: oldest first','Дата: сначала старые','Data: najstarsze najpierw'],sortName:['Name: A → Z','Name: A → Z','Имя: А → Я','Nazwa: A → Z'],sortNameR:['Name: Z → A','Name: Z → A','Имя: Я → А','Nazwa: Z → A'],sortSize:['Größe: größte zuerst','Size: largest first','Размер: сначала большие','Rozmiar: największe najpierw'],sortSizeR:['Größe: kleinste zuerst','Size: smallest first','Размер: сначала маленькие','Rozmiar: najmniejsze najpierw'],byDate:['Datum','Date','Дата','Data'],bySize:['Größe','Size','Размер','Rozmiar'],orderName:['↕ A → Z','↕ A → Z','↕ А → Я','↕ A → Z'],orderNameR:['↕ Z → A','↕ Z → A','↕ Я → А','↕ Z → A'],orderDate:['↕ Neueste oben','↕ Newest first','↕ Сначала новые','↕ Najnowsze u góry'],orderDateR:['↕ Älteste oben','↕ Oldest first','↕ Сначала старые','↕ Najstarsze u góry'],orderSize:['↕ Größte oben','↕ Largest first','↕ Сначала большие','↕ Największe u góry'],orderSizeR:['↕ Kleinste oben','↕ Smallest first','↕ Сначала маленькие','↕ Najmniejsze u góry'],inContent:['🔎 auch im Inhalt','🔎 also in content','🔎 также в содержимом','🔎 także w treści'],
     find:['Was möchtest du finden?','What would you like to find?','Что вы хотите найти?','Co chcesz znaleźć?'],findHelp:['Durchsuche E-Mails, Dokumente und Bilder gemeinsam nach ihrer Bedeutung.','Search emails, documents and images together by meaning.','Ищите письма, документы и изображения вместе по смыслу.','Szukaj wiadomości, dokumentów i obrazów według znaczenia.'],
     noFolder:['Noch kein Ablageordner gewählt. Einzeln gewählte Dateien sind nur in dieser Sitzung verfügbar. Für dauerhaften Zugriff einen Ordner verbinden oder einen Ablageordner wählen.','No library folder selected. Individually selected files are available for this session only. Connect a folder or choose a library for lasting access.','Папка не выбрана. Отдельно выбранные файлы доступны только в этом сеансе. Подключите папку для постоянного доступа.','Nie wybrano folderu. Wybrane pliki są dostępne tylko w tej sesji. Połącz folder, aby zachować dostęp.'],
     unsupported:['Dieser Browser unterstützt keine direkte Ordnerablage. Dateiimport und Suche funktionieren; Dateien müssen nach einem Neustart erneut ausgewählt werden. Für lokale Ordner Chrome oder Edge auf einem unterstützten Desktop verwenden.','This browser does not support direct folder storage. File import and search work; select files again after restarting. For local folders use Chrome or Edge on a supported desktop.','Браузер не поддерживает прямую запись в папку. Импорт и поиск работают; после перезапуска выберите файлы снова. Для папок используйте Chrome или Edge на поддерживаемом компьютере.','Przeglądarka nie obsługuje zapisu do folderu. Import i wyszukiwanie działają; po ponownym uruchomieniu wybierz pliki jeszcze raz. Dostęp do folderów wymaga obsługiwanej przeglądarki Chrome lub Edge na komputerze.'],
@@ -148,23 +148,22 @@
     } catch (_) { toast(text('unavailable'),6000); }
   }
   function button(label, action) { const b=document.createElement('button');b.type='button';b.className='ghost';b.textContent=label;b.onclick=action;return b; }
-  // Newest on top by default; ↕ turns any order around; the content switch also searches the file text.
-  let explorerReverse=false;
+  // Klaus 2026-10-24: sorting is ONE field („Sortieren nach“: Datum/Name/Größe with their direction), as usual elsewhere;
+  // newest on top by default. The content switch also searches the file text.
+  const sortValue=()=>el('explorerSort').value||'date', sortBase=()=>sortValue().replace(/-r$/,''), sortReversed=()=>/-r$/.test(sortValue());
   const orderBox=document.createElement('span');orderBox.className='explorer-order';
-  const orderButton=document.createElement('button');orderButton.type='button';orderButton.className='ghost';orderButton.id='explorerOrder';
   const contentLabel=document.createElement('label');contentLabel.className='explorer-content';
   const contentBox=document.createElement('input');contentBox.type='checkbox';contentBox.id='explorerContent';
-  const contentText=document.createElement('span');contentLabel.append(contentBox,contentText);orderBox.append(orderButton,contentLabel);
+  const contentText=document.createElement('span');contentLabel.append(contentBox,contentText);orderBox.append(contentLabel);
   el('explorerSort').after(orderBox);
   if(!el('explorerSort').dataset.chosen)el('explorerSort').value='date';
-  function orderLabel(){const k={name:'orderName',date:'orderDate',size:'orderSize'}[el('explorerSort').value]||'orderDate';orderButton.textContent=text(k+(explorerReverse?'R':''));orderButton.setAttribute('aria-pressed',String(explorerReverse));contentText.textContent=text('inContent');}
-  orderButton.onclick=()=>{explorerReverse=!explorerReverse;renderExplorer();};
+  function orderLabel(){contentText.textContent=text('inContent');const s=el('explorerSort'),t=text('sortBy');s.title=t;s.setAttribute('aria-label',t);}
   contentBox.onchange=()=>renderExplorer();
-  function explorerState(){return {path:folderPath,filter:el('explorerFilter').value,sort:el('explorerSort').value,reverse:explorerReverse,content:contentBox.checked};}
+  function explorerState(){return {path:folderPath,filter:el('explorerFilter').value,sort:sortBase(),reverse:sortReversed(),content:contentBox.checked};}
   function restoreExplorer(state){
     folderPath=String(state?.path||'');el('explorerFilter').value=String(state?.filter||'');
-    el('explorerSort').value=['name','date','size'].includes(state?.sort)?state.sort:'date';
-    explorerReverse=state?.reverse===true;contentBox.checked=state?.content===true;renderExplorer();
+    el('explorerSort').value=(['name','date','size'].includes(state?.sort)?state.sort:'date')+(state?.reverse===true?'-r':'');
+    contentBox.checked=state?.content===true;renderExplorer();
   }
   const foldText=s=>String(s||'').toLocaleLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ß/g,'ss');
   function explorerMatch(e,words){
@@ -393,7 +392,7 @@
     if(!folderPath)topics?.notice(files);
     if(view)topics.head(files,view.key);
     const words=foldText(el('explorerFilter').value).split(/\s+/).filter(Boolean);
-    const sort=el('explorerSort').value, flip=explorerReverse?-1:1;
+    const sort=sortBase(), flip=sortReversed()?-1:1;
     const order=(a,b)=>flip*(sort==='date'?(b.r.date||0)-(a.r.date||0):sort==='size'?(b.r.size||0)-(a.r.size||0):a.r.name.localeCompare(b.r.name));
     const extra=window.PBExplorerExtra;
     if(here?.kind==='mail')extra?.head?.(files);
@@ -430,7 +429,7 @@
   }
   el('chooseLibrary').onclick=chooseLibrary;
   el('pauseLibrary').onclick=()=>{if(signing)return;library=null;localStorage.setItem('pb_library_enabled','0');refresh();};
-  el('explorerFilter').oninput=renderExplorer;el('explorerSort').onchange=()=>{el('explorerSort').dataset.chosen='1';explorerReverse=false;renderExplorer();};
+  el('explorerFilter').oninput=renderExplorer;el('explorerSort').onchange=()=>{el('explorerSort').dataset.chosen='1';renderExplorer();};
   el('explorerHome').onclick=()=>openFolder('',{clear:true});
   el('explorerUp').onclick=()=>openFolder(folderPath.startsWith('topic:')?'':lastModel?.get(folderPath)?.parent??'');
   new MutationObserver(refresh).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});

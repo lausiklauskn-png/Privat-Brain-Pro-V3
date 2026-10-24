@@ -7,14 +7,19 @@
   const LOOKS = ['bisher', 'klar', 'petrol', 'schiefer', 'weich'];
   // Farbprobe je Thema: Fläche und Akzent (hell).
   const SWATCH = {
-    bisher: ['#faf6f0', '#b08d57'], klar: ['#ffffff', '#2b62c4'], petrol: ['#f6f1ea', '#0e6b6b'],
-    schiefer: ['#eceef1', '#c24e14'], weich: ['#fbe7ef', '#a63a6a']
+    // Klaus 2026-10-24: die zwei Farben, die das Design ausmachen, deutlich (Petrol warm = Sand und Petrol).
+    bisher: ['#e3cfa8', '#9a7442'], klar: ['#dce7fa', '#2b62c4'], petrol: ['#d8bf8f', '#0e6b6b'],
+    schiefer: ['#c7ccd4', '#c24e14'], weich: ['#f5cadb', '#a63a6a']
   };
   const WORDS = {
-    de: { title: 'Design wählen', head: 'Design', names: ['Bisher', 'Klar', 'Petrol warm', 'Schiefer kompakt', 'Weich und luftig'] },
-    en: { title: 'Choose design', head: 'Design', names: ['Original', 'Clear', 'Warm petrol', 'Compact slate', 'Soft and airy'] },
-    ru: { title: 'Выбрать оформление', head: 'Оформление', names: ['Прежнее', 'Ясное', 'Тёплый петроль', 'Компактный сланец', 'Мягкое и лёгкое'] },
-    pl: { title: 'Wybierz wygląd', head: 'Wygląd', names: ['Dotychczasowy', 'Jasny', 'Ciepły petrol', 'Kompaktowy łupek', 'Miękki i lekki'] }
+    de: { title: 'Design wählen', head: 'Design', names: ['Erdton', 'Klar', 'Petrol warm', 'Schiefer kompakt', 'Weich und luftig'],
+      desc: ['Sand und Ocker', 'Weiß und Blau', 'Sand und Petrol', 'Grau und Orange', 'Rosé und Beere'] },
+    en: { title: 'Choose design', head: 'Design', names: ['Earth tone', 'Clear', 'Warm petrol', 'Compact slate', 'Soft and airy'],
+      desc: ['Sand and ochre', 'White and blue', 'Sand and petrol', 'Grey and orange', 'Rosé and berry'] },
+    ru: { title: 'Выбрать оформление', head: 'Оформление', names: ['Землистое', 'Ясное', 'Тёплый петроль', 'Компактный сланец', 'Мягкое и лёгкое'],
+      desc: ['Песок и охра', 'Белый и синий', 'Песок и петроль', 'Серый и оранжевый', 'Розовый и ягодный'] },
+    pl: { title: 'Wybierz wygląd', head: 'Wygląd', names: ['Ziemisty', 'Jasny', 'Ciepły petrol', 'Kompaktowy łupek', 'Miękki i lekki'],
+      desc: ['Piasek i ochra', 'Biel i niebieski', 'Piasek i petrol', 'Szary i pomarańcz', 'Róż i jagoda'] }
   };
   const words = () => WORDS[document.documentElement.lang] || WORDS.de;
   const root = document.documentElement;
@@ -66,8 +71,10 @@
         item.setAttribute('role', 'menuitemradio'); item.setAttribute('aria-checked', String(get() === look));
         const sw = document.createElement('span'); sw.className = 'pb-look-swatch';
         sw.style.background = `linear-gradient(135deg,${SWATCH[look][0]} 0 50%,${SWATCH[look][1]} 50% 100%)`;
-        const name = document.createElement('span'); name.textContent = w.names[i];
-        item.append(sw, name, svg('pb-look-check', CHECK));
+        const name = document.createElement('span'); name.className = 'pb-look-name'; name.textContent = w.names[i];
+        const desc = document.createElement('small'); desc.className = 'pb-look-desc'; desc.textContent = w.desc?.[i] || '';
+        const text = document.createElement('span'); text.className = 'pb-look-text'; text.append(name, desc);
+        item.append(sw, text, svg('pb-look-check', CHECK));
         item.addEventListener('click', () => { set(look); close(); btn.focus(); });
         menu.append(item);
       });

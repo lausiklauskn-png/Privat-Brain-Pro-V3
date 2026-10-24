@@ -36,16 +36,18 @@ try{
   const names=()=>page.locator('#explorerFiles .explorer-row strong').allTextContents().then(a=>a.map(x=>x.replace(/^\S+\s/,'')));
   ok('Newest file is on top by default',JSON.stringify(await names())===JSON.stringify(['Rechnung-Stadtwerke.pdf','Gehaltsabrechnung-September.pdf','Arztbrief-Orthopaedie.pdf']));
   ok('Mails from "Alle Konten" do not appear in the explorer',!(await names()).some(n=>n.includes('Aldi'))&&!(await page.locator('#explorerTree').textContent()).includes('Mail'));
-  ok('Order button says what it shows',(await page.locator('#explorerOrder').textContent())==='↕ Neueste oben');
-  await page.locator('#explorerOrder').click();
-  ok('↕ puts the oldest on top',JSON.stringify(await names())===JSON.stringify(['Arztbrief-Orthopaedie.pdf','Gehaltsabrechnung-September.pdf','Rechnung-Stadtwerke.pdf'])&&(await page.locator('#explorerOrder').textContent())==='↕ Älteste oben');
-  await page.locator('#explorerSort').selectOption('name');
-  ok('Changing the sort starts in its natural order (A → Z)',(await names())[0]==='Arztbrief-Orthopaedie.pdf'&&(await page.locator('#explorerOrder').textContent())==='↕ A → Z');
-  await page.locator('#explorerOrder').click();
-  ok('↕ also turns names around (Z → A)',(await names())[0]==='Rechnung-Stadtwerke.pdf');
-  await page.locator('#explorerSort').selectOption('size');
+  // Klaus 2026-10-24: sorting is one field („Sortieren nach“), no second ↕ button.
+  const sortBox=page.locator('#explorerSort');
+  ok('Sorting is a single field: "Sortieren nach" with six choices, no separate ↕ button',await page.locator('#explorerOrder').count()===0&&await sortBox.getAttribute('aria-label')==='Sortieren nach'&&JSON.stringify(await sortBox.locator('option').allTextContents())===JSON.stringify(['Datum: neueste zuerst','Datum: älteste zuerst','Name: A → Z','Name: Z → A','Größe: größte zuerst','Größe: kleinste zuerst'])&&await sortBox.inputValue()==='date');
+  await sortBox.selectOption('date-r');
+  ok('"Datum: älteste zuerst" puts the oldest on top',JSON.stringify(await names())===JSON.stringify(['Arztbrief-Orthopaedie.pdf','Gehaltsabrechnung-September.pdf','Rechnung-Stadtwerke.pdf']));
+  await sortBox.selectOption('name');
+  ok('"Name: A → Z"',(await names())[0]==='Arztbrief-Orthopaedie.pdf');
+  await sortBox.selectOption('name-r');
+  ok('"Name: Z → A"',(await names())[0]==='Rechnung-Stadtwerke.pdf');
+  await sortBox.selectOption('size');
   ok('Size: largest on top',(await names())[0]==='Gehaltsabrechnung-September.pdf');
-  await page.locator('#explorerSort').selectOption('date');
+  await sortBox.selectOption('date');
   await page.fill('#explorerFilter','bandscheibe');
   ok('Without the content switch only names are searched',(await names()).length===0);
   await page.locator('#explorerContent').check();
@@ -57,12 +59,12 @@ try{
   const state=await page.evaluate(()=>PBWorkspace.explorerState());
   ok('Back navigation keeps order and content switch',state.content===true&&state.reverse===false&&state.sort==='date');
   await page.evaluate(()=>PBWorkspace.restoreExplorer({path:'',filter:'',sort:'date',reverse:true,content:false}));
-  ok('Restoring a state restores ↕ and the switch',(await names())[0]==='Arztbrief-Orthopaedie.pdf'&&!(await page.locator('#explorerContent').isChecked()));
+  ok('Restoring a state restores the order and the switch',(await names())[0]==='Arztbrief-Orthopaedie.pdf'&&await sortBox.inputValue()==='date-r'&&!(await page.locator('#explorerContent').isChecked()));
   await page.evaluate(()=>{document.documentElement.lang='en';PBWorkspace.refresh();});
-  ok('English labels',(await page.locator('#explorerOrder').textContent())==='↕ Oldest first'&&(await page.locator('.explorer-content').textContent()).includes('also in content'));
+  ok('English labels',(await sortBox.locator('option:checked').textContent())==='Date: oldest first'&&await sortBox.getAttribute('aria-label')==='Sort by'&&(await page.locator('.explorer-content').textContent()).includes('also in content'));
   await page.setViewportSize({width:360,height:740});
   ok('Toolbar fits a phone without sideways scrolling',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
-  ok('Order button and switch are flat but easy to tap (26–32 px)',await page.evaluate(()=>['#explorerOrder','.explorer-content'].every(s=>{const h=document.querySelector(s).getBoundingClientRect().height;return h>=26&&h<=32;})));
+  ok('Sort field and switch are flat but easy to tap (26–32 px)',await page.evaluate(()=>['#explorerSort','.explorer-content'].every(s=>{const h=document.querySelector(s).getBoundingClientRect().height;return h>=26&&h<=32;})));
   ok('No runtime errors',errors.length===0);
 }finally{await browser?.close();await new Promise(r=>server.close(r));}
 console.log(`${count} explorer order checks passed (seeded catalog; no files written).`);
