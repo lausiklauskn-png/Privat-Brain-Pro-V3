@@ -271,6 +271,64 @@
     sync();
   }
 
+  // ---------- Spaltenbreiten verstellen (Klaus 2026-10-24: „Maus dahin, Pfeil rechts links, Größe verändern“) ----------
+  // Postfach (Ordner | Liste | Lesen) und Explorer (Baum | Dateien): Trennlinie mit der Maus oder dem Finger ziehen,
+  // mit Pfeiltasten in 16-px-Schritten, Doppelklick stellt zurück. Die Breiten bleiben gespeichert (je Gerät).
+  const SPLITS = [
+    { sel: '#mailWorkspace .mail-layout', key: 'pb-cols-mail', cols: ['.mail-folders', '.mail-list'], vars: ['--v3-col-a', '--v3-col-b'], min: [110, 180], rest: 320, media: '(min-width: 901px)' },
+    { sel: '#panel-explorer .explorer-layout', key: 'pb-cols-explorer', cols: ['#explorerTree'], vars: ['--v3-col-a'], min: [140], rest: 280, media: '(min-width: 651px)' }
+  ];
+  const SPLIT_TIP = { de: 'Breite ändern: ziehen oder Pfeiltasten · Doppelklick: zurücksetzen', en: 'Change width: drag or arrow keys · double-click: reset',
+    ru: 'Изменить ширину: перетащите или стрелки · двойной щелчок: сброс', pl: 'Zmień szerokość: przeciągnij lub strzałki · dwuklik: reset' };
+  function splitLayout(layout, set) {
+    if (layout.dataset.v3Split) return; layout.dataset.v3Split = '1'; layout.classList.add('v3-split');
+    const mq = matchMedia(set.media);
+    let saved = {}; try { saved = JSON.parse(localStorage.getItem(set.key) || '{}') || {}; } catch {}
+    set.vars.forEach(v => { if (saved[v] > 0) layout.style.setProperty(v, saved[v] + 'px'); });
+    const col = i => layout.querySelector(':scope>' + set.cols[i]);
+    const handles = set.cols.map((_, i) => {
+      const h = document.createElement('div'); h.className = 'v3-splitter'; h.tabIndex = 0;
+      h.setAttribute('role', 'separator'); h.setAttribute('aria-orientation', 'vertical');
+      layout.append(h); return h;
+    });
+    const place = () => handles.forEach((h, i) => {
+      const c = col(i), on = mq.matches && c && c.offsetParent !== null && getComputedStyle(layout).display === 'grid';
+      h.hidden = !on; if (!on) return;
+      const gap = parseFloat(getComputedStyle(layout).columnGap) || 0;
+      h.style.left = (c.offsetLeft + c.offsetWidth + gap / 2 - 5) + 'px';
+      const tip = SPLIT_TIP[document.documentElement.lang] || SPLIT_TIP.de; h.title = tip; h.setAttribute('aria-label', tip);
+      h.setAttribute('aria-valuenow', String(Math.round(c.offsetWidth)));
+    });
+    const save = () => { const o = {}; set.vars.forEach(v => { const n = parseFloat(layout.style.getPropertyValue(v)); if (n > 0) o[v] = Math.round(n); });
+      try { localStorage.setItem(set.key, JSON.stringify(o)); } catch {} };
+    const resize = (i, width) => {
+      const others = set.cols.reduce((sum, _, j) => j === i ? sum : sum + (col(j)?.offsetWidth || 0), 0);
+      const max = Math.max(set.min[i], layout.clientWidth - others - set.rest);
+      layout.style.setProperty(set.vars[i], Math.round(Math.min(max, Math.max(set.min[i], width))) + 'px'); place();
+    };
+    handles.forEach((h, i) => {
+      h.addEventListener('pointerdown', e => {
+        const c = col(i); if (!c) return; e.preventDefault(); h.setPointerCapture(e.pointerId); h.classList.add('v3-dragging');
+        document.documentElement.classList.add('v3-resizing');
+        const x0 = e.clientX, w0 = c.getBoundingClientRect().width;
+        const move = ev => resize(i, w0 + ev.clientX - x0);
+        const up = () => { h.removeEventListener('pointermove', move); h.classList.remove('v3-dragging'); document.documentElement.classList.remove('v3-resizing'); save(); };
+        h.addEventListener('pointermove', move); h.addEventListener('pointerup', up, { once: true }); h.addEventListener('pointercancel', up, { once: true });
+      });
+      h.addEventListener('keydown', e => {
+        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return; e.preventDefault();
+        resize(i, (col(i)?.offsetWidth || 0) + (e.key === 'ArrowRight' ? 16 : -16)); save();
+      });
+      h.addEventListener('dblclick', () => { layout.style.removeProperty(set.vars[i]); place(); save(); });
+    });
+    new ResizeObserver(place).observe(layout);
+    new MutationObserver(place).observe(layout, { childList: true, subtree: false, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
+    mq.addEventListener('change', place); place();
+  }
+  function columnSplitters(root = document) {
+    for (const set of SPLITS) root.querySelectorAll?.(set.sel).forEach(l => splitLayout(l, set));
+  }
+
   function start() {
     document.documentElement.classList.add('v3');
     decorate(document);
@@ -285,7 +343,8 @@
       }
     }).observe(document.body, { childList: true, subtree: true, characterData: true });
     placeNav(); wide.addEventListener('change', placeNav);
-    quietSearch(); filterToggle(); helpButtons(); speechChip(); meaningToggle();
+    quietSearch(); filterToggle(); helpButtons(); speechChip(); meaningToggle(); columnSplitters();
+    new MutationObserver(() => columnSplitters()).observe(document.body, { childList: true, subtree: true });
   }
   // Nach den Skripten am Ende von <body> (dort baut native-toolbar.js die Leiste).
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();

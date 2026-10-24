@@ -99,6 +99,31 @@ try{
       await page.evaluate(()=>document.documentElement.setAttribute('data-theme','dunkel'));await page.waitForTimeout(450);await page.screenshot({path:`${shots}/${look}-dunkel-1280.png`});
       await page.evaluate(()=>document.documentElement.removeAttribute('data-theme'));}
   }
+  // Klaus 2026-10-24: Spaltenbreiten mit der Maus verstellen (Postfach und Explorer), ↔-Zeiger an der Trennlinie.
+  const live='#mailWorkspace .live-mail .mail-layout';
+  const split=page.locator(live+' > .v3-splitter').first();
+  ok('Mail: a divider with the ↔ pointer sits between folders and list',await split.isVisible()&&await split.evaluate(h=>getComputedStyle(h).cursor==='col-resize'));
+  const fw=()=>page.locator(live+' > .mail-folders').evaluate(e=>e.getBoundingClientRect().width);
+  const w0=await fw(),hb=await split.boundingBox();
+  await page.mouse.move(hb.x+hb.width/2,hb.y+40);await page.mouse.down();await page.mouse.move(hb.x+hb.width/2+60,hb.y+40,{steps:6});await page.mouse.up();
+  const w1=await fw();
+  ok('Mail: dragging the divider makes the folder column wider',Math.abs(w1-w0-60)<=3);
+  ok('Mail: the width is kept for the next start',await page.evaluate(()=>JSON.parse(localStorage.getItem('pb-cols-mail')||'{}')['--v3-col-a']>0));
+  const lw=()=>page.locator(live+' > .mail-list').evaluate(e=>e.getBoundingClientRect().width);
+  const l0=await lw();await page.locator(live+' > .v3-splitter').nth(1).focus();await page.keyboard.press('ArrowRight');
+  ok('Mail: arrow keys move the second divider (list column) in 16 px steps',Math.abs(await lw()-l0-16)<=2);
+  await split.dblclick();
+  ok('Mail: double-click resets the column',Math.abs(await fw()-w0)<=3);
+  ok('Mail: the reading pane keeps at least 320 px even when dragged far',await (async()=>{const b=await split.boundingBox();await page.mouse.move(b.x+5,b.y+40);await page.mouse.down();await page.mouse.move(b.x+2000,b.y+40,{steps:4});await page.mouse.up();
+    return page.locator(live+' > .mail-reader').evaluate(e=>e.getBoundingClientRect().width>=318);})());
+  await split.dblclick();
+  await page.locator('[data-tab=explorer]').click();await page.waitForTimeout(300);
+  const tsplit=page.locator('#panel-explorer .explorer-layout > .v3-splitter');
+  const tw=()=>page.locator('#explorerTree').evaluate(e=>e.getBoundingClientRect().width);
+  const t0=await tw(),tb=await tsplit.boundingBox();
+  await page.mouse.move(tb.x+tb.width/2,tb.y+20);await page.mouse.down();await page.mouse.move(tb.x+tb.width/2+80,tb.y+20,{steps:6});await page.mouse.up();
+  ok('Explorer: the folder tree can be made wider with the mouse',Math.abs(await tw()-t0-80)<=3&&await page.evaluate(()=>JSON.parse(localStorage.getItem('pb-cols-explorer')||'{}')['--v3-col-a']>0));
+  await tsplit.dblclick();
   await page.locator('[data-tab=search]').click();await page.setViewportSize({width:412,height:860});await page.waitForTimeout(300);
   ok('412px: search field starts high up, filters hidden behind one "Filter" button',await page.evaluate(()=>document.querySelector('#q').getBoundingClientRect().top<160&&getComputedStyle(document.querySelector('#filterbar')).display==='none'&&!!document.querySelector('#v3FilterToggle')));
   await page.locator('#v3FilterToggle').click();
