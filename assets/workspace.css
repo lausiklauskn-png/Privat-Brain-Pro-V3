@@ -1,0 +1,57 @@
+.main-pages{position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 0;display:flex;gap:8px}
+.main-pages .tab{flex:1;min-height:48px;text-align:center;font:inherit}
+.brain-emoji{display:inline-block;width:1em;height:1em;vertical-align:middle}
+.logo{background:transparent;box-shadow:none;border-radius:0}
+.logo img{display:block;width:46px;height:46px;object-fit:contain;border-radius:10px}
+#searchEmpty .brain-emoji{width:104px;height:104px}
+header .tools{max-width:100%;min-width:0}
+.workspace-tools{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 20px}
+.workspace-tools .tab{font:inherit;font-size:.8rem;min-height:44px;padding:6px 12px}
+.search-welcome{padding:24px 0 12px}.search-welcome h2{font-size:clamp(1.6rem,4vw,2.5rem);margin:0 0 12px}
+.search-welcome p,.library-setup p{color:var(--mut);line-height:1.6}
+.search-totals{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0 24px}
+.search-totals span{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.explorer-toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}
+.explorer-toolbar input{flex:1;min-width:130px}.explorer-toolbar input,.explorer-toolbar select{padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--field);color:var(--ink)}
+.explorer-layout{display:grid;grid-template-columns:minmax(160px,230px) minmax(0,1fr);gap:16px}
+#explorerTree{border-right:1px solid var(--line);padding-right:12px;max-height:65vh;overflow:auto}
+#explorerTree button{display:block;text-align:left;width:100%;min-height:44px;margin:4px 0;overflow-wrap:anywhere}
+.explorer-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;padding:14px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--card)}
+.explorer-row strong{display:block;overflow-wrap:anywhere}.explorer-meta{font-size:.8rem;color:var(--mut);margin-top:6px;overflow-wrap:anywhere}
+.explorer-row button{min-height:44px}.explorer-empty{padding:25px;line-height:1.7;color:var(--mut)}
+#explorerPath{overflow-wrap:anywhere}#libraryStatus{overflow-wrap:anywhere}
+@media(max-width:650px){.main-pages{gap:4px}.main-pages .tab{font-size:.8rem;padding:10px 5px;white-space:normal}.explorer-layout{grid-template-columns:1fr}#explorerTree{border-right:0;border-bottom:1px solid var(--line);max-height:180px;padding:0 0 10px}.explorer-toolbar>*{max-width:100%}.explorer-row{padding:12px}.workspace-tools .tab{flex:1}.search-totals{gap:6px}.search-totals span{font-size:.8rem;padding:10px}.library-setup .btnrow{flex-wrap:wrap}}
+.explorer-order{display:inline-flex;flex-wrap:wrap;gap:8px;align-items:center}
+.explorer-content{display:inline-flex;align-items:center;gap:6px;min-height:44px;cursor:pointer}
+.explorer-toolbar .explorer-content input{flex:none;min-width:0;width:22px;height:22px;padding:0;margin:0}
+/* Klaus 2026-10-22: tree by type, nested folders with readable names, note after adding files. */
+.explorer-tree-head{margin:10px 0 2px;font-size:.78rem;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+#explorerTree button.explorer-folder{padding-left:calc(10px + var(--depth,0) * 14px)}
+.pb-import-done{position:relative;margin:12px 0;padding:10px 40px 10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card,transparent)}
+.pb-import-done[hidden]{display:none!important}
+.pb-import-done .explorer-tree-head{margin:0 0 6px;text-transform:none;letter-spacing:0;font-size:.95rem;color:inherit}
+.pb-import-done p{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:4px 0}
+.pb-import-close{position:absolute;top:6px;right:6px}
+/* Klaus 2026-10-22: folder tree like a real explorer; on the phone one level at a time with a path to tap. */
+.explorer-tree-tools{display:flex;justify-content:flex-end;gap:4px;margin:0 0 4px}
+#explorerTree .explorer-tree-tools button{display:inline-block;width:auto;min-height:26px;margin:0;padding:2px 8px}
+.explorer-node{display:flex;align-items:center;gap:2px;padding-left:calc(var(--depth,0) * 14px)}
+#explorerTree .explorer-node button{margin:1px 0}
+#explorerTree .explorer-node .explorer-twisty{flex:none;width:24px;min-height:28px;padding:0;text-align:center;border:0;background:transparent;box-shadow:none}
+.explorer-twisty-space{flex:none;width:24px}
+#explorerTree .explorer-node button.explorer-folder{flex:1;width:auto;min-width:0;padding-left:8px}
+#explorerTree button.explorer-folder[aria-current=location]{font-weight:700}
+#explorerTree button.explorer-folder[data-found]::after{content:" ⚠";color:#b3261e}
+#explorerPath{display:flex;flex-wrap:wrap;align-items:center;gap:2px}
+#explorerPath .explorer-crumb{min-height:24px;padding:0 6px;font-size:inherit;box-shadow:none}
+#explorerPath .explorer-crumb-here{font-weight:700;padding:0 4px}
+.explorer-dir{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--card);cursor:pointer}
+.explorer-dir strong{display:block;overflow-wrap:anywhere}
+.explorer-dir[data-found] .explorer-meta{color:#b3261e}
+.explorer-dir-open{font-size:1.2rem;min-width:36px}
+#panel-explorer.explorer-tree-hidden #explorerTree{display:none}
+#panel-explorer.explorer-tree-hidden .explorer-layout{grid-template-columns:1fr}
+@media(max-width:760px){
+  #explorerTree,#explorerTreeToggle{display:none!important}
+  .explorer-layout{grid-template-columns:1fr}
+}
