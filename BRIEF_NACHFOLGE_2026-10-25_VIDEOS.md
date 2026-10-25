@@ -1,5 +1,9 @@
 # Brief für die nächste Sitzung: Werbefilm und Handbuchvideo im neuen Design (Private Brain Pro)
 
+> **Geändert am 2026-10-25 (Klaus):** nur noch **eine gute Fassung je Film**, gestreamt und herunterladbar wie das
+> Werbevideo auf family-projekt.de. Die Liste der fünf Fassungen unten gilt nicht mehr. Maßgeblich ist Abschnitt 3 in
+> [BRIEF_NACHFOLGE_2026-10-25_GMAIL-TRESOR-VIDEOS.md](BRIEF_NACHFOLGE_2026-10-25_GMAIL-TRESOR-VIDEOS.md).
+
 **Auftrag (Klaus 2026-10-25):** Werbefilm und Handbuchvideo neu aufnehmen, im neuen Design. **Nur mit Private Brain Pro**
 (Codex' neu gestaltete Fassung, ab Android v1.0.0-preview.34), **nicht mit V3**. Begründung von Klaus: In Pro laufen die
 E-Mails schon, dort ist alles eingerichtet. Danach kommen die neuen Filme ins Geschenk für Jens.
