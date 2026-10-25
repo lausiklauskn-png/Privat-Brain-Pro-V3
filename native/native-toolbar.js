@@ -87,7 +87,7 @@
   if(!row.isConnected){main.before(row);row.append(main,more);more.append(moreTitle,secondary);}
   const tools=document.querySelector('header .tools');
   const options=tools.querySelector(':scope>.native-options')||make('details','native-options'),optionsTitle=options.querySelector(':scope>summary')||make('summary','ghost'),optionsPanel=options.querySelector(':scope>.native-options-panel')||make('div','native-options-panel');
-  for(const node of [...tools.children])if(!node.matches('.native-navigation,.native-net-lamp,.native-options'))optionsPanel.append(node);
+  for(const node of [...tools.children])if(!node.matches('.native-navigation,.native-net-lamp,.native-options,.pb-filme-knopf'))optionsPanel.append(node);
   if(!options.isConnected){options.append(optionsTitle,optionsPanel);tools.append(options);}
   const offlineButton=optionsPanel.querySelector('.native-offline-switch')||make('button','ghost native-offline-switch');offlineButton.type='button';
   offlineButton.setAttribute('role','switch');
