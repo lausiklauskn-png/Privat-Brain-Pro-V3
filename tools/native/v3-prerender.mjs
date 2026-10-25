@@ -70,7 +70,7 @@ export async function prerenderV3(html, root, { version } = {}) {
   const tools = cut(/  <div class="workspace-tools" aria-label="Werkzeuge">([\s\S]*?)<\/div>\n/, 'workspace-tools');
   if (tools.index !== at) throw new Error('v3-prerender: workspace-tools steht nicht direkt hinter main-pages');
   const filmeJs = await read('assets/filme.js');
-  const FILM_ICON = stringConst(filmeJs, 'ICON', 'filme.js'), filmTitle = 'Filme: Werbefilm und Handbuchvideo';
+  const FILM_ICON = stringConst(filmeJs, 'ICON', 'filme.js'), filmTitle = 'Anleitungsvideo: was Private Brain kann';
   const film = `<button class="ghost compact-tool pb-filme-knopf" type="button" id="pbFilme" title="${filmTitle}" aria-label="${filmTitle}">${svgC('x').replace(/d="[^"]*"/, `d="${FILM_ICON}"`)}</button>`;
   const look = `<button type="button" id="pbLookBtn" class="ghost iconbtn pb-look-btn compact-tool" aria-haspopup="menu" aria-expanded="false" title="Design wählen" aria-label="Design wählen">${svgC('x').replace(/d="[^"]*"/, `d="${PALETTE}"`)}</button>`;
   const more = 'Weitere Ansichten';

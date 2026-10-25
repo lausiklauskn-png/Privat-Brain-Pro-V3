@@ -2,7 +2,7 @@
 // Läuft NACH build:web und ändert nur das Verzeichnis, das übergeben wird (Standard www). Die Android-App
 // bekommt diese Schritte nicht: dort aktualisiert Android, und es gibt keinen Installieren-Knopf.
 //   node tools/native/prepare-pages.mjs [verzeichnis]
-import { readFile, writeFile, cp } from 'node:fs/promises';
+import { readFile, writeFile, cp, rm } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { join, resolve } from 'node:path';
@@ -11,6 +11,8 @@ const dir = resolve(process.argv[2] || join(root, 'www'));
 let version = 'lokal';
 try { version = execFileSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(); } catch {}
 
+// Das fest eingebaute Anleitungsvideo gehört nur in APK/Windows; die Webfassung streamt es von der Videoseite.
+await rm(join(dir, 'filme'), { recursive: true, force: true });
 for (const name of ['icon-v3-192.png', 'icon-v3-512.png']) await cp(join(root, name), join(dir, name));
 
 const manifest = {

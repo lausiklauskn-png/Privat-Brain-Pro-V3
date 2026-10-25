@@ -1,6 +1,7 @@
 import { adaptRecovery } from './adapt-recovery.mjs';
 import { bundleSemanticModel } from './fetch-semantic-model.mjs';
 import { prerenderV3 } from './v3-prerender.mjs';
+import { bundleFilms } from './fetch-films.mjs';
 import { cp, mkdir, readFile, rm, writeFile, lstat, readdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
@@ -104,6 +105,7 @@ for (const name of ['native-recovery.js', 'native.js', 'native-network.js', 'nat
 await cp(join(root, 'node_modules/@capacitor/core/LICENSE'), join(out, 'CAPACITOR-LICENSE'));
 // Meaning model and transformers.js inside the app (Klaus 2026-10-21), checked against fixed hashes.
 await bundleSemanticModel(out);
+await bundleFilms(out);   // Anleitungsvideo fest in der App (filme/), geprüft gegen film-pins.json
 // The same fixed hashes and sources for loading the model with the switch in the app.
 await cp(join(root, 'native/tool-icons'), join(out, 'tool-icons'), { recursive: true });   // own icons of the tools (☰)
 await cp(join(root, 'tools/native/semantic-model.json'), join(out, 'semantic-model.json'));
