@@ -5,6 +5,13 @@
    Lädt früh im <head>; die DOM-Arbeit beginnt nach dem Aufbau der Seite. */
 (() => {
   'use strict';
+  // Klaus 2026-10-25: beim Start blitzte kurz die alte Oberfläche auf (umbrechende Leiste, „Namenssuche“), weil der
+  // Browser die Seite schon zeichnet, bevor die Skripte am Ende von <body> und diese Schicht sie umgebaut haben.
+  // Bis start() fertig ist, bleibt der Inhalt unsichtbar (themes.css: html.v3-wait). Ohne JavaScript greift das nicht;
+  // hängt etwas, zeigt die Sicherung nach 2,5 s die Seite trotzdem.
+  document.documentElement.classList.add('v3-wait');
+  const reveal = () => document.documentElement.classList.remove('v3-wait');
+  setTimeout(reveal, 2500);
   // ---------- Kurze Kontonamen ----------
   const PROVIDERS = [
     [/(^|\.)t-online\.de$/i, 'T-Online'], [/(^|\.)magenta\.de$/i, 'Magenta'],
@@ -345,7 +352,9 @@
     placeNav(); wide.addEventListener('change', placeNav);
     quietSearch(); filterToggle(); helpButtons(); speechChip(); meaningToggle(); columnSplitters();
     new MutationObserver(() => columnSplitters()).observe(document.body, { childList: true, subtree: true });
+    reveal();
   }
   // Nach den Skripten am Ende von <body> (dort baut native-toolbar.js die Leiste).
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  const safeStart = () => { try { start(); } finally { reveal(); } };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeStart); else safeStart();
 })();

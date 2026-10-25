@@ -54,7 +54,12 @@ try{
       }
     }};
   },MAILS);
+  await context.addInitScript(()=>{window.__v3Wait=[];new MutationObserver(()=>{const h=document.documentElement;if(h)window.__v3Wait.push([h.classList.contains('v3-wait'),!!document.querySelector('#mode'),document.readyState]);}).observe(document,{attributes:true,attributeFilter:['class'],subtree:true,childList:true});});
   await page.goto(url);
+  // Klaus 2026-10-25: kein Aufblitzen der alten Oberfläche. v3-wait steht, bevor die Suchleiste entsteht, und ist
+  // weg, sobald die Seite geladen ist; der Inhalt ist dann sichtbar.
+  const wait=await page.evaluate(()=>({log:window.__v3Wait,now:document.documentElement.classList.contains('v3-wait'),vis:getComputedStyle(document.body).visibility}));
+  ok('Start ohne Aufblitzen: verdeckt, bevor die alte Suchleiste steht, sichtbar nach dem Umbau',wait.log.some(([on,mode])=>on&&!mode)&&!wait.now&&wait.vis==='visible');
   await page.waitForFunction(()=>window.PBAccountName&&document.documentElement.classList.contains('v3')&&typeof db!=='undefined'&&db);
   ok('Short names: T-Online, Gmail, Googlemail, WEB.DE, GMX, unknown domain without ending',await page.evaluate(()=>[
     PBAccountName('a@t-online.de'),PBAccountName('a@gmail.com'),PBAccountName('a@googlemail.com'),PBAccountName('a@web.de'),PBAccountName('a@gmx.net'),PBAccountName('a@musterhaus.de')].join('|')==='T-Online|Gmail|Googlemail|WEB.DE|GMX|Musterhaus'));

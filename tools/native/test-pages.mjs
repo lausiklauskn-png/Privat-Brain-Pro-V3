@@ -31,7 +31,7 @@ try{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(url);await page.waitForFunction(()=>navigator.serviceWorker.controller||new Promise(r=>setTimeout(r,50)).then(()=>false),null,{timeout:15000}).catch(()=>{});
   await page.evaluate(()=>navigator.serviceWorker.ready);
-  ok('Title and heading say Private Brain V3',(await page.title()).startsWith('Private Brain V3')&&(await page.locator('.brand h1').textContent()).includes('Private Brain V3'));
+  ok('Title and heading say Private Brain V3 (without Pro)',(await page.title()).startsWith('Private Brain V3 —')&&(await page.locator('.brand h1').textContent()).trim().startsWith('Private Brain V3')&&!(await page.locator('.brand h1').textContent()).includes('Pro')&&!(await page.locator('.native-status').textContent().catch(()=>'')).includes('V3 Pro'));
   const m=await page.evaluate(async()=>{const l=document.querySelector('link[rel=manifest]');return l&&(await fetch(l.href)).json();});
   ok('Manifest: name Private Brain V3, text under the symbol Private Brain V3, V3 symbols',m&&m.name==='Private Brain V3'&&m.short_name==='Private Brain V3'&&m.icons.every(i=>i.src.startsWith('icon-v3-')));
   ok('Browser tab symbol is the V3 symbol',await page.evaluate(()=>document.querySelector('link[rel=icon]').getAttribute('href')==='icon-v3-192.png'));

@@ -150,3 +150,6 @@
 .pb-look-text{ display:flex; flex-direction:column; line-height:1.2; }
 .pb-look-desc{ font-size:.72rem; font-weight:400; color:var(--mut); }
 .pb-look-swatch{ width:28px; height:20px; }
+
+/* Klaus 2026-10-25: kein Aufblitzen der alten Oberfläche beim Start (v3-ui.js setzt und entfernt v3-wait). */
+html.v3-wait body{ visibility:hidden; }

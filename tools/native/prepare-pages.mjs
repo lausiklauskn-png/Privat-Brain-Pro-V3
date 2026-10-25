@@ -64,6 +64,10 @@ await writeFile(join(dir, 'sw.js'), worker);
 let html = await readFile(join(dir, 'index.html'), 'utf8');
 const swap = (before, after) => { if (!html.includes(before)) throw new Error('prepare-pages: nicht gefunden: ' + before); html = html.split(before).join(after); };
 swap('<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=3d">', '<link rel="icon" type="image/png" sizes="192x192" href="icon-v3-192.png">');
+// Klaus 2026-10-25: die Apps heißen „Private Brain V3 Pro“, die Browserfassung nur „Private Brain V3“.
+swap('<title>Private Brain V3 Pro — nach Bedeutung suchen</title>', '<title>Private Brain V3 — nach Bedeutung suchen</title>');
+swap('<meta name="apple-mobile-web-app-title" content="Private Brain V3 Pro">', '<meta name="apple-mobile-web-app-title" content="Private Brain V3">');
+swap('<h1>Private Brain V3 Pro</h1>', '<h1>Private Brain V3</h1>');
 swap('<link rel="apple-touch-icon" href="icon-192.png?v=3d">', '<link rel="apple-touch-icon" href="icon-v3-192.png">\n<link rel="manifest" href="app-manifest.json">');
 // Installieren-Knopf (Kanon-Datei, unverändert) wieder einbinden; native.css blendet ihn sonst aus.
 const pagesBits = `<style>html.pb-web #installieren{display:inline-flex!important;align-items:center;gap:4px;height:28px;padding:0 10px;border-radius:8px;font-size:.8rem;white-space:nowrap;box-shadow:none}html.pb-web #install-box{display:block!important}@media (display-mode: standalone){html.pb-web #installieren{display:none!important}}</style>
