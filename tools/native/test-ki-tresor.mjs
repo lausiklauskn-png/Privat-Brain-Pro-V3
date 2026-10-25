@@ -40,6 +40,9 @@ const leak=(page,needle)=>page.evaluate(async needle=>{
 },needle);
 const answers=(page,list)=>page.evaluate(list=>{window.__asked=[];window.__answers=list.slice();window.prompt=t=>{window.__asked.push(t);return window.__answers.length?window.__answers.shift():null;};window.confirm=()=>true;},list);
 const status=page=>page.locator('.ki-tresor-status').textContent();
+// Wartet auf einen Satz in der Statuszeile; bei Zeitablauf steht der tatsächliche Satz im Fehler.
+const waitStatus=async(page,re)=>{try{await page.waitForFunction(src=>new RegExp(src).test(document.querySelector('.ki-tresor-status').textContent),re.source,{timeout:90000});}
+  catch(e){throw new Error('Status '+re+' kam nicht; steht da: '+JSON.stringify(await status(page))+' · gefragt: '+JSON.stringify(await page.evaluate(()=>window.__asked)));}};
 const ready=async page=>{
   await page.waitForFunction(()=>typeof db!=='undefined'&&db&&document.querySelector('.ki-tresor-status')&&window.SbkimSafe&&window.PBWorkspace?.navigate);
   await page.evaluate(()=>window.PBWorkspace.navigate('settings'));
@@ -69,7 +72,7 @@ try{
   await answers(page,['geheim-passwort','anderes-passwort']);await page.click('[data-ki-tresor=save]');
   ok('Two different passwords: nothing saved',/verschieden/.test(await status(page)));
   await answers(page,['geheim-passwort','geheim-passwort','Name der Katze']);await page.click('[data-ki-tresor=save]');
-  await page.waitForFunction(()=>/verschlüsselt im Tresor/.test(document.querySelector('.ki-tresor-status').textContent));
+  await waitStatus(page,/verschlüsselt im Tresor/);
   ok('Kept in the vault: plain copy deleted, provider still remembered',await page.evaluate(()=>localStorage.getItem('cb_ai_key')===null&&localStorage.getItem('cb_ai_provider')==='mistral'));
   ok('Counter-check: the key is nowhere in plain text (localStorage, sessionStorage, every IndexedDB store)',(await leak(page,KEY)).length===0);
   ok('The vault holds an encrypted record (PBKDF2 600000, AES-GCM) under the KI-Richter name',await page.evaluate(async()=>{const r=await SbkimStorage.get('sbkim_safe','secret:ki_richter_key:mistral');return !!r&&r.iterations===600000&&/AES-GCM/.test(r.cipher)&&!!r.ct;}));
@@ -79,7 +82,7 @@ try{
   ok('After reload: no key in the field or in memory, "Unlock vault" offered, provider kept',
     await page.locator('#aiKey').inputValue()===''&&await page.evaluate(()=>AI.key==='')&&await page.locator('#aiProvider').inputValue()==='mistral'&&!(await shown(page,'save')));
   await answers(page,['falsches-passwort']);await page.click('[data-ki-tresor=unlock]');
-  await page.waitForFunction(()=>/Falsches Passwort/.test(document.querySelector('.ki-tresor-status').textContent));
+  await waitStatus(page,/Falsches Passwort/);
   ok('Wrong password: no key, a friendly message, the page keeps running',await page.locator('#aiKey').inputValue()===''&&await page.evaluate(()=>AI.key===''));
   await answers(page,['geheim-passwort']);await page.click('[data-ki-tresor=unlock]');
   await page.waitForFunction(k=>document.getElementById('aiKey').value===k,KEY);
@@ -99,7 +102,7 @@ try{
   ok('Another provider has its own vault entry (none yet)',!(await shown(page,'unlock')));
   await page.selectOption('#aiProvider','mistral');await page.waitForFunction(()=>document.querySelector('[data-ki-tresor=unlock]').style.display!=='none');
   await answers(page,[]);await page.click('[data-ki-tresor=remove]');
-  await page.waitForFunction(()=>/gelöscht/.test(document.querySelector('.ki-tresor-status').textContent));
+  await waitStatus(page,/gelöscht/);
   ok('Delete from vault removes the record',await page.evaluate(async()=>!(await SbkimSafe.hasSecret('ki_richter_key:mistral'))));
   ok('No unhandled page errors',errors.length===0||console.log(errors));
   // Ohne Modul 20: keine Knöpfe, ehrlicher Satz, Schlüssel nur für die Sitzung.
