@@ -2,6 +2,7 @@ name: V3-Signierschlüssel (Private Brain V3 Pro)
 # Eigener Android-Schlüssel für Private Brain V3 Pro (Klaus 2026-10-24). Nie Pros Schlüssel, nie Pros Geheimnis.
 # create: einmalig einen neuen Schlüssel in Actions erzeugen, nur verschlüsselt als Artefakt ausgeben.
 # check:  das eingecheckte Paket signing/v3-android-release.enc.json öffnen und prüfen.
+# adopt:  das Artefakt eines create-Laufs prüfen und auf den Zweig v3-signierpaket-uebernahme legen (für eine PR).
 # Voraussetzung: Repo-Geheimnis V3_SIGNING_UNLOCK (langes Passwort, Klaus bewahrt es in seinem Tresor auf).
 on:
   workflow_dispatch:
@@ -11,7 +12,11 @@ on:
         required: true
         type: choice
         default: check
-        options: [create, check]
+        options: [create, check, adopt]
+      create_run_id:
+        description: nur bei adopt – Nummer des erfolgreichen create-Laufs
+        required: false
+        type: string
 permissions:
   contents: read
 concurrency:
@@ -19,7 +24,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   identity:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && inputs.operation != 'adopt'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7.0.1
@@ -58,3 +63,45 @@ jobs:
             signing/v3-android-certificate.json
           if-no-files-found: error
           retention-days: 30
+  adopt:
+    if: github.ref == 'refs/heads/main' && inputs.operation == 'adopt'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v6.1.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Nur übernehmen, solange noch keine Identität im Repo liegt
+        run: |
+          [[ "${{ inputs.create_run_id }}" =~ ^[0-9]+$ ]] || { echo '::error::create_run_id fehlt'; exit 1; }
+          if [[ -e signing/v3-android-release.enc.json || -e signing/v3-android-certificate.json ]]; then
+            echo '::error title=V3-Signierung::Die V3-Signieridentität ist schon im Repo.'; exit 1
+          fi
+      - name: Verschlüsseltes Paket aus dem create-Lauf holen
+        uses: actions/download-artifact@v8.0.1
+        with:
+          name: v3-signierpaket
+          path: signing
+          run-id: ${{ inputs.create_run_id }}
+          github-token: ${{ github.token }}
+      - name: Paket öffnen, Zertifikat und privaten Schlüssel prüfen
+        env:
+          V3_SIGNING_UNLOCK: ${{ secrets.V3_SIGNING_UNLOCK }}
+          TMPDIR: ${{ runner.temp }}
+        run: node tools/signing-v3/cli.mjs check
+      - name: Nur die beiden Dateien auf einen eigenen Zweig legen
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout -b v3-signierpaket-uebernahme
+          git add signing/v3-android-release.enc.json signing/v3-android-certificate.json
+          [[ "$(git diff --cached --name-only | wc -l)" == 2 ]] || { echo '::error::unerwartete Dateien'; exit 1; }
+          git commit -m 'V3-Signierpaket aus create-Lauf ${{ inputs.create_run_id }} übernehmen (verschlüsselt, öffentliches Zertifikat)'
+          git push origin v3-signierpaket-uebernahme
