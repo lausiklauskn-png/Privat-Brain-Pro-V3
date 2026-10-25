@@ -76,7 +76,7 @@
   async function stored() {
     const st = window.SbkimStorage;
     if (!st || typeof st.get !== 'function' || !provider()) return false;
-    try { return !!(await st.get('sbkim_safe', 'secret:' + name())); } catch { return false; }   // Schublade fehlt: nichts gemerkt
+    try { return !!(await healthy(() => st.get('sbkim_safe', 'secret:' + name()))); } catch { return false; }   // Schublade fehlt: nichts gemerkt
   }
   async function refresh() {
     inVault = safe() ? await stored() : false;
@@ -94,20 +94,36 @@
     } catch {}
   }
 
-  // Die Schublade sbkim_safe entsteht beim ersten Speichern über einen Versionssprung der Datenbank (Modul 01).
-  // Liest ein anderer Teil der App genau in diesem Augenblick (beim Start tun das Mycel und Sporen), scheitert der
-  // Sprung, und erst ein Neuladen hilft. Deshalb: warten, bis die Datenbank-Version eine Weile ruhig ist, dann die
-  // Schublade allein anlegen; putSecret braucht danach keinen Sprung mehr.
+  // Beim Start der App legen mehrere Module ihre Schubladen über Versionssprünge der Datenbank an (Modul 01).
+  // Fragt in genau so einem Sprung jemand die Datenbank neu an, bleibt Modul 01 auf einer gescheiterten Öffnung
+  // stehen („requested version … is less than the existing version“), bis die Seite neu lädt. Modul 01 ist
+  // byte-gepinnt; hier wird nur geheilt: ein leerer Versionssprung von außen löst dessen onversionchange aus,
+  // der die alte Verbindung schließt und die gescheiterte Öffnung vergisst. Danach öffnet Modul 01 frisch.
+  // Kein Abfragen im Kreis: das würde selbst in einen laufenden Sprung fallen.
+  const pause = ms => new Promise(r => setTimeout(r, ms));
+  async function heal() {
+    const name = window.SbkimStorage?._meta?.dbName;
+    if (!name || !window.indexedDB) return;
+    const open = v => new Promise(res => {
+      let r; try { r = v ? indexedDB.open(name, v) : indexedDB.open(name); } catch { return res(0); }
+      r.onsuccess = () => { const ver = r.result.version; try { r.result.close(); } catch {} res(ver); };
+      r.onerror = () => res(0);
+    });
+    const now = await open(0);
+    if (now) await open(now + 1);
+  }
+  // Wiederholt eine Speicher-Aktion nach dem Heilen, höchstens dreimal.
+  async function healthy(job) {
+    for (let i = 0; ; i++) {
+      try { return await job(); }
+      catch (e) { if (!storageTrouble(e) || i >= 2) throw e; await heal(); await pause(250); }
+    }
+  }
+  // Die Schublade sbkim_safe allein anlegen (hinter allen anderen Sprüngen der Kette), damit putSecret keinen Sprung braucht.
   async function settled() {
     const st = window.SbkimStorage;
-    if (!st || typeof st.init !== 'function' || typeof st.ensureStore !== 'function') return;
-    let last = -1, calm = 0;
-    for (let i = 0; i < 40 && calm < 3; i++) {
-      const v = (await st.init()).version;
-      calm = v === last ? calm + 1 : 0; last = v;
-      if (calm < 3) await new Promise(r => setTimeout(r, 150));
-    }
-    await st.ensureStore('sbkim_safe');
+    if (!st || typeof st.ensureStore !== 'function') return;
+    await healthy(async () => { await st.ensureStore('sbkim_safe'); await st.get('sbkim_safe', '__ki_tresor_probe__'); });
   }
   async function save() {
     const s = safe(), t = w(), k = key();
@@ -129,6 +145,7 @@
   async function unlock() {
     const s = safe(), t = w();
     if (!s) return say(t.missing);
+    try { await healthy(() => window.SbkimStorage.init()); } catch {}   // getSecret meldet jeden Fehler nur als null
     let hint = null; try { hint = await s.getSecretHint?.(name()); } catch {}
     const pw = ask((hint ? t.hint + hint + '\n\n' : '') + t.askOpen); if (!pw) return;
     let value = null;
