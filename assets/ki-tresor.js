@@ -124,7 +124,7 @@
       await s.putSecret(name(), k, pw, hint ? { hint } : undefined);
       try { localStorage.removeItem(LEGACY); } catch {}
       inVault = true; say(t.saved + ' ' + t.forgot);
-    } catch (e) { say(storageTrouble(e) ? t.reload : t.error + (e?.message || e)); }
+    } catch (e) { try { console.warn('[ki-tresor] save:', e?.name, e?.message); } catch {} say(storageTrouble(e) ? t.reload : t.error + (e?.message || e)); }
   }
   async function unlock() {
     const s = safe(), t = w();

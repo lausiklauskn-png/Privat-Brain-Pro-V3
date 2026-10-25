@@ -42,7 +42,7 @@ const answers=(page,list)=>page.evaluate(list=>{window.__asked=[];window.__answe
 const status=page=>page.locator('.ki-tresor-status').textContent();
 // Wartet auf einen Satz in der Statuszeile; bei Zeitablauf steht der tatsächliche Satz im Fehler.
 const waitStatus=async(page,re)=>{try{await page.waitForFunction(src=>new RegExp(src).test(document.querySelector('.ki-tresor-status').textContent),re.source,{timeout:90000});}
-  catch(e){throw new Error('Status '+re+' kam nicht; steht da: '+JSON.stringify(await status(page))+' · gefragt: '+JSON.stringify(await page.evaluate(()=>window.__asked)));}};
+  catch(e){throw new Error('Status '+re+' kam nicht; steht da: '+JSON.stringify(await status(page))+' · gefragt: '+JSON.stringify(await page.evaluate(()=>window.__asked))+' · Konsole: '+JSON.stringify((globalThis.__logs||[]).slice(-15)));}};
 const ready=async page=>{
   await page.waitForFunction(()=>typeof db!=='undefined'&&db&&document.querySelector('.ki-tresor-status')&&window.SbkimSafe&&window.PBWorkspace?.navigate);
   await page.evaluate(()=>window.PBWorkspace.navigate('settings'));
@@ -56,7 +56,7 @@ try{
   const ctx=await browser.newContext({viewport:{width:1280,height:900}});
   await ctx.route('**/*',r=>r.request().url().startsWith(url)?r.continue():r.abort());
   const page=await ctx.newPage();const errors=[];
-  if(process.env.PB_SLOW){const cdp=await ctx.newCDPSession(page);await cdp.send('Emulation.setCPUThrottlingRate',{rate:Number(process.env.PB_SLOW)});}page.on('pageerror',e=>errors.push(e.message));
+  if(process.env.PB_SLOW){const cdp=await ctx.newCDPSession(page);await cdp.send('Emulation.setCPUThrottlingRate',{rate:Number(process.env.PB_SLOW)});}page.on('pageerror',e=>errors.push(e.message));globalThis.__logs=[];page.on('console',m=>globalThis.__logs.push(m.type()+': '+m.text()));
   await page.goto(url);await ready(page);
   // Altbestand: ein Klartext-Schlüssel aus der früheren Fassung.
   await page.evaluate(k=>{localStorage.setItem('cb_ai_provider','mistral');localStorage.setItem('cb_ai_key',k);},KEY);
