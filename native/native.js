@@ -3,11 +3,13 @@
   // Keep legal/site links reachable in Settings without a second page below the app window.
   const settingsPage = document.querySelector('#panel-settings');
   for (const node of document.querySelectorAll('.wrap>footer,body>.fp-badge-wrap')) settingsPage?.append(node);
+  // Klaus 2026-10-25: the apps are "Private Brain V3 Pro", the browser version (pb-web) is "Private Brain V3".
+  const appName = document.documentElement.classList.contains('pb-web') ? 'Private Brain V3' : 'Private Brain V3 Pro';
   const text = {
-    de: ['Private Brain V3', 'Direkte Mailverbindung und dauerhafter Ordnerzugriff werden noch ergänzt.'],
-    en: ['Private Brain V3', 'Direct mail and persistent folder access are still being added.'],
-    ru: ['Private Brain V3', 'Прямая почта и постоянный доступ к папкам ещё разрабатываются.'],
-    pl: ['Private Brain V3', 'Bezpośrednia poczta i trwały dostęp do folderów są w przygotowaniu.']
+    de: [appName, 'Direkte Mailverbindung und dauerhafter Ordnerzugriff werden noch ergänzt.'],
+    en: [appName, 'Direct mail and persistent folder access are still being added.'],
+    ru: [appName, 'Прямая почта и постоянный доступ к папкам ещё разрабатываются.'],
+    pl: [appName, 'Bezpośrednia poczta i trwały dostęp do folderów są w przygotowaniu.']
   };
   const status = document.createElement('p');
   status.className = 'native-status';
@@ -47,7 +49,7 @@
     const m = /^(\d+)\.(\d+)\.\d+-preview\.(\d+)(?:-[a-z]+)?$/.exec(name);   // "-debug" builds read the same
     const shown = 'v' + (m ? m[1] + '.' + m[2] + '.' + m[3] : name);
     tag.type = 'button'; tag.className = 'pb-version'; tag.id = 'pbVersion'; tag.textContent = shown;
-    tag.title = tag.ariaLabel = 'Private Brain V3 ' + shown;
+    tag.title = tag.ariaLabel = appName + ' ' + shown;
     tag.onclick = () => { window.PBWorkspace?.navigate?.('settings'); const b = document.getElementById('native-update-check'); b?.scrollIntoView({ block: 'center' }); b?.focus(); };
     document.querySelector('header .brand h1')?.append(' ', tag);
     window.PBVersionShown = shown; render();

@@ -23,11 +23,12 @@ for (const input of files) {
   await cp(join(root, input), join(out, input), { recursive: true });
 }
 let html = await readFile(join(root, 'index.html'), 'utf8');
-// Native branding is independent of the unchanged PWA source.
+// Native branding is independent of the unchanged PWA source. Klaus 2026-10-25: the apps (Android, Windows) say
+// "Private Brain V3 Pro" in the header; prepare-pages.mjs turns it back into "Private Brain V3" for the browser version.
 for (const [before, after] of [
-  ['<title>Private Brain — nach Bedeutung suchen</title>', '<title>Private Brain V3 — nach Bedeutung suchen</title>'],
-  ['<meta name="apple-mobile-web-app-title" content="Private Brain">', '<meta name="apple-mobile-web-app-title" content="Private Brain V3">'],
-  ['<h1>Private Brain</h1>', '<h1>Private Brain V3</h1>']
+  ['<title>Private Brain — nach Bedeutung suchen</title>', '<title>Private Brain V3 Pro — nach Bedeutung suchen</title>'],
+  ['<meta name="apple-mobile-web-app-title" content="Private Brain">', '<meta name="apple-mobile-web-app-title" content="Private Brain V3 Pro">'],
+  ['<h1>Private Brain</h1>', '<h1>Private Brain V3 Pro</h1>']
 ]) {
   if (!html.includes(before)) throw new Error('Review native branding after source changes');
   html = html.replace(before, after);

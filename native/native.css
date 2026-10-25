@@ -621,8 +621,9 @@ img.pb-tool-icon,span.pb-tool-icon{width:20px;height:20px;border-radius:5px;flex
 /* Version always visible next to the name (Klaus 2026-10-22). */
 header .brand h1 .pb-version { display:inline-block; vertical-align:middle; min-height:20px; margin-left:4px; padding:0 7px; font:600 .7rem/1.6 system-ui,sans-serif; letter-spacing:0; border-radius:999px; box-shadow:none; opacity:.85; white-space:nowrap; }
 
-/* Klaus 2026-10-25: am Handy steht oben „PBV3 Pro“ statt „Private Brain V3“ (sonst stößt der Name an die Knöpfe rechts).
-   Nur Darstellung: der Text im h1 bleibt „Private Brain V3“ (Proben, Vorlesen). Die Webfassung (pb-web) zeigt „PBV3“. */
+/* Klaus 2026-10-25: die Apps zeigen oben „Private Brain V3 Pro“, am Handy „PBV3 Pro“ (sonst stößt der Name an die Knöpfe
+   rechts). Nur Darstellung: der Text im h1 bleibt ganz (Proben, Vorlesen). Die Webfassung (pb-web) heißt „Private Brain V3“
+   und zeigt am Handy „PBV3“. */
 @media (max-width:600px) {
   header .brand h1 { font-size:0!important; }
   header .brand h1::before { content:'PBV3 Pro'; font-size:1.05rem; }

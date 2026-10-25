@@ -34,8 +34,8 @@ try {
   page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/*',r=>r.request().url().startsWith(url)?r.continue():r.abort());
   await page.goto(url);await page.waitForFunction(()=>window.PBWorkspace && typeof db!=='undefined' && db);
-  ok('Native bundle starts on search',await page.locator('#q').isVisible() && await page.locator('.brand h1').textContent()==='Private Brain V3' && (await page.title()).startsWith('Private Brain V3 —'));
-  ok('Native limitations visible in settings',await page.locator('.native-status').textContent().then(s=>s.includes('Private Brain V3') && s.includes('Direkte Mailverbindung')));
+  ok('Native bundle starts on search',await page.locator('#q').isVisible() && await page.locator('.brand h1').textContent()==='Private Brain V3 Pro' && (await page.title()).startsWith('Private Brain V3 Pro —'));
+  ok('Native limitations visible in settings',await page.locator('.native-status').textContent().then(s=>s.includes('Private Brain V3 Pro') && s.includes('Direkte Mailverbindung')));
   for(const width of [280,320,390,650,768,1000,1280,1920]) {
     await page.setViewportSize({width,height:900});
     for(const tab of ['search','intake','explorer','mail','dash','order','dupes','settings']) {
