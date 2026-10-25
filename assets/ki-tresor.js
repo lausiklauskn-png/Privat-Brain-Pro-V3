@@ -24,7 +24,7 @@
       inVault: 'Ein Schlüssel liegt verschlüsselt im Tresor.', legacy: 'Dein Schlüssel liegt noch offen in diesem Browser. Tippe „Im Tresor merken“: danach liegt er nur noch verschlüsselt hier.',
       noProvider: 'Erst einen Anbieter wählen.', missing: 'Der Tresor ist in diesem Browser nicht verfügbar. Der Schlüssel gilt nur bis zum Schließen.',
       forgot: 'Passwort vergessen? Kein Drama: beim Anbieter einen neuen Schlüssel holen und neu merken.',
-      error: 'Tresor-Fehler: ', intro: 'Aus, solange leer. Der Schlüssel bleibt in diesem Browser: bis zum Schließen im Arbeitsspeicher oder, wenn du willst, mit einem Passwort verschlüsselt im Tresor. Er wird nie ins Repo geschrieben. Erst wenn gesetzt, dürfen einzelne Bilder/Texte zur EU-KI gehen, mit klarer Anzeige.' },
+      error: 'Tresor-Fehler: ', reload: 'Der Speicher dieses Browsers war gerade beschäftigt. Bitte die Seite neu laden und noch einmal versuchen. Dein Schlüssel ist nicht verloren.', intro: 'Aus, solange leer. Der Schlüssel bleibt in diesem Browser: bis zum Schließen im Arbeitsspeicher oder, wenn du willst, mit einem Passwort verschlüsselt im Tresor. Er wird nie ins Repo geschrieben. Erst wenn gesetzt, dürfen einzelne Bilder/Texte zur EU-KI gehen, mit klarer Anzeige.' },
     en: { save: 'Keep in vault', unlock: 'Unlock vault', lock: 'Lock', remove: 'Delete from vault',
       askNew: 'Vault password (at least 8 characters). It encrypts your AI key and is never stored:',
       askAgain: 'The same password again:', askHint: 'Password hint (optional, NOT the password itself):',
@@ -38,7 +38,7 @@
       inVault: 'A key is stored encrypted in the vault.', legacy: 'Your key is still stored unencrypted in this browser. Tap “Keep in vault”: afterwards it is only kept encrypted.',
       noProvider: 'Choose a provider first.', missing: 'The vault is not available in this browser. The key lasts only until you close the page.',
       forgot: 'Forgot the password? No problem: get a new key from the provider and keep it again.',
-      error: 'Vault error: ', intro: 'Off while empty. The key stays in this browser: in memory until you close the page or, if you like, encrypted with a password in the vault. It is never written to the repository. Only when set may single images/texts go to the EU AI, clearly shown.' }
+      error: 'Vault error: ', reload: 'This browser’s storage was busy. Please reload the page and try again. Your key is not lost.', intro: 'Off while empty. The key stays in this browser: in memory until you close the page or, if you like, encrypted with a password in the vault. It is never written to the repository. Only when set may single images/texts go to the EU AI, clearly shown.' }
   };
   const w = () => W[document.documentElement.lang] || W.de;   // RU/PL: Deutsch (wie das Mycel-Fenster)
   const safe = () => { const s = window.SbkimSafe; return s && typeof s.putSecret === 'function' && typeof s.getSecret === 'function' && typeof s.hasSecret === 'function' ? s : null; };
@@ -70,11 +70,19 @@
     const intro = box.parentElement?.querySelector(':scope > p');
     if (intro && intro.dataset.kiTresor) intro.textContent = t.intro;
   }
+  // Nur nachsehen, nichts anlegen: SbkimSafe.hasSecret() legt die Schublade sbkim_safe an (Versionssprung der
+  // Datenbank). Geschah das beim Start gleichzeitig mit den übrigen Modulen, blieb Modul 01 bis zum Neuladen
+  // hängen (CI 2026-10-25: „Re-Open mit Version 9 … existing version (10)“). Angelegt wird erst beim Merken.
+  async function stored() {
+    const st = window.SbkimStorage;
+    if (!st || typeof st.get !== 'function' || !provider()) return false;
+    try { return !!(await st.get('sbkim_safe', 'secret:' + name())); } catch { return false; }   // Schublade fehlt: nichts gemerkt
+  }
   async function refresh() {
-    const s = safe(); inVault = false;
-    if (s && provider()) { try { inVault = await s.hasSecret(name()); } catch { inVault = false; } }
+    inVault = safe() ? await stored() : false;
     render();
   }
+  const storageTrouble = e => /version|re-open|closing|StorageOpenError/i.test(String(e?.message || e) + ' ' + (e?.name || ''));
   // Der Anbieter ist kein Geheimnis und bleibt gemerkt; den Klartext-Schlüssel schreibt saveAI nicht mehr
   // (der Haken „merken“ ist aus und verborgen). Läuft nach saveAI, weil später angemeldet.
   function keepProvider() {
@@ -100,7 +108,7 @@
       await s.putSecret(name(), k, pw, hint ? { hint } : undefined);
       try { localStorage.removeItem(LEGACY); } catch {}
       inVault = true; say(t.saved + ' ' + t.forgot);
-    } catch (e) { say(t.error + (e?.message || e)); }
+    } catch (e) { say(storageTrouble(e) ? t.reload : t.error + (e?.message || e)); }
   }
   async function unlock() {
     const s = safe(), t = w();
@@ -109,7 +117,11 @@
     const pw = ask((hint ? t.hint + hint + '\n\n' : '') + t.askOpen); if (!pw) return;
     let value = null;
     try { value = await s.getSecret(name(), pw); } catch (e) { return say(t.error + (e?.message || e)); }
-    if (!value) return say(t.wrong + ' ' + t.forgot);
+    if (!value) {
+      // getSecret() meldet jeden Fehler als null. Nur wenn der verschlüsselte Eintrag lesbar da ist, war es das Passwort.
+      let readable = false; try { readable = !!(await window.SbkimStorage.get('sbkim_safe', 'secret:' + name())); } catch {}
+      return say(readable ? t.wrong + ' ' + t.forgot : t.reload);
+    }
     setKey(value); say(t.opened);
   }
   function lock() { setKey(''); say(w().locked); }
