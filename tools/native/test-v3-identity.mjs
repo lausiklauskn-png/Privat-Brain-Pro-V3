@@ -46,8 +46,10 @@ ok('Update-Probe in CI zielt auf ' + ID + '.preview.debug', ci.includes(`-Pprobe
 const release = read('.github/workflows/v3-android-release.yml'), signing = read('.github/workflows/v3-signing.yml');
 ok('Veröffentlichung nur für ' + ID + '.preview mit Tag „v3-android-“', release.includes(`package: name='${ID}.preview'`) && release.includes('tag="v3-android-$VERSION"') && release.includes(`application-label:'${NAME}'`));
 ok('Veröffentlichung verlangt grüne android.yml auf demselben Commit', release.includes('actions/workflows/android.yml/runs?head_sha=$SOURCE_SHA'));
-const workflows = ['android.yml', 'v3-android-release.yml', 'v3-signing.yml', 'windows-app.yml', 'pages.yml'].filter(f => existsSync(join(root, '.github/workflows', f))).map(f => read('.github/workflows/' + f)).join('\n');
+const workflows = ['android.yml', 'v3-android-release.yml', 'v3-signing.yml', 'windows-app.yml', 'pages.yml', 'v3-windows-release.yml'].filter(f => existsSync(join(root, '.github/workflows', f))).map(f => read('.github/workflows/' + f)).join('\n');
 ok('kein Ablauf nutzt Pros Signier-Geheimnis', !workflows.includes('PB_' + 'SIGNING_UNLOCK') && signing.includes('secrets.V3_SIGNING_UNLOCK') && release.includes('secrets.V3_SIGNING_UNLOCK'));
+const winRelease = existsSync(join(root, '.github/workflows/v3-windows-release.yml')) ? read('.github/workflows/v3-windows-release.yml') : '';
+ok('Windows-Veröffentlichung nur aus grünem windows-app.yml auf main, Tag v3-windows-, nie Pros Repo', winRelease.includes('actions/workflows/windows-app.yml/runs?head_sha=$GITHUB_SHA') && winRelease.includes('tag="v3-windows-$VERSION"') && !winRelease.includes('Privat-Brain-Pro/'));
 ok('keine Signierdateien von Pro im Repo', !existsSync(join(root, 'signing/android-release.enc.json')) && !existsSync(join(root, 'tools/signing/identity.mjs')));
 
 console.log(`\n${count} grün · ${failed} rot`);
