@@ -1,5 +1,10 @@
 # Private Brain Pro V3 — Sitzungs-Anker
 
+**2026-10-25 abends (Filme · Geschenk · Kim-sync):** Pro 1.0.38 und V3 3.0.0-preview.7 veröffentlicht (Android +
+Windows, Anleitungsvideo eingebaut, ▶-Knopf), PWA ohne „Pro“, Geschenk für Jens (PWA zuerst), Kim-sync mit Räumen im
+Tresor und Dateien (PR #32). [Abschluss](BRIEF_ABSCHLUSS_2026-10-25_FILME-GESCHENK-KIMSYNC.md) ·
+[Forschung](docs/FORSCHUNG-2026-10-25.md) · **Nächste Sitzung:** [Brief](BRIEF_NACHFOLGE_2026-10-26_KIMSYNC-GESCHENK.md).
+
 **2026-10-25 (Sitzung Tresor/Oberfläche/Videos):** V3-Oberfläche steht schon beim Bau fertig im HTML
 (`tools/native/v3-prerender.mjs`, kein `v3-wait` mehr), KI-Schlüssel der Browserfassung im Tresor (`assets/ki-tresor.js`).
 Stand und Grenzen: [Brief](BRIEF_NACHFOLGE_2026-10-25_GMAIL-TRESOR-VIDEOS.md) Abschnitte 2–4.
