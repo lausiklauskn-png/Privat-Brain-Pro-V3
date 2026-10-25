@@ -52,7 +52,8 @@ try{
   browser=await chromium.launch({executablePath:process.env.CB_CHROMIUM||'/usr/bin/chromium',args:['--no-sandbox']});
   const ctx=await browser.newContext({viewport:{width:1280,height:900}});
   await ctx.route('**/*',r=>r.request().url().startsWith(url)?r.continue():r.abort());
-  const page=await ctx.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  const page=await ctx.newPage();const errors=[];
+  if(process.env.PB_SLOW){const cdp=await ctx.newCDPSession(page);await cdp.send('Emulation.setCPUThrottlingRate',{rate:Number(process.env.PB_SLOW)});}page.on('pageerror',e=>errors.push(e.message));
   await page.goto(url);await ready(page);
   // Altbestand: ein Klartext-Schlüssel aus der früheren Fassung.
   await page.evaluate(k=>{localStorage.setItem('cb_ai_provider','mistral');localStorage.setItem('cb_ai_key',k);},KEY);

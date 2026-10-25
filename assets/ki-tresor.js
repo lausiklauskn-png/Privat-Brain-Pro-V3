@@ -131,11 +131,13 @@
     box = document.createElement('div'); box.className = 'btnrow ki-tresor'; box.dataset.kiTresor = '1';
     for (const id of ['save', 'unlock', 'lock', 'remove']) {
       const b = document.createElement('button'); b.type = 'button'; b.className = 'ghost'; b.dataset.kiTresor = id;
+      b.hidden = true; b.style.display = 'none';   // erst zeigen, wenn der Stand bekannt ist (kein kurzes Aufblitzen)
       b.addEventListener('click', () => ({ save, unlock, lock, remove })[id]());
       buttons[id] = b; box.append(b);
     }
     status = document.createElement('p'); status.className = 'hint ki-tresor-status'; status.setAttribute('role', 'status');
     (label || field).after(box, status);
+    render();
     field.addEventListener('input', () => { note = ''; render(); });
     field.addEventListener('change', () => { keepProvider(); render(); });
     $('aiProvider')?.addEventListener('change', () => { keepProvider(); note = ''; refresh(); });
