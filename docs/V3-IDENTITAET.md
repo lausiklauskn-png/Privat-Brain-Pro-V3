@@ -52,7 +52,13 @@ Yahoo, IONOS und Hetzner gehen wie gewohnt. Die Startprobe (`NativeStartupTest`)
 ehrliche Meldung und null Aufrufe der Kontoauswahl, mit Client wieder die alte Google-Prüfung.
 Wenn der Google-Client angelegt ist: den Wert auf `true` setzen (siehe unten, Schritt 4).
 
-### Signieren und Veröffentlichen (vorbereitet, noch nicht ausgeführt)
+### Signieren und Veröffentlichen
+
+**Stand 2026-10-25:** Klaus hat `V3_SIGNING_UNLOCK` angelegt (Tresor-Datei `pbv3-freigabe.age`, age -p, bei Klaus).
+Schlüssel erzeugt in Lauf 40165892761, übernommen per `adopt` (Zweig `v3-signierpaket-uebernahme`).
+Zertifikat `CN=Private Brain V3 Pro`, gültig bis 2056-10-17:
+SHA-256 `e00eb61d0749fc276b97708d06c4fb47e424802db5d29b7e83839a1fb487b45e`,
+SHA-1 `23b0e28e248f7353653b6581adaa67314b61d6a7` (für den Google-Android-Client, Paket `de.familyprojekt.privatebrain.v3.preview`).
 
 - `tools/signing-v3/` – neues Format `private-brain-v3-android-signing`: Schlüssel RSA 4096, 30 Jahre,
   „CN=Private Brain V3 Pro“, nur in GitHub Actions erzeugt; im Repo liegt er nur AES-256-GCM-verschlüsselt, der

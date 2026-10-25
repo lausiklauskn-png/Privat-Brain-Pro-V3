@@ -5,8 +5,8 @@
 
 **V3 als eigene Android-App (S2, 2026-10-24):** „Private Brain V3 Pro“, Paket `de.familyprojekt.privatebrain.v3`
 (+ `.preview`/`.preview.debug`), Version `3.0.0-preview.1`, V3-Logo als Symbol, Updates nur `v3-android-…` aus diesem Repo,
-Gmail ehrlich „noch nicht eingerichtet“. Eigener Signierschlüssel vorbereitet (`v3-signing.yml`, Geheimnis
-`V3_SIGNING_UNLOCK`, noch nicht angelegt), Pros Signierwerkzeuge entfernt. Alles an einer Stelle:
+Gmail ehrlich „noch nicht eingerichtet“. Eigener Signierschlüssel seit 2026-10-25 im Repo (`signing/v3-*`, Geheimnis `V3_SIGNING_UNLOCK`,
+Tresor `pbv3-freigabe.age` bei Klaus), Pros Signierwerkzeuge entfernt. Alles an einer Stelle:
 [V3-Identität](docs/V3-IDENTITAET.md), Wächter `tools/native/test-v3-identity.mjs`.
 
 **V3 für Windows (2026-10-24):** W1–W3 erledigt (eigene Kennung, Name „Private Brain V3 Pro“), W4–W6 offen:
