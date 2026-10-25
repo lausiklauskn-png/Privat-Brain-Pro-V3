@@ -67,6 +67,10 @@ swap('<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=3d"
 // Klaus 2026-10-25: die Apps heißen „Private Brain V3 Pro“, die Browserfassung nur „Private Brain V3“.
 swap('<title>Private Brain V3 Pro — nach Bedeutung suchen</title>', '<title>Private Brain V3 — nach Bedeutung suchen</title>');
 swap('<meta name="apple-mobile-web-app-title" content="Private Brain V3 Pro">', '<meta name="apple-mobile-web-app-title" content="Private Brain V3">');
+// Die Versionsnummer neben dem Namen gehört zu den Apps (native.js nimmt sie im Browser ohnehin weg).
+const versionTag = / <button type="button" class="pb-version" id="pbVersion"[^>]*>[^<]*<\/button><\/h1>/;
+if (!versionTag.test(html)) throw new Error('prepare-pages: Versionsnummer im Kopf nicht gefunden');
+html = html.replace(versionTag, '</h1>');
 swap('<h1>Private Brain V3 Pro</h1>', '<h1>Private Brain V3</h1>');
 swap('<link rel="apple-touch-icon" href="icon-192.png?v=3d">', '<link rel="apple-touch-icon" href="icon-v3-192.png">\n<link rel="manifest" href="app-manifest.json">');
 // Installieren-Knopf (Kanon-Datei, unverändert) wieder einbinden; native.css blendet ihn sonst aus.

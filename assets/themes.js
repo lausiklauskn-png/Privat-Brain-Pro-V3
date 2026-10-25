@@ -47,11 +47,14 @@
   const CHECK = 'm5 12 5 5 9-10';
 
   function build() {
-    if (document.getElementById('pbLookBtn')) return;
-    const btn = document.createElement('button');
+    // Klaus 2026-10-25: der Knopf steht schon fertig im HTML (tools/native/v3-prerender.mjs); dann nur verdrahten.
+    const ready = document.getElementById('pbLookBtn');
+    if (ready?.dataset.wired) return;
+    const btn = ready || document.createElement('button');
+    btn.dataset.wired = '1';
     btn.type = 'button'; btn.id = 'pbLookBtn'; btn.className = 'ghost iconbtn pb-look-btn compact-tool';
     btn.setAttribute('aria-haspopup', 'menu'); btn.setAttribute('aria-expanded', 'false');
-    const icon = svg('compact-icon', PALETTE); btn.append(icon);
+    if (!btn.querySelector('svg')) btn.append(svg('compact-icon', PALETTE));
     const menu = document.createElement('div');
     menu.id = 'pbLookMenu'; menu.className = 'pb-look-menu'; menu.setAttribute('role', 'menu'); menu.hidden = true;
     document.body.append(menu);
@@ -59,7 +62,7 @@
     // Hinter dem Zahnrad in der Navigationszeile; rechts oben ist der Platz des Siegels (native-seal-place.js).
     const gear = document.querySelector('.workspace-tools [data-tab="settings"], .main-pages [data-tab="settings"]');
     const tools = document.querySelector('header .tools');
-    if (gear) gear.after(btn); else if (tools) tools.prepend(btn); else return;
+    if (!ready) { if (gear) gear.after(btn); else if (tools) tools.prepend(btn); else return; }
 
     function label() { const t = words().title; btn.title = t; btn.setAttribute('aria-label', t); }
     function render() {

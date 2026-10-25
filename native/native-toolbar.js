@@ -80,21 +80,24 @@
   addEventListener('resize',hideTip);document.addEventListener('scroll',hideTip,true);
   const main=document.querySelector('.main-pages'), secondary=document.querySelector('.workspace-tools');
   if(!main||!secondary)return;
-  const row=make('div','native-toolbar-row'),more=make('details','native-more'),moreTitle=make('summary','ghost');
-  main.before(row);row.append(main,more);more.append(moreTitle,secondary);
+  // Klaus 2026-10-25: der Bau (tools/native/v3-prerender.mjs) schreibt Leiste und Menü schon fertig ins HTML.
+  // Dann werden die vorhandenen Teile übernommen; ohne sie (z. B. eine Probe mit Pros index.html) wie bisher gebaut.
+  const found=sel=>document.querySelector(sel);
+  const row=found('.native-toolbar-row')||make('div','native-toolbar-row'),more=found('.native-toolbar-row>.native-more')||make('details','native-more'),moreTitle=more.querySelector(':scope>summary')||make('summary','ghost');
+  if(!row.isConnected){main.before(row);row.append(main,more);more.append(moreTitle,secondary);}
   const tools=document.querySelector('header .tools');
-  const options=make('details','native-options'),optionsTitle=make('summary','ghost'),optionsPanel=make('div','native-options-panel');
-  for(const node of [...tools.children])if(!node.classList.contains('native-navigation'))optionsPanel.append(node);
-  options.append(optionsTitle,optionsPanel);tools.append(options);
-  const offlineButton=make('button','ghost native-offline-switch');offlineButton.type='button';
+  const options=tools.querySelector(':scope>.native-options')||make('details','native-options'),optionsTitle=options.querySelector(':scope>summary')||make('summary','ghost'),optionsPanel=options.querySelector(':scope>.native-options-panel')||make('div','native-options-panel');
+  for(const node of [...tools.children])if(!node.matches('.native-navigation,.native-net-lamp,.native-options'))optionsPanel.append(node);
+  if(!options.isConnected){options.append(optionsTitle,optionsPanel);tools.append(options);}
+  const offlineButton=optionsPanel.querySelector('.native-offline-switch')||make('button','ghost native-offline-switch');offlineButton.type='button';
   offlineButton.setAttribute('role','switch');
-  const offlineError=make('p','native-network-error');offlineError.setAttribute('role','status');offlineError.hidden=true;
-  optionsPanel.append(offlineButton,offlineError);
+  const offlineError=optionsPanel.querySelector('.native-network-error')||make('p','native-network-error');offlineError.setAttribute('role','status');offlineError.hidden=true;
+  if(!offlineButton.isConnected)optionsPanel.append(offlineButton,offlineError);
   // Klaus 2026-10-21: a small lamp up in the bar, green = internet allowed, red = app cut off.
   // Tap toggles; the tooltip says what a tap will do. The menu entry stays.
-  const lamp=make('button','native-net-lamp compact-tool');lamp.type='button';lamp.setAttribute('role','switch');
-  const dot=make('span','native-net-dot');dot.setAttribute('aria-hidden','true');lamp.append(dot);
-  const nav=tools.querySelector('.native-navigation');if(nav)nav.before(lamp);else options.before(lamp);
+  const lamp=tools.querySelector(':scope>.native-net-lamp')||make('button','native-net-lamp compact-tool');lamp.type='button';lamp.setAttribute('role','switch');
+  if(!lamp.isConnected){const dot=make('span','native-net-dot');dot.setAttribute('aria-hidden','true');lamp.append(dot);
+    const nav=tools.querySelector('.native-navigation');if(nav)nav.before(lamp);else options.before(lamp);}
   function networkLabel(){
     const off=Boolean(window.PBNetwork?.offline),label=offText(off?1:0);
     if(offlineButton.textContent!==label)offlineButton.textContent=label;
