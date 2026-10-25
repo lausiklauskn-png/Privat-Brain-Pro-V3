@@ -19,7 +19,7 @@ Bewacht von `tools/native/test-v3-identity.mjs` (in `npm run test:native-web`), 
 | Updates Android | Repo `Privat-Brain-Pro`, Tags `v1.0.0-preview.N` | Repo `Privat-Brain-Pro-V3`, nur Tags **`v3-android-…`**, Datei `Private-Brain-V3-Pro-<Version>.apk` |
 | Updates Windows | Repo `Privat-Brain-Pro`, Tags `windows-v…` | Repo `Privat-Brain-Pro-V3`, nur Tags **`v3-windows-…`** |
 | Signierschlüssel Android | Pros Schlüssel, Geheimnis nur in Pro | **eigener** Schlüssel, Repo-Geheimnis `V3_SIGNING_UNLOCK` (noch nicht angelegt) |
-| Gmail Android | Google-Android-Client für Pros Paket + Zertifikat | **noch keiner** → Gmail zeigt ehrlich „noch nicht eingerichtet“ |
+| Gmail Android | Google-Android-Client für Pros Paket + Zertifikat | **eigener** seit 2026-10-25: „Private Brain V3 Pro Android“ im Projekt `privat-brain-pro`, Paket `…v3.preview`, SHA-1 des V3-Schlüssels; `gmail_android_client_ready = true` ab 3.0.0-preview.4 |
 | Gmail Windows | Desktop-Client „Private Brain Pro Windows“ | vorerst Pros Desktop-Client (`windows/gmail-desktop.json`, Schritt W4 offen) |
 | App-Daten | eigener App-Speicher | eigener App-Speicher (Android trennt je Paket), kein Datenumzug |
 
