@@ -94,6 +94,21 @@
     } catch {}
   }
 
+  // Die Schublade sbkim_safe entsteht beim ersten Speichern über einen Versionssprung der Datenbank (Modul 01).
+  // Liest ein anderer Teil der App genau in diesem Augenblick (beim Start tun das Mycel und Sporen), scheitert der
+  // Sprung, und erst ein Neuladen hilft. Deshalb: warten, bis die Datenbank-Version eine Weile ruhig ist, dann die
+  // Schublade allein anlegen; putSecret braucht danach keinen Sprung mehr.
+  async function settled() {
+    const st = window.SbkimStorage;
+    if (!st || typeof st.init !== 'function' || typeof st.ensureStore !== 'function') return;
+    let last = -1, calm = 0;
+    for (let i = 0; i < 40 && calm < 3; i++) {
+      const v = (await st.init()).version;
+      calm = v === last ? calm + 1 : 0; last = v;
+      if (calm < 3) await new Promise(r => setTimeout(r, 150));
+    }
+    await st.ensureStore('sbkim_safe');
+  }
   async function save() {
     const s = safe(), t = w(), k = key();
     if (!s) return say(t.missing);
@@ -105,6 +120,7 @@
     if (again !== pw) return say(t.differ);
     const hint = (ask(t.askHint) || '').trim().slice(0, 140);
     try {
+      await settled();
       await s.putSecret(name(), k, pw, hint ? { hint } : undefined);
       try { localStorage.removeItem(LEGACY); } catch {}
       inVault = true; say(t.saved + ' ' + t.forgot);
