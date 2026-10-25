@@ -25,13 +25,13 @@ def vgrad(w, h, top, bottom):
         t = y / max(1, h - 1); d.line((0, y, w, y), fill=tuple(int(top[i] + (bottom[i] - top[i]) * t) for i in range(3)) + (255,))
     return g
 
-def v3_text(img, cx, cy, height, outline=6):
+def v3_text(img, cx, cy, height, outline=6, text='V3'):
     """Großes „V3“ im Licht der dicken Kugel: hell-goldener Kern, dunkel-violetter Rand, weicher Schein."""
     font = ImageFont.truetype(FONT, height)
     d = ImageDraw.Draw(Image.new('L', (S, S)))
-    l, t, r, b = d.textbbox((0, 0), 'V3', font=font)
+    l, t, r, b = d.textbbox((0, 0), text, font=font)
     x, y = int(cx - (r - l) / 2 - l), int(cy - (b - t) / 2 - t)
-    m = Image.new('L', (S, S)); ImageDraw.Draw(m).text((x, y), 'V3', font=font, fill=255)
+    m = Image.new('L', (S, S)); ImageDraw.Draw(m).text((x, y), text, font=font, fill=255)
     out = img.copy()
     out = Image.alpha_composite(out, glow(m, (255, 175, 70), 9, 0.9))       # weicher goldener Schein (nah am Text)
     edge = m.filter(ImageFilter.MaxFilter(outline * 2 + 1))
@@ -79,4 +79,11 @@ for i, (cx, cy) in enumerate([(0, 0), (1, 0), (0, 1), (1, 1)]):
     shine = Image.new('RGBA', (S, S), (255, 255, 255, 255)); shine.putalpha(hi)
     win = Image.alpha_composite(win, shine)                                 # jedes Fenster mit eigenem Glanzlicht
 save(v3_text(win, C[0], C[1] + 2, 84, outline=5), 'icon-v3-windows', ico=True)
-print('icon-v3-512/192.png, icon-v3-windows-512/192.png, icon-v3-windows.ico')
+
+# 3) Native Apps „Private Brain V3 Pro“ (Klaus 2026-10-25): unter dem „V3“ zusätzlich „Pro“, damit man die native App
+#    am Symbol erkennt. Webfassung/iOS behalten icon-v3 ohne „Pro“.
+pro = v3_text(base, C[0], C[1] - 22, 104)
+save(v3_text(pro, C[0], C[1] + 74, 62, outline=5, text='Pro'), 'icon-v3-pro')
+winpro = v3_text(win, C[0], C[1] - 22, 84, outline=5)
+save(v3_text(winpro, C[0], C[1] + 62, 54, outline=4, text='Pro'), 'icon-v3-pro-windows', ico=True)
+print('icon-v3-512/192.png, icon-v3-windows-512/192.png, icon-v3-windows.ico, icon-v3-pro-*, icon-v3-pro-windows-*')

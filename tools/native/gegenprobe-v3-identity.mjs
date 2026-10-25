@@ -8,7 +8,7 @@ const files = ['android/app/build.gradle', 'capacitor.config.json', 'android/app
   'android/app/src/main/res/values/v3_identity.xml', 'android/app/src/main/AndroidManifest.xml', 'windows/src-tauri/tauri.conf.json',
   'android/app/src/main/java/de/familyprojekt/privatebrain/pro/UpdatePolicy.java',
   'android/app/src/main/java/de/familyprojekt/privatebrain/pro/ProUpdatesPlugin.java', 'windows/engine/src/DesktopUpdates.java',
-  'android/app/src/main/res/drawable-nodpi/private_brain_icon.png', 'icon-v3-512.png', 'icon-512.png',
+  'android/app/src/main/res/drawable-nodpi/private_brain_icon.png', 'icon-v3-pro-512.png', 'icon-512.png',
   '.github/workflows/android.yml', '.github/workflows/v3-android-release.yml', '.github/workflows/v3-signing.yml'];
 const text = (file, a, b) => async dir => { const p = join(dir, file), s = await readFile(p, 'utf8'); await writeFile(p, s.replace(a, b)); return s !== s.replace(a, b); };
 const cases = {

@@ -9,7 +9,7 @@ installiert in der CI den echten Pro-Installer daneben und prüft das. Updates s
 V3 nur im eigenen Repository unter Tags `v3-windows-3.0.0-preview.N`. Das Java-Paket
 der Mail-Maschine heißt weiter `de.familyprojekt.privatebrain.pro`, weil der Kern aus
 den gemeinsamen Android-Quellen übersetzt wird; das ist nur ein Code-Name, keine
-Kennung auf dem PC. Symbol: `icon-v3-windows.ico` aus `tools/native/icon/make-v3-icons.py`.
+Kennung auf dem PC. Symbol: `icon-v3-pro-windows.ico` (mit „Pro“ unter dem V3) aus `tools/native/icon/make-v3-icons.py`.
 
 Herkunft: 1:1 aus Privat-Brain-Pro kopiert. Tauri 2/WebView2 mit derselben lokalen
 V3-Oberfläche wie Android. Der Mail-,
