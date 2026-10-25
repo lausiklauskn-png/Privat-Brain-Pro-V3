@@ -106,6 +106,25 @@ Das **ersetzt** in `BRIEF_NACHFOLGE_2026-10-25_VIDEOS.md` die Liste der fünf Fa
 - Die neuen Filme ins Geschenk für Jens.
 - Grenzen ehrlich nennen: am Tablet nicht gemessen, solange Klaus es nicht gesehen hat.
 
+## 4 · Die neue Oberfläche gleich fertig ausliefern (Klaus 2026-10-25)
+
+Klaus: *„Warum flackert immer noch die alte Version auf … man kann doch gleich das Original richtig rendern. Ich meine mit
+Original die neue Version, die ist doch auch bekannt.“*
+
+**Heute** liefert `index.html` noch Pros alte Oberfläche aus (umbrechende Leiste, Knopf „Namenssuche“, Emoji-Symbole).
+`assets/v3-ui.js` und `native/native-toolbar.js` bauen sie erst nach dem Laden um. Seit 3.0.0-preview.5 verdeckt
+`html.v3-wait` die Seite bis dahin (höchstens 2,5 s), es blitzt also nichts mehr auf. Das ist aber nur eine Abdeckung.
+
+**Ziel:** Die fertige V3-Oberfläche steht schon im ausgelieferten HTML.
+- Was `v3-ui.js` beim Start einmalig umbaut, macht künftig der Bau (`tools/native/prepare-web.mjs`, und für den Browser `prepare-pages.mjs`) direkt im HTML:
+  - Navigation in der Kopfleiste
+  - Schalter „Bedeutung“ statt „Namenssuche“
+  - Liniensymbole statt Emojis
+- `v3-ui.js` behält nur, was zur Laufzeit entsteht (Mails, Konten, Ordner).
+- Danach `v3-wait` entfernen.
+- Wächter: Erstes Bild ohne JavaScript (Playwright `javaScriptEnabled:false`) zeigt schon die V3-Leiste und keinen Knopf „Namenssuche“.
+- Pro bleibt unangetastet. Wenn Funktionen aus Pro herübergeholt werden, greifen dieselben Bau-Ersetzungen; jede wirft einen Fehler, wenn ihr Anker fehlt.
+
 ## Was nie
 
 - Pros `signing/`, `PB_SIGNING_UNLOCK` oder Pros Schlüssel benutzen.
