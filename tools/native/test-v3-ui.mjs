@@ -54,12 +54,25 @@ try{
       }
     }};
   },MAILS);
-  await context.addInitScript(()=>{window.__v3Wait=[];new MutationObserver(()=>{const h=document.documentElement;if(h)window.__v3Wait.push([h.classList.contains('v3-wait'),!!document.querySelector('#mode'),document.readyState]);}).observe(document,{attributes:true,attributeFilter:['class'],subtree:true,childList:true});});
+  // Klaus 2026-10-25: „gleich das Original richtig rendern“. Das erste Bild ohne JavaScript zeigt schon die V3-Leiste,
+  // Liniensymbole und den Schalter „Bedeutung“; keine Abdeckung (v3-wait) mehr.
+  for(const width of [1280,390]){
+    const bare=await browser.newContext({viewport:{width,height:800},javaScriptEnabled:false});
+    await bare.route('**/*',r=>r.request().url().startsWith(url)?r.continue():r.abort());
+    const first=await bare.newPage();await first.goto(url);
+    const view=await first.evaluate(()=>{const vis=s=>{const n=document.querySelector(s);if(!n)return false;const r=n.getBoundingClientRect();return r.width>0&&r.height>0&&getComputedStyle(n).visibility!=='hidden';};
+      // Sichtbarer Text; die Beschriftungen für Bildschirmleser (compact-label, 1 px) zählen nicht.
+      let text='';const walk=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);for(let n;n=walk.nextNode();){const e=n.parentElement,r=e.getBoundingClientRect();if(r.width>2&&r.height>2&&e.checkVisibility()&&!e.closest('.compact-label'))text+=n.nodeValue+' ';}
+      return {v3:document.documentElement.classList.contains('v3'),row:vis('.native-toolbar-row .main-pages .tab[data-tab=intake] svg.compact-icon'),menu:vis('header.top .native-options>summary svg'),
+        lamp:vis('header.top .native-net-lamp'),mean:vis('#mode [data-m=mean] .v3-mean-label'),name:vis('#mode [data-m=name]'),chip:vis('#v3SpeechChip'),mic:vis('#mic svg.v3-icon'),
+        oldWords:/Namenssuche|Bedeutungssuche|Dateien hinzufügen|Was möchtest du finden/.test(text),emoji:/[🎤💾🔗🔎📥📁✉️📊🗂🧹⚙🌙🔄]/u.test(text),wait:/v3-wait/.test(document.documentElement.outerHTML)};});
+    ok(`${width}px ohne JavaScript: V3-Leiste mit Symbolen, ☰-Menü, Lampe, Schalter „Bedeutung“, Sprachkürzel, kein Knopf „Namenssuche“, keine Emojis, keine Abdeckung`,
+      view.v3&&view.row&&view.menu&&view.lamp&&view.mean&&!view.name&&view.chip&&view.mic&&!view.oldWords&&!view.emoji&&!view.wait||console.log(view));
+    await bare.close();
+  }
   await page.goto(url);
-  // Klaus 2026-10-25: kein Aufblitzen der alten Oberfläche. v3-wait steht, bevor die Suchleiste entsteht, und ist
-  // weg, sobald die Seite geladen ist; der Inhalt ist dann sichtbar.
-  const wait=await page.evaluate(()=>({log:window.__v3Wait,now:document.documentElement.classList.contains('v3-wait'),vis:getComputedStyle(document.body).visibility}));
-  ok('Start ohne Aufblitzen: verdeckt, bevor die alte Suchleiste steht, sichtbar nach dem Umbau',wait.log.some(([on,mode])=>on&&!mode)&&!wait.now&&wait.vis==='visible');
+  // Mit JavaScript steht breit die Leiste schon im ersten Bild in der Kopfzeile (Inline-Skript direkt hinter der Leiste).
+  ok('1280px: the navigation is already in the header when the page is first parsed',await page.evaluate(()=>!!document.querySelector('header.top.v3-one-row > .native-toolbar-row')));
   await page.waitForFunction(()=>window.PBAccountName&&document.documentElement.classList.contains('v3')&&typeof db!=='undefined'&&db);
   ok('Short names: T-Online, Gmail, Googlemail, WEB.DE, GMX, unknown domain without ending',await page.evaluate(()=>[
     PBAccountName('a@t-online.de'),PBAccountName('a@gmail.com'),PBAccountName('a@googlemail.com'),PBAccountName('a@web.de'),PBAccountName('a@gmx.net'),PBAccountName('a@musterhaus.de')].join('|')==='T-Online|Gmail|Googlemail|WEB.DE|GMX|Musterhaus'));

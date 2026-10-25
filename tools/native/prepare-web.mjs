@@ -1,5 +1,6 @@
 import { adaptRecovery } from './adapt-recovery.mjs';
 import { bundleSemanticModel } from './fetch-semantic-model.mjs';
+import { prerenderV3 } from './v3-prerender.mjs';
 import { cp, mkdir, readFile, rm, writeFile, lstat, readdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
@@ -55,6 +56,11 @@ const themesLink = '<link rel="stylesheet" href="assets/themes.css">';
 if (!html.includes(themesLink)) throw new Error('Review V3 themes link after source changes');
 html = html.replace(themesLink, '<link rel="stylesheet" href="native.css">\n' + themesLink);
 html = adaptRecovery(html);
+// Klaus 2026-10-25: die V3-Oberfläche steht schon fertig im ausgelieferten HTML, nichts wird beim Start umgebaut.
+const gradle = await readFile(join(root, 'android/app/build.gradle'), 'utf8');
+const versionName = /versionName "([^"]+)"/.exec(gradle)?.[1];
+if (!versionName) throw new Error('Review versionName in android/app/build.gradle');
+html = await prerenderV3(html, root, { version: versionName });
 html = html.replace('</body>', '<script src="native-recovery.js"></script>\n<script src="native-originals.js"></script>\n<script src="native-folders.js"></script>\n<script src="native-vault.js"></script>\n<script src="native-protect.js"></script>\n<script src="native-categories.js"></script>\n<script src="native-mycel.js"></script>\n<script src="native-mail-expiry.js"></script>\n<script src="native-unsubscribe.js"></script>\n<script src="native-mail-index.js"></script>\n<script src="native-mail-ai.js"></script>\n<script src="native-keys.js"></script>\n<script src="native-check.js"></script>\n<script src="native-license.js"></script>\n<script src="native-tools.js"></script>\n<script src="native-pdf.js"></script>\n<script src="native-speech.js"></script>\n<script src="native-share.js"></script>\n<script src="native-navigation.js"></script>\n<script src="native.js"></script>\n<script src="native-toolbar.js"></script>\n</body>');
 if (!html.includes('<script src="assets/live-mail.js')) throw new Error('Review native mail adapter injection after source changes');
 html = html.replace(/<script src="assets\/live-mail\.js/, '<script src="native-mail.js"></script>\n<script src="native-mail-view.js"></script>\n<script src="native-mail-folders.js"></script>\n<script src="assets/live-mail.js');

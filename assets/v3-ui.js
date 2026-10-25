@@ -5,13 +5,10 @@
    Lädt früh im <head>; die DOM-Arbeit beginnt nach dem Aufbau der Seite. */
 (() => {
   'use strict';
-  // Klaus 2026-10-25: beim Start blitzte kurz die alte Oberfläche auf (umbrechende Leiste, „Namenssuche“), weil der
-  // Browser die Seite schon zeichnet, bevor die Skripte am Ende von <body> und diese Schicht sie umgebaut haben.
-  // Bis start() fertig ist, bleibt der Inhalt unsichtbar (themes.css: html.v3-wait). Ohne JavaScript greift das nicht;
-  // hängt etwas, zeigt die Sicherung nach 2,5 s die Seite trotzdem.
-  document.documentElement.classList.add('v3-wait');
-  const reveal = () => document.documentElement.classList.remove('v3-wait');
-  setTimeout(reveal, 2500);
+  // Klaus 2026-10-25: „gleich das Original richtig rendern“. Leiste, Menü, Symbole und Schalter schreibt der Bau schon
+  // fertig ins HTML (tools/native/v3-prerender.mjs); hier wird nur verdrahtet, was dort steht. Was erst zur Laufzeit
+  // entsteht (Mails, Konten, Ordner, übersetzte Texte), bekommt seine Symbole vom Beobachter, der schon jetzt im
+  // <head> startet: so ersetzt er jedes Emoji, bevor der Browser das erste Bild malt.
   // ---------- Kurze Kontonamen ----------
   const PROVIDERS = [
     [/(^|\.)t-online\.de$/i, 'T-Online'], [/(^|\.)magenta\.de$/i, 'Magenta'],
@@ -136,7 +133,11 @@
   function placeNav() {
     const header = document.querySelector('header.top'), row = document.querySelector('.native-toolbar-row');
     if (!header || !row) return;
-    if (!home) { home = document.createComment('v3-nav-home'); row.before(home); }
+    if (!home) {
+      // Der Bau setzt die Marke an Pros Platz der Leiste; fehlt sie, entsteht sie dort, wo die Leiste gerade steht.
+      home = [...(header.parentElement?.childNodes || [])].find(n => n.nodeType === 8 && n.nodeValue === 'v3-nav-home');
+      if (!home) { home = document.createComment('v3-nav-home'); row.before(home); }
+    }
     const brand = header.querySelector('.brand');
     let moved = false;
     if (wide.matches) { if (row.parentElement !== header) { (brand || header.firstChild).after(row); moved = true; } header.classList.add('v3-one-row'); }
@@ -157,14 +158,15 @@
   const FILTER = { de: 'Filter', en: 'Filters', ru: 'Фильтры', pl: 'Filtry' };
   function filterToggle() {
     const box = document.querySelector('#panel-search .searchbox'), bar = document.getElementById('filterbar');
-    if (!box || !bar || document.getElementById('v3FilterToggle')) return;
-    const b = document.createElement('button'); b.type = 'button'; b.id = 'v3FilterToggle'; b.className = 'ghost v3-filter-toggle';
+    const ready = document.getElementById('v3FilterToggle');
+    if (!box || !bar || ready?.dataset.wired) return;
+    const b = ready || document.createElement('button'); b.dataset.wired = '1'; b.type = 'button'; b.id = 'v3FilterToggle'; b.className = 'ghost v3-filter-toggle';
     b.setAttribute('aria-expanded', 'false'); b.setAttribute('aria-controls', 'filterbar');
-    const label = document.createElement('span'); b.append(svg('filter'), label);
+    const label = b.querySelector(':scope>span') || document.createElement('span'); if (!ready) b.append(svg('filter'), label);
     const text = () => { const w = FILTER[document.documentElement.lang] || FILTER.de; label.textContent = w; b.title = w; };
     text(); new MutationObserver(text).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
     b.addEventListener('click', () => { const open = !document.documentElement.classList.contains('v3-filters-open'); document.documentElement.classList.toggle('v3-filters-open', open); b.setAttribute('aria-expanded', String(open)); });
-    box.append(b);
+    if (!ready) box.append(b);
   }
 
   // „?“ im Kasten: Erklärtexte zeigen/verstecken.
@@ -228,10 +230,11 @@
   }
   const UNSET = { de: 'noch nicht gewählt', en: 'not chosen yet', ru: 'ещё не выбран', pl: 'jeszcze nie wybrano' };
   function speechChip() {
-    const mic = document.getElementById('mic'); if (!mic || document.getElementById('v3SpeechChip')) return;
-    const chip = document.createElement('button'); chip.type = 'button'; chip.id = 'v3SpeechChip'; chip.className = 'ghost v3-speech-chip';
+    const ready = document.getElementById('v3SpeechChip');
+    const mic = document.getElementById('mic'); if (!mic || ready?.dataset.wired) return;
+    const chip = ready || document.createElement('button'); chip.dataset.wired = '1'; chip.type = 'button'; chip.id = 'v3SpeechChip'; chip.classList.add('ghost', 'v3-speech-chip');
     chip.addEventListener('click', e => { e.stopPropagation(); speechPicker(chip); });
-    mic.after(chip); syncSpeech();
+    if (!ready) mic.after(chip); syncSpeech();
     new MutationObserver(syncSpeech).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
     // Erster Tipp aufs Mikrofon ohne gewählte Sprache: erst fragen, dann zuhören.
     // Am Fenster (nicht am Dokument), damit es vor dem Abfänger von native-speech.js läuft.
@@ -255,11 +258,14 @@
     pl: ['Wyszukiwanie po znaczeniu włączone. Dotknij, aby wyłączyć (szukanie po nazwie).', 'Wyszukiwanie po znaczeniu wyłączone (szukanie po nazwie). Dotknij, aby włączyć.'] };
   function meaningToggle() {
     const mean = document.querySelector('#mode [data-m="mean"]'), name = document.querySelector('#mode [data-m="name"]');
-    if (!mean || !name || mean.dataset.v3Toggle) return;
-    mean.dataset.v3Toggle = '1'; mean.removeAttribute('data-i18n'); mean.type = 'button';
-    const label = document.createElement('span'); label.className = 'v3-mean-label';
-    const icon = svg('search'); icon.classList.add('v3-after');
-    mean.replaceChildren(label, icon);
+    if (!mean || !name || mean.dataset.v3Wired) return;
+    mean.dataset.v3Wired = '1'; mean.dataset.v3Toggle = '1'; mean.removeAttribute('data-i18n'); mean.type = 'button';
+    let label = mean.querySelector(':scope>.v3-mean-label');
+    if (!label) {
+      label = document.createElement('span'); label.className = 'v3-mean-label';
+      const icon = svg('search'); icon.classList.add('v3-after');
+      mean.replaceChildren(label, icon);
+    }
     const lang = () => document.documentElement.lang;
     const sync = () => {
       const on = mean.classList.contains('on');
@@ -336,10 +342,8 @@
     for (const set of SPLITS) root.querySelectorAll?.(set.sel).forEach(l => splitLayout(l, set));
   }
 
-  function start() {
-    document.documentElement.classList.add('v3');
-    decorate(document);
-    new MutationObserver(list => {
+  // Symbole für alles, was während des Aufbaus und danach entsteht (auch übersetzte Texte mit Emoji).
+  new MutationObserver(list => {
       for (const m of list) {
         if (m.type === 'characterData') { const b = m.target.parentElement; if (b?.matches('.mail-folders .mail-folder') && b.firstChild === m.target) stripEmoji(b); else if (b?.matches(GENERIC)) decorateGeneric(b); continue; }
         for (const n of m.addedNodes) {
@@ -348,13 +352,14 @@
           else if (n.nodeType === 3 && n.parentElement?.matches(GENERIC)) decorateGeneric(n.parentElement);
         }
       }
-    }).observe(document.body, { childList: true, subtree: true, characterData: true });
+    }).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+  function start() {
+    document.documentElement.classList.add('v3');
+    decorate(document);
     placeNav(); wide.addEventListener('change', placeNav);
     quietSearch(); filterToggle(); helpButtons(); speechChip(); meaningToggle(); columnSplitters();
     new MutationObserver(() => columnSplitters()).observe(document.body, { childList: true, subtree: true });
-    reveal();
   }
   // Nach den Skripten am Ende von <body> (dort baut native-toolbar.js die Leiste).
-  const safeStart = () => { try { start(); } finally { reveal(); } };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeStart); else safeStart();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();

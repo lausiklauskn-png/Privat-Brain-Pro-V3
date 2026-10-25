@@ -57,6 +57,17 @@ Heute steht `gmail_android_client_ready = false` in `android/app/src/main/res/va
 
 ## 2 · KI-Schlüssel der Browserfassung im Tresor
 
+> ✅ **Erledigt am 2026-10-25:** `assets/ki-tresor.js`, nur in der Browserfassung (`prepare-pages.mjs`). Vorbild ist
+> der KI-Richter im Mycel-Fenster (Modul 23-UI, Kanon) bzw. `net-widget.js` der alten PWA: Modul 20, Name
+> `ki_richter_key:<Anbieter>`, Passwort per Abfrage (zweimal), freiwillige Merkhilfe. Knöpfe „Im Tresor merken“,
+> „Tresor entsperren“, „Sperren“, „Aus dem Tresor löschen“; der Haken „merken“ ist weg. Ein alter `cb_ai_key` wird
+> beim Merken übernommen und gelöscht, nach jeder Änderung ohne Tresor ebenfalls; der Anbieter bleibt gemerkt.
+> **Termux ist nicht nötig:** das Geheimnis entsteht im Browser, das Passwort tippt man in der Seite.
+> Probe `tools/native/test-ki-tresor.mjs` (18, echte Krypto, Gegenprobe „kein Klartext in localStorage,
+> sessionStorage, IndexedDB“; ohne das Löschen des Altbestands rot). Datenschutzerklärung nachgezogen. Den
+> Vorrat `pbv3-web-` zählt der Bau selbst (Commit-Kennung). Grenze: die Apps (Android, Windows) speichern den
+> Schlüssel mit „merken“ weiter im App-Speicher, wie beauftragt unverändert; am Tablet nicht gemessen.
+
 **Heute:** Mit dem Haken „merken“ legt die Browserfassung den Schlüssel im **Klartext** ab: `localStorage` `cb_ai_key` und `cb_ai_provider`. Die Fundstellen in `index.html` sind etwa Zeile 1981 (Lesen) und 2143 (Schreiben). Auf einer geteilten Adresse (github.io) ist das schwach.
 
 **Ziel:** Nie ein Klartext-Schlüssel im Speicher. Der Schlüssel liegt verschlüsselt in einem **eigenen V3-Tresor** und übersteht Neuladen und Schließen. Ein Passwort entsperrt ihn je Sitzung. Andere Apps am selben Ursprung können ihn nicht lesen.
@@ -107,6 +118,15 @@ Das **ersetzt** in `BRIEF_NACHFOLGE_2026-10-25_VIDEOS.md` die Liste der fünf Fa
 - Grenzen ehrlich nennen: am Tablet nicht gemessen, solange Klaus es nicht gesehen hat.
 
 ## 4 · Die neue Oberfläche gleich fertig ausliefern (Klaus 2026-10-25)
+
+> ✅ **Erledigt am 2026-10-25:** `tools/native/v3-prerender.mjs` schreibt beim Bau (`prepare-web.mjs`) Leiste mit
+> Liniensymbolen, ☰-Menü, Lampe, ← →, Versionsnummer, Designknopf, Schalter „Bedeutung“, Sprachkürzel, Filterknopf,
+> „Alle geprüft“ und die Fußzeile in den Einstellungen fertig ins HTML; breit setzt ein kleines Skript direkt hinter
+> der Leiste sie noch beim Aufbau in die Kopfzeile. `native-toolbar.js`, `native-navigation.js`, `themes.js`,
+> `native.js` und `v3-ui.js` übernehmen die vorhandenen Teile. Der Symbol-Beobachter in `v3-ui.js` startet schon im
+> `<head>` (übersetzte Texte mit Emoji bekommen ihr Symbol vor dem ersten Bild). `html.v3-wait` ist entfernt.
+> Wächter in `test-v3-ui.mjs`: erstes Bild ohne JavaScript bei 1280 und 390 px; Gegenprobe ohne Vorab-Bau wird rot.
+> Grenze: das schwebende Siegel (Modul 17) entsteht weiter erst beim Start; am Tablet nicht gemessen.
 
 Klaus: *„Warum flackert immer noch die alte Version auf … man kann doch gleich das Original richtig rendern. Ich meine mit
 Original die neue Version, die ist doch auch bekannt.“*

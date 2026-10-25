@@ -1,5 +1,9 @@
 # Private Brain Pro V3 — Sitzungs-Anker
 
+**2026-10-25 (Sitzung Tresor/Oberfläche/Videos):** V3-Oberfläche steht schon beim Bau fertig im HTML
+(`tools/native/v3-prerender.mjs`, kein `v3-wait` mehr), KI-Schlüssel der Browserfassung im Tresor (`assets/ki-tresor.js`).
+Stand und Grenzen: [Brief](BRIEF_NACHFOLGE_2026-10-25_GMAIL-TRESOR-VIDEOS.md) Abschnitte 2–4.
+
 **Nächste Sitzung (Klaus 2026-10-25): Gmail in V3, KI-Schlüssel der Browserfassung im Tresor, Videos in EINER guten
 Fassung (Stream + Download wie family-projekt.de).** [Brief](BRIEF_NACHFOLGE_2026-10-25_GMAIL-TRESOR-VIDEOS.md).
 Stand 2026-10-25: APK und Windows 3.0.0-preview.5 veröffentlicht, Gmail an, Apps heißen „Private Brain V3 Pro“ — [Abschlussbericht](BRIEF_ABSCHLUSS_2026-10-25_V3.md). Die frühere Videos-Notiz darunter ist durch den neuen Brief ersetzt (eine Fassung je Film).

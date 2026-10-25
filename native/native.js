@@ -44,16 +44,17 @@
   // Klaus 2026-10-22: "die App-Version muss immer sichtbar irgendwo stehen … gleich auf den ersten Seiten".
   // Small, next to the name in the header on every page; a tap leads to "Auf Updates prüfen".
   if (version) {
-    const name = version.slice(3), tag = document.createElement('button');
+    // Klaus 2026-10-25: der Bau schreibt die Nummer schon neben den Namen (v3-prerender.mjs); dann nur nachziehen.
+    const name = version.slice(3), tag = document.getElementById('pbVersion') || document.createElement('button');
     // Klaus 2026-10-22: "eine echte App-Nummer … nicht Vorschau": 1.0.0-preview.28 reads as v1.0.28.
     const m = /^(\d+)\.(\d+)\.\d+-preview\.(\d+)(?:-[a-z]+)?$/.exec(name);   // "-debug" builds read the same
     const shown = 'v' + (m ? m[1] + '.' + m[2] + '.' + m[3] : name);
     tag.type = 'button'; tag.className = 'pb-version'; tag.id = 'pbVersion'; tag.textContent = shown;
     tag.title = tag.ariaLabel = appName + ' ' + shown;
     tag.onclick = () => { window.PBWorkspace?.navigate?.('settings'); const b = document.getElementById('native-update-check'); b?.scrollIntoView({ block: 'center' }); b?.focus(); };
-    document.querySelector('header .brand h1')?.append(' ', tag);
+    if (!tag.isConnected) document.querySelector('header .brand h1')?.append(' ', tag);
     window.PBVersionShown = shown; render();
-  }
+  } else document.getElementById('pbVersion')?.remove();
   // Klaus 2026-10-22: the diagnosis log stays in the app but is hidden; seven taps on the version line bring it back
   // (and hide it again) when we need it to improve the app. It keeps recording either way.
   const diagBox = document.getElementById('diagLog')?.closest('.note');
