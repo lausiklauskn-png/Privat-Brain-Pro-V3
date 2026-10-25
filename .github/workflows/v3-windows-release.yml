@@ -1,0 +1,90 @@
+name: V3-Windows-Veröffentlichung (Private Brain V3 Pro)
+# Nur von Hand und nur auf Klaus' ausdrücklichen Wunsch (W5). Baut nichts neu: übernimmt den Installer, den
+# windows-app.yml auf demselben main-Commit gebaut, installiert, gestartet und wieder entfernt hat, prüft
+# Version, Quell-Commit und Prüfsummen und veröffentlicht ihn als GitHub-Vorabversion v3-windows-<Version>.
+# Danach wird der öffentliche Download wieder geladen und bytegleich verglichen. Pros Windows-Releases bleiben unberührt.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version zur Bestätigung, genau wie in windows/src-tauri/tauri.conf.json (z. B. 3.0.0-preview.3)
+        required: true
+        type: string
+      dry_run:
+        description: Nur prüfen, nicht veröffentlichen
+        default: false
+        type: boolean
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v3-windows-release
+  cancel-in-progress: false
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Version, Tag und grünen Windows-Bau auf demselben main-Commit finden
+        id: source
+        env:
+          VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [[ "$VERSION" =~ ^3\.[0-9]+\.[0-9]+-preview\.[0-9]+$ ]] || { echo '::error::Version muss wie 3.0.0-preview.3 aussehen.'; exit 1; }
+          jq -e --arg v "$VERSION" '.version == $v and .identifier == "de.familyprojekt.privatebrain.v3"' windows/src-tauri/tauri.conf.json >/dev/null \
+            || { echo "::error::tauri.conf.json trägt nicht Version $VERSION mit V3-Kennung."; exit 1; }
+          tag="v3-windows-$VERSION"
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1; then echo "::error::Tag $tag gibt es schon."; exit 1; fi
+          git fetch origin main
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/windows-app.yml/runs?head_sha=$GITHUB_SHA&per_page=50" > "$RUNNER_TEMP/runs.json"
+          run=$(jq -r '[.workflow_runs[] | select(.head_branch == "main" and .event == "push" and .conclusion == "success")][0].id // empty' "$RUNNER_TEMP/runs.json")
+          [ -n "$run" ] || { echo '::error::Für diesen Commit gibt es keinen grünen windows-app.yml-Lauf auf main.'; exit 1; }
+          echo "run=$run" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@v8.0.1
+        with:
+          name: windows-installer
+          path: release-files
+          run-id: ${{ steps.source.outputs.run }}
+          github-token: ${{ github.token }}
+      - name: Installer, Baubeleg und Prüfsummen prüfen
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          (cd release-files; sha256sum -c SHA256SUMS)
+          name="Private-Brain-V3-Pro-Windows-$VERSION-x64-setup.exe"
+          test -f "release-files/$name"
+          jq -e --arg v "$VERSION" --arg s "$GITHUB_SHA" --arg n "$name" \
+            '.version == $v and .sourceCommit == $s and .installer == $n and .testEndpoint == false' release-files/windows-build.json >/dev/null \
+            || { echo '::error::windows-build.json passt nicht zu Version, Commit oder Installer.'; exit 1; }
+          { echo "Installer $name"; echo; sed 's/^/    /' release-files/SHA256SUMS; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Als Vorabversion veröffentlichen und öffentlichen Download vergleichen
+        if: inputs.dry_run != true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ steps.source.outputs.tag }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          # Draft first: never make an incomplete upload publicly visible.
+          gh release create "$TAG" release-files/* --draft --prerelease --target "$GITHUB_SHA" \
+            --title "Private Brain V3 Pro $VERSION (Windows)" \
+            --notes "Vorschau von Private Brain V3 Pro für Windows (x64, Kennung de.familyprojekt.privatebrain.v3). Installiert sich neben Private Brain Pro und lässt es unberührt. Der Installer ist nicht mit einem Windows-Zertifikat signiert; Windows SmartScreen fragt deshalb einmal nach („Weitere Informationen“ → „Trotzdem ausführen“)."
+          gh release edit "$TAG" --draft=false
+          name="Private-Brain-V3-Pro-Windows-$VERSION-x64-setup.exe"
+          mkdir public-download
+          curl -fsSL --retry 5 -o "public-download/$name" "https://github.com/$GH_REPO/releases/download/$TAG/$name"
+          cmp "release-files/$name" "public-download/$name"
+          sha256sum "public-download/$name" >> "$GITHUB_STEP_SUMMARY"
+          echo "Download: https://github.com/$GH_REPO/releases/download/$TAG/$name" >> "$GITHUB_STEP_SUMMARY"
