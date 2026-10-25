@@ -86,6 +86,14 @@ Heute steht `gmail_android_client_ready = false` in `android/app/src/main/res/va
 
 ## 3 · Videos: eine gute Fassung, gestreamt und herunterladbar
 
+> ✅ **Erledigt am 2026-10-25:** Beide Filme neu aufgenommen mit Private Brain Pro .35 (Privat-Brain-Pro #83, Tonspur der
+> bisherigen Filme), je eine Fassung, auf der Videoseite unter den alten Kennungen `private-brain-pro-film` (1:45, 92,5 MB)
+> und `private-brain-pro-handbuch` (3:43, 42,1 MB); die drei Zusatzfassungen entfernt (Family-Projekt.de-Video #24).
+> **Film-Knopf in V3** neben dem Design-Knopf (`assets/filme.js`, schon beim Bau im HTML): Browserfassung streamt über den
+> Spieler der Videoseite (gleicher Ursprung), Android/Windows holen die Teile, prüfen SHA-256 und spielen im Fenster;
+> „Herunterladen“ öffnet `?laden=`. Probe `tools/native/test-filme.mjs` (10). Version 3.0.0-preview.6.
+> Grenzen: in den Apps lädt der ganze Film vor dem ersten Bild (kein Service Worker); am Tablet nicht gemessen.
+
 **Klaus' Entscheidung (2026-10-25):**
 
 - Nicht mehr viele Fassungen: **je Film eine gute Fassung.**

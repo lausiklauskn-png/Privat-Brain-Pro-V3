@@ -145,3 +145,11 @@ html.v3.v3-resizing,html.v3.v3-resizing *{cursor:col-resize!important;user-selec
 @media (min-width:651px){
   html.v3 #panel-explorer:not(.explorer-tree-hidden) .explorer-layout.v3-split{grid-template-columns:var(--v3-col-a,minmax(160px,230px)) minmax(0,1fr)}
 }
+/* Klaus 2026-10-25: der Film-Knopf neben dem Design-Knopf. Zwischen 1100 und 1219 px rücken die Reiter dafür enger
+   zusammen, damit Name, Leiste und Kopf rechts weiter in eine Zeile passen (auch mit Versionsnummer in den Apps). */
+@media (min-width:1100px) and (max-width:1219px){
+  html.v3 header.top.v3-one-row{gap:6px}
+  html.v3 header.top.v3-one-row .native-toolbar-row .tab:not(.compact-icon-only){padding:3px 4px!important;gap:3px!important}
+  html.v3 header.top.v3-one-row .native-toolbar-row .main-pages,html.v3 header.top.v3-one-row .native-more>.workspace-tools{gap:2px!important}
+  html.v3 header.top.v3-one-row .native-toolbar-row{gap:2px!important}
+}

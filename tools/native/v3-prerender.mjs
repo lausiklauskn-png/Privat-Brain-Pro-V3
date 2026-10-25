@@ -69,11 +69,14 @@ export async function prerenderV3(html, root, { version } = {}) {
   const at = nav.index;
   const tools = cut(/  <div class="workspace-tools" aria-label="Werkzeuge">([\s\S]*?)<\/div>\n/, 'workspace-tools');
   if (tools.index !== at) throw new Error('v3-prerender: workspace-tools steht nicht direkt hinter main-pages');
+  const filmeJs = await read('assets/filme.js');
+  const FILM_ICON = stringConst(filmeJs, 'ICON', 'filme.js'), filmTitle = 'Filme: Werbefilm und Handbuchvideo';
+  const film = `<button class="ghost compact-tool pb-filme-knopf" type="button" id="pbFilme" title="${filmTitle}" aria-label="${filmTitle}">${svgC('x').replace(/d="[^"]*"/, `d="${FILM_ICON}"`)}</button>`;
   const look = `<button type="button" id="pbLookBtn" class="ghost iconbtn pb-look-btn compact-tool" aria-haspopup="menu" aria-expanded="false" title="Design wählen" aria-label="Design wählen">${svgC('x').replace(/d="[^"]*"/, `d="${PALETTE}"`)}</button>`;
   const more = 'Weitere Ansichten';
   const row = `  <!--v3-nav-home--><div class="native-toolbar-row"><nav class="tabs main-pages" aria-label="Hauptseiten">${tabs(nav[1])}</nav>`
     + `<details class="native-more" open><summary class="ghost compact-tool" aria-label="${more}" title="${more}">${svgC('more')}<span class="compact-label">${more}</span></summary>`
-    + `<div class="workspace-tools" aria-label="Werkzeuge">${tabs(tools[1]).replace(/(data-tab="settings"[\s\S]*?<\/button>)/, '$1' + look)}</div></details></div>\n`
+    + `<div class="workspace-tools" aria-label="Werkzeuge">${tabs(tools[1]).replace(/(data-tab="settings"[\s\S]*?<\/button>)/, '$1' + look + film)}</div></details></div>\n`
     // Breit gehört die Leiste in die Kopfzeile (wie v3-ui.js placeNav). Gleich hier, während die Seite entsteht.
     + `<script>(function(){var h=document.querySelector('header.top'),r=document.querySelector('.native-toolbar-row');if(h&&r&&matchMedia('(min-width: 1100px)').matches){(h.querySelector('.brand')||h.firstChild).after(r);h.classList.add('v3-one-row');}})();</script>\n`;
   html = html.slice(0, at) + row + html.slice(at);
