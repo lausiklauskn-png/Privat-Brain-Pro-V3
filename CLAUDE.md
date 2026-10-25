@@ -1,7 +1,7 @@
 # Private Brain Pro V3 — Sitzungs-Anker
 
-**Nächste Sitzung (Klaus 2026-10-24): Werbefilm und Handbuchvideo neu aufnehmen im neuen Design – mit Private Brain Pro
-(Codex' neu gestaltete Fassung, dort laufen die E-Mails), nicht mit V3.** [Brief](BRIEF_NACHFOLGE_2026-10-25_V3-ANDROID.md).
+**Nächste Sitzung (Klaus 2026-10-25): Werbefilm und Handbuchvideo neu aufnehmen im neuen Design – mit Private Brain Pro
+(Codex' neu gestaltete Fassung, dort laufen die E-Mails), nicht mit V3.** [Video-Brief](BRIEF_NACHFOLGE_2026-10-25_VIDEOS.md).
 
 **V3 als eigene Android-App (S2, 2026-10-24):** „Private Brain V3 Pro“, Paket `de.familyprojekt.privatebrain.v3`
 (+ `.preview`/`.preview.debug`), Version `3.0.0-preview.1`, V3-Logo als Symbol, Updates nur `v3-android-…` aus diesem Repo,
