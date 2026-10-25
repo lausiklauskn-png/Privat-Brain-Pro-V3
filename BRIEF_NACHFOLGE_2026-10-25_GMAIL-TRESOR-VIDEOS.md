@@ -26,6 +26,11 @@ Zuerst diese Datei lesen, dann `CLAUDE.md`, `docs/V3-IDENTITAET.md` und
 
 ## 1 · Gmail in V3 Pro
 
+> ✅ **Erledigt am 2026-10-25 in derselben Sitzung:** Klaus hat den Android-Client im Projekt `privat-brain-pro` angelegt
+> (kein neues Projekt), `gmail_android_client_ready` steht auf `true`, Version 3.0.0-preview.4. Offen bleibt nur Klaus'
+> Prüfung am Gerät (Konto freigeben, abrufen, Testmail senden) mit der veröffentlichten preview.4. Der Rest dieses
+> Abschnitts ist die Vorgeschichte.
+
 Heute steht `gmail_android_client_ready = false` in `android/app/src/main/res/values/v3_identity.xml`. Die App sagt ehrlich „noch nicht eingerichtet“. Es fehlt nur der Google-Zugang; der Code ist Pros erprobter Weg.
 
 **Klaus' Schritt** (die Sitzung erklärt ihn in Einzelschritten, keine Geheimnisse in den Chat):
