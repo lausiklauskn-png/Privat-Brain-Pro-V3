@@ -40,7 +40,11 @@ const leak=(page,needle)=>page.evaluate(async needle=>{
 },needle);
 const answers=(page,list)=>page.evaluate(list=>{window.__asked=[];window.__answers=list.slice();window.prompt=t=>{window.__asked.push(t);return window.__answers.length?window.__answers.shift():null;};window.confirm=()=>true;},list);
 const status=page=>page.locator('.ki-tresor-status').textContent();
-const ready=page=>page.waitForFunction(()=>typeof db!=='undefined'&&db&&document.querySelector('.ki-tresor-status')&&window.SbkimSafe);
+const ready=async page=>{
+  await page.waitForFunction(()=>typeof db!=='undefined'&&db&&document.querySelector('.ki-tresor-status')&&window.SbkimSafe&&window.PBWorkspace?.navigate);
+  await page.evaluate(()=>window.PBWorkspace.navigate('settings'));
+  await page.waitForFunction(()=>document.getElementById('aiKey').checkVisibility());
+};
 const shown=(page,id)=>page.locator(`[data-ki-tresor=${id}]`).isVisible();
 try{
   const pagesHtml=await readFile(join(dir,'index.html'),'utf8'),nativeHtml=await readFile('www/index.html','utf8');
@@ -53,8 +57,9 @@ try{
   // Altbestand: ein Klartext-Schlüssel aus der früheren Fassung.
   await page.evaluate(k=>{localStorage.setItem('cb_ai_provider','mistral');localStorage.setItem('cb_ai_key',k);},KEY);
   await page.reload();await ready(page);
-  await page.evaluate(()=>window.PBWorkspace?.navigate?.('settings'));
-  await page.waitForFunction(()=>document.getElementById('aiKey').value);
+  const state=()=>page.evaluate(()=>({key:document.getElementById('aiKey').value,tick:document.getElementById('aiPersist').checkVisibility(),
+    save:document.querySelector('[data-ki-tresor=save]').checkVisibility(),status:document.querySelector('.ki-tresor-status').textContent}));
+  await page.waitForFunction(k=>document.getElementById('aiKey').value===k&&document.querySelector('[data-ki-tresor=save]').checkVisibility()&&/offen/.test(document.querySelector('.ki-tresor-status').textContent),KEY,{timeout:15000}).catch(async()=>console.log(await state()));
   ok('Old plain key is picked up once, the "remember" tick is gone, the page asks to keep it in the vault',
     await page.locator('#aiKey').inputValue()===KEY&&!(await page.locator('#aiPersist').isVisible())&&await shown(page,'save')&&/offen/.test(await status(page)));
   // Zu kurzes Passwort: nichts geschieht.
@@ -68,7 +73,7 @@ try{
   ok('Counter-check: the key is nowhere in plain text (localStorage, sessionStorage, every IndexedDB store)',(await leak(page,KEY)).length===0);
   ok('The vault holds an encrypted record (PBKDF2 600000, AES-GCM) under the KI-Richter name',await page.evaluate(async()=>{const r=await SbkimStorage.get('sbkim_safe','secret:ki_richter_key:mistral');return !!r&&r.iterations===600000&&/AES-GCM/.test(r.cipher)&&!!r.ct;}));
   // Neu laden: Schlüssel weg, Tresor da.
-  await page.reload();await ready(page);await page.evaluate(()=>window.PBWorkspace?.navigate?.('settings'));
+  await page.reload();await ready(page);
   await page.waitForFunction(()=>document.querySelector('[data-ki-tresor=unlock]').style.display!=='none');
   ok('After reload: no key in the field or in memory, "Unlock vault" offered, provider kept',
     await page.locator('#aiKey').inputValue()===''&&await page.evaluate(()=>AI.key==='')&&await page.locator('#aiProvider').inputValue()==='mistral'&&!(await shown(page,'save')));
