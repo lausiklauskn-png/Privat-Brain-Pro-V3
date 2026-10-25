@@ -122,10 +122,13 @@
     verschlüsselt mit dem Android-Keystore bzw. unter Windows mit DPAPI. Sie gehen nur an deinen Mail-Anbieter.</li>
     <li><b>Netz-Kennung.</b> Für die optionale Verbindung zum Netz (Abschnitt 2.4 h) erzeugt die App ein eigenes
     Schlüsselpaar. Der geheime Schlüssel bleibt auf dem Gerät; eine Sicherung ist nur als verschlüsselte Datei möglich.</li>
-    <li><b>KI-Schlüssel.</b> Einen eigenen KI-Schlüssel speichert die App nur, wenn du „Schlüssel merken“
-    wählst, und zwar im lokalen Speicher dieses Browsers bzw. der App auf deinem Gerät, sonst nur bis zum
-    Schließen. Im Fenster des Netzes kann er zusätzlich im verschlüsselten Tresor liegen. Der Schlüssel geht nur
-    an den Anbieter, zu dem er gehört.</li>
+    <li><b>KI-Schlüssel.</b> In der Browserfassung bleibt ein eigener KI-Schlüssel nur bis zum Schließen im
+    Arbeitsspeicher. Wählst du „Im Tresor merken“, liegt er mit deinem Passwort verschlüsselt im Speicher dieses
+    Browsers (AES-256-GCM, der Schlüssel dafür entsteht aus dem Passwort mit PBKDF2, 600.000 Runden). Das Passwort
+    wird nirgends gespeichert; ohne es kann niemand den KI-Schlüssel lesen. In der App auf deinem Gerät speichert
+    sie ihn nur, wenn du „Schlüssel merken“ wählst, im lokalen Speicher der App, sonst nur bis zum Schließen. Im
+    Fenster des Netzes kann er zusätzlich im verschlüsselten Tresor liegen. Der Schlüssel geht nur an den Anbieter,
+    zu dem er gehört.</li>
   </ul>
 
   <h3>2.4 Wann die App ins Internet geht</h3>

@@ -80,5 +80,8 @@ const pagesBits = `<style>html.pb-web #installieren{display:inline-flex!importan
 <script src="assets/installieren.js?v=1" data-name="Private Brain V3" data-in="#install-box" data-klasse="primary" data-vor="install-platz" defer></script>
 </head>`;
 swap('</head>', pagesBits);
+// KI-Schlüssel nur verschlüsselt im Tresor (Klaus 2026-10-25), nur in der Browserfassung; nach dem App-Code, damit
+// die Datei loadAI() und die Felder vorfindet.
+swap('<script src="native-toolbar.js"></script>\n</body>', '<script src="native-toolbar.js"></script>\n<script src="assets/ki-tresor.js"></script>\n</body>');
 await writeFile(join(dir, 'index.html'), html);
 console.log('Pages-Fassung vorbereitet in ' + dir + ' (Stand ' + version + ').');
