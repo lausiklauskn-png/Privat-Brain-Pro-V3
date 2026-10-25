@@ -2,7 +2,7 @@
 
 **Nächste Sitzung (Klaus 2026-10-25): Gmail in V3, KI-Schlüssel der Browserfassung im Tresor, Videos in EINER guten
 Fassung (Stream + Download wie family-projekt.de).** [Brief](BRIEF_NACHFOLGE_2026-10-25_GMAIL-TRESOR-VIDEOS.md).
-APK 3.0.0-preview.3 veröffentlicht (PR #12, main `196bb97`, SHA-256 `c824e283…1abdff`). Die frühere Videos-Notiz darunter ist durch den neuen Brief ersetzt (eine Fassung je Film).
+Stand 2026-10-25: APK und Windows 3.0.0-preview.5 veröffentlicht, Gmail an, Apps heißen „Private Brain V3 Pro“ — [Abschlussbericht](BRIEF_ABSCHLUSS_2026-10-25_V3.md). Die frühere Videos-Notiz darunter ist durch den neuen Brief ersetzt (eine Fassung je Film).
 
 **Nächste Sitzung (Klaus 2026-10-25): Werbefilm und Handbuchvideo neu aufnehmen im neuen Design – mit Private Brain Pro
 (Codex' neu gestaltete Fassung, dort laufen die E-Mails), nicht mit V3.** [Video-Brief](BRIEF_NACHFOLGE_2026-10-25_VIDEOS.md).
