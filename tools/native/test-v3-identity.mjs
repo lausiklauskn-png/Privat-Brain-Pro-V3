@@ -38,7 +38,7 @@ ok('Update-Prüfung kennt nur die V3-Pakete', updates.includes(`"${ID}.preview"`
 ok('Windows-Updates bleiben im eigenen Kanal „v3-windows-“', read('windows/engine/src/DesktopUpdates.java').includes('TAG_PREFIX="v3-windows-"'));
 
 const icon = readFileSync(join(root, 'android/app/src/main/res/drawable-nodpi/private_brain_icon.png'));
-ok('Android-Symbol ist das V3-Logo (icon-v3-512.png)', icon.equals(readFileSync(join(root, 'icon-v3-512.png'))));
+ok('Android-Symbol ist das V3-Pro-Logo (icon-v3-pro-512.png)', icon.equals(readFileSync(join(root, 'icon-v3-pro-512.png'))));
 ok('Gmail-Schalter für den fehlenden Google-Android-Client vorhanden', /<bool name="gmail_android_client_ready">(true|false)<\/bool>/.test(read('android/app/src/main/res/values/v3_identity.xml')));
 
 const ci = read('.github/workflows/android.yml');

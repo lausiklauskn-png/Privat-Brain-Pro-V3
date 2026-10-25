@@ -7,7 +7,7 @@ Aufruf: python3 tools/native/icon/export-v3-android-icon.py   (Prüfen ohne Schr
 import math, os, shutil, sys
 from PIL import Image, ImageChops
 root = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-source = os.path.join(root, 'icon-v3-512.png')
+source = os.path.join(root, 'icon-v3-pro-512.png')   # native App: mit „Pro“ unter dem V3 (Klaus 2026-10-25)
 target = os.path.join(root, 'android/app/src/main/res/drawable-nodpi/private_brain_icon.png')
 base = os.path.join(root, 'icon-512.png')                  # dasselbe Logo ohne „V3“: daraus die Lage der Schrift
 
