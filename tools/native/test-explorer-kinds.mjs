@@ -56,18 +56,23 @@ try{
   await tree.locator('[data-toggle="mail:erika erika@example.invalid"]').click();
   await node('loose:erika erika@example.invalid').click();
   ok('Attachments without a known mail stand together, with what to do',(await page.locator('#explorerPath').textContent()).endsWith('📎 Anhänge, Mail nicht zugeordnet')&&(await page.locator('.explorer-loose-hint').textContent()).includes('noch einmal ein'));
-  await page.locator('#explorerUp').click();
-  ok('↑ goes one level up',(await page.locator('#explorerPath').textContent())==='📁 Alle Dateien › ✉️ E-Mails › 👤 Erika erika@example.invalid');
-  await page.locator('#explorerHome').click();
+  // Sitzung 2 (Punkt 3): the small ↑ is gone; the path is the way back, and ⌂ is the choice of view.
+  const home=async()=>{await page.locator('#pb-explorer-view>summary').click();await page.locator('#pb-explorer-view [data-view-path=""]').click();};
+  ok('The old ↑ is no longer shown',await page.locator('#explorerUp').isHidden());
+  await page.locator('#explorerPath .explorer-crumb').last().click();
+  ok('The path goes one level up',(await page.locator('#explorerPath').textContent())==='📁 Alle Dateien › ✉️ E-Mails › 👤 Erika erika@example.invalid');
+  await home();
   await tree.locator('.explorer-collapse').click();
   ok('⊟ closes the whole tree: only the main folders stay',await node('mail:').count()===0&&await kind('mail').count()===1);
   await tree.locator('[data-toggle="kind:mail"]').click();
   ok('▸ opens one folder',await node('mail:').count()===1&&(await tree.locator('[data-toggle="kind:mail"]').getAttribute('aria-expanded'))==='true');
   await tree.locator('[data-toggle="kind:mail"]').click();
   ok('▾ closes it again',await node('mail:').count()===0&&(await tree.locator('[data-toggle="kind:mail"]').getAttribute('aria-expanded'))==='false');
-  await page.locator('#explorerTreeToggle').click();
-  ok('The tree can be hidden for more room, and comes back',await tree.isHidden()&&(await page.locator('#explorerTreeToggle').click(),await tree.isVisible()));
-  await page.locator('#explorerHome').click();
+  const toggleTree=async()=>{await page.locator('#panel-explorer .pb-arrange>summary').click();await page.locator('#panel-explorer .pb-arrange [data-arrange=tree]').click();};
+  await toggleTree();
+  ok('The tree can be hidden for more room, and comes back',await tree.isHidden()&&(await toggleTree(),await tree.isVisible()));
+  await page.evaluate(()=>PBArrange.reset('explorer'));
+  await home();
   await page.fill('#explorerFilter','preisliste');
   ok('A search looks through everything below',JSON.stringify(await rows.locator('strong').allTextContents())===JSON.stringify(['📎 Preisliste.pdf'])&&await dirs.count()===0);
   await page.fill('#explorerFilter','');
@@ -95,7 +100,7 @@ try{
   await page.evaluate(()=>{document.documentElement.lang='en';});
   await page.locator('[data-tab="explorer"]').click();
   await page.waitForFunction(()=>document.querySelector('#explorerTree [data-kind="mail"]')?.textContent==='✉️ Emails (6)');
-  await page.locator('#explorerHome').click();
+  await home();
   ok('The tree follows the app language',(await node('').textContent())==='📁 All files'&&(await dirs.first().locator('.explorer-meta').textContent()).includes('files'));
   ok('No runtime errors',errors.length===0||console.log(errors));
   console.log(`${count} explorer kind checks passed (seeded catalog, one real import).`);

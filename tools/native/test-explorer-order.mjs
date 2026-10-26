@@ -36,18 +36,23 @@ try{
   const names=()=>page.locator('#explorerFiles .explorer-row strong').allTextContents().then(a=>a.map(x=>x.replace(/^\S+\s/,'')));
   ok('Newest file is on top by default',JSON.stringify(await names())===JSON.stringify(['Rechnung-Stadtwerke.pdf','Gehaltsabrechnung-September.pdf','Arztbrief-Orthopaedie.pdf']));
   ok('Mails from "Alle Konten" do not appear in the explorer',!(await names()).some(n=>n.includes('Aldi'))&&!(await page.locator('#explorerTree').textContent()).includes('Mail'));
-  // Klaus 2026-10-24: sorting is one field („Sortieren nach“), no second ↕ button.
-  const sortBox=page.locator('#explorerSort');
-  ok('Sorting is a single field: "Sortieren nach" with six choices, no separate ↕ button',await page.locator('#explorerOrder').count()===0&&await sortBox.getAttribute('aria-label')==='Sortieren nach'&&JSON.stringify(await sortBox.locator('option').allTextContents())===JSON.stringify(['Datum: neueste zuerst','Datum: älteste zuerst','Name: A → Z','Name: Z → A','Größe: größte zuerst','Größe: kleinste zuerst'])&&await sortBox.inputValue()==='date');
-  await sortBox.selectOption('date-r');
-  ok('"Datum: älteste zuerst" puts the oldest on top',JSON.stringify(await names())===JSON.stringify(['Arztbrief-Orthopaedie.pdf','Gehaltsabrechnung-September.pdf','Rechnung-Stadtwerke.pdf']));
-  await sortBox.selectOption('name');
-  ok('"Name: A → Z"',(await names())[0]==='Arztbrief-Orthopaedie.pdf');
-  await sortBox.selectOption('name-r');
-  ok('"Name: Z → A"',(await names())[0]==='Rechnung-Stadtwerke.pdf');
-  await sortBox.selectOption('size');
-  ok('Size: largest on top',(await names())[0]==='Gehaltsabrechnung-September.pdf');
-  await sortBox.selectOption('date');
+  // Klaus 2026-10-24: one sorting control. Sitzung 2 (2026-10-26): it shows its choice on the button, „D ↓“.
+  const sortBox=page.locator('#explorerSort'),menu=page.locator('#pb-explorer-sort'),summary=menu.locator(':scope>summary');
+  const choose=async selector=>{if(!await menu.evaluate(e=>e.open))await summary.click();await menu.locator(selector).click();};
+  const short=()=>summary.innerText().then(s=>s.trim());
+  ok('Sorting is one button showing „D ↓“ (date, newest on top); the old field stays hidden as state holder',await page.locator('#explorerOrder').count()===0&&await short()==='D ↓'&&await summary.getAttribute('aria-label')==='Sortieren: Datum · Neueste oben'&&!await sortBox.isVisible()&&await sortBox.inputValue()==='date');
+  ok('The tooltip explains the letters and arrows',(await summary.getAttribute('title')).includes('D Datum · N Name · G Größe · T Typ'));
+  await choose('[data-sort-reverse="true"]');
+  ok('„D ↑“ puts the oldest on top',JSON.stringify(await names())===JSON.stringify(['Arztbrief-Orthopaedie.pdf','Gehaltsabrechnung-September.pdf','Rechnung-Stadtwerke.pdf'])&&await short()==='D ↑'&&await sortBox.inputValue()==='date-r');
+  await choose('[data-sort-key="name"]');
+  ok('„N ↑“: name A → Z',(await names())[0]==='Arztbrief-Orthopaedie.pdf'&&await short()==='N ↑');
+  await choose('[data-sort-reverse="true"]');
+  ok('„N ↓“: name Z → A',(await names())[0]==='Rechnung-Stadtwerke.pdf'&&await short()==='N ↓');
+  await choose('[data-sort-key="size"]');
+  ok('„G ↓“: largest on top',(await names())[0]==='Gehaltsabrechnung-September.pdf'&&await short()==='G ↓');
+  await choose('[data-sort-key="type"]');
+  ok('„T ↑“: type is offered too',await short()==='T ↑'&&(await page.evaluate(()=>PBWorkspace.explorerState().sort))==='type');
+  await choose('[data-sort-key="date"]');
   await page.fill('#explorerFilter','bandscheibe');
   ok('Without the content switch only names are searched',(await names()).length===0);
   await page.locator('#explorerContent').check();
@@ -59,12 +64,14 @@ try{
   const state=await page.evaluate(()=>PBWorkspace.explorerState());
   ok('Back navigation keeps order and content switch',state.content===true&&state.reverse===false&&state.sort==='date');
   await page.evaluate(()=>PBWorkspace.restoreExplorer({path:'',filter:'',sort:'date',reverse:true,content:false}));
-  ok('Restoring a state restores the order and the switch',(await names())[0]==='Arztbrief-Orthopaedie.pdf'&&await sortBox.inputValue()==='date-r'&&!(await page.locator('#explorerContent').isChecked()));
+  await page.waitForFunction(()=>document.querySelector('#pb-explorer-sort .pb-sort-short').textContent==='D ↑');
+  ok('Restoring a state restores the order, the button and the switch',(await names())[0]==='Arztbrief-Orthopaedie.pdf'&&await sortBox.inputValue()==='date-r'&&!(await page.locator('#explorerContent').isChecked()));
   await page.evaluate(()=>{document.documentElement.lang='en';PBWorkspace.refresh();});
-  ok('English labels',(await sortBox.locator('option:checked').textContent())==='Date: oldest first'&&await sortBox.getAttribute('aria-label')==='Sort by'&&(await page.locator('.explorer-content').textContent()).includes('also in content'));
+  await page.waitForFunction(()=>document.querySelector('#pb-explorer-sort>summary').getAttribute('aria-label')==='Sort: Date · Oldest first');
+  ok('English labels',await short()==='D ↑'&&(await page.locator('.explorer-content').textContent()).includes('also in content'));
   await page.setViewportSize({width:360,height:740});
   ok('Toolbar fits a phone without sideways scrolling',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
-  ok('Sort field and switch are flat but easy to tap (26–32 px)',await page.evaluate(()=>['#explorerSort','.explorer-content'].every(s=>{const h=document.querySelector(s).getBoundingClientRect().height;return h>=26&&h<=32;})));
+  ok('Sort button and switch are flat but easy to tap (26–44 px)',await page.evaluate(()=>['#pb-explorer-sort>summary','.explorer-content'].every(s=>{const h=document.querySelector(s).getBoundingClientRect().height;return h>=26&&h<=44;})));
   ok('No runtime errors',errors.length===0);
 }finally{await browser?.close();await new Promise(r=>server.close(r));}
 console.log(`${count} explorer order checks passed (seeded catalog; no files written).`);

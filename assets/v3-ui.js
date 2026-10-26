@@ -305,7 +305,8 @@
       layout.append(h); return h;
     });
     const place = () => handles.forEach((h, i) => {
-      const c = col(i), on = mq.matches && c && c.offsetParent !== null && getComputedStyle(layout).display === 'grid';
+      // Sitzung 2: eine gewählte Anordnung (pb-arrange.js) entscheidet, sonst die Fensterbreite.
+      const chosen = layout.dataset.pbArrange, c = col(i), on = (chosen ? chosen === 'side' && !layout.hasAttribute('data-pb-narrow') : mq.matches) && c && c.offsetParent !== null && getComputedStyle(layout).display === 'grid';
       h.hidden = !on; if (!on) return;
       const gap = parseFloat(getComputedStyle(layout).columnGap) || 0;
       h.style.left = (c.offsetLeft + c.offsetWidth + gap / 2 - 5) + 'px';
@@ -335,7 +336,7 @@
       h.addEventListener('dblclick', () => { layout.style.removeProperty(set.vars[i]); place(); save(); });
     });
     new ResizeObserver(place).observe(layout);
-    new MutationObserver(place).observe(layout, { childList: true, subtree: false, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
+    new MutationObserver(place).observe(layout, { childList: true, subtree: false, attributes: true, attributeFilter: ['class', 'style', 'hidden', 'data-pb-arrange', 'data-pb-folders', 'data-pb-narrow'] });
     mq.addEventListener('change', place); place();
   }
   function columnSplitters(root = document) {
