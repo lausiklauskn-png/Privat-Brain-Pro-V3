@@ -261,7 +261,8 @@
     chip.classList.toggle('v3-speech-unset', !chosen);
     const spoken = SPOKEN[document.documentElement.lang] || SPOKEN.de;
     const w = spoken + ': ' + shown[2] + (chosen ? '' : ' (' + (UNSET[document.documentElement.lang] || UNSET.de) + ')');
-    chip.title = w; chip.setAttribute('aria-label', w);
+    // Das sichtbare Kürzel steht vorn im vorgelesenen Namen (Sprachsteuerung, Lighthouse).
+    chip.title = w; chip.setAttribute('aria-label', shown[1] + ' – ' + w);
   }
   const UNSET = { de: 'noch nicht gewählt', en: 'not chosen yet', ru: 'ещё не выбран', pl: 'jeszcze nie wybrano' };
   function speechChip() {

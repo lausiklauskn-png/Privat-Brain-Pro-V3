@@ -29,10 +29,25 @@ bleiben unverändert; geschützte Module werden nur in der ausgelieferten Kopie 
 
 Seite nach dem Laden elementgleich mit vorher (gezählt je Element), keine Fehler; `test-pages` 12 grün, Drift-Guard 22 gleich.
 
+## Zweiter Schritt: größtes Element und Bedienbarkeit
+
+- **Hilfetext der Bildsuche** (das größte Element) kam mit dem letzten Skript. `pb-bildbeschreibung.js` (byte-gleich mit
+  Pro) bleibt unverändert; `pages-speed.mjs` setzt eine Vorab-Zeile mit gleichem Aussehen ins HTML (`inert`,
+  `aria-hidden`, Regeln aus `help-layout.css` übernommen). Sobald die echte Zeile da ist, verschwindet sie im selben
+  Schritt; bei anderer Sprache oder zugeklappter Hilfe gar nicht erst gezeigt. Gemessen: gleiche Lage und Größe
+  (y 228, 400 × 143), danach genau eine Zeile; in Chrome war in 6 von 6 Läufen die Vorab-Zeile das größte Element.
+- **Postfach-Knopf**: vorgelesener Name und Tooltip „Mail – Postfach“ (das sichtbare Wort steht im Namen),
+  `native-toolbar.js`, für alle V3-Fassungen.
+- **Sprach-Knopf „DE“**: nicht mehr blass (Kontrast 2,3 → über 4,5), „noch nicht gewählt“ als gepunktete Linie; Name
+  beginnt mit „DE – …“ (`v3-ui.js`/`.css`, `v3-prerender.mjs`).
+
+Gemessen danach (drei Läufe): **Leistung 98 · 98 · 98**, Bedienbarkeit **95**, Gute Praxis 100, Auffindbarkeit 100;
+erster Inhalt 1,5 s, größtes Element 2,1 s. In einer früheren Sechser-Reihe kippten 2 Läufe auf 74/75: Lighthouse zählte
+dort die echte Zeile; im echten Chrome nicht nachgestellt.
+
 ## Grenzen
 
-- Das größte Element bleibt der Hilfetext der Bildsuche: `pb-bildbeschreibung.js` legt ihn an und muss zuletzt laufen.
-  Ihn vorab ins HTML zu legen verlangt eine Änderung dieser mit Pro byte-gleichen Datei, also nur gemeinsam mit Pro.
-- Bedienbarkeit (91: Kontrast „Sprech-Sprache“, kleine Tippflächen) ist nicht angefasst.
+- Tippflächen bleiben bei Lighthouse rot: das ✕ am Siegel-Widget (16 px, überdeckt den Siegel-Knopf). Die Internet-Lampe
+  breiter zu machen verschiebt das Siegel (`test-mycel` rot) und wurde zurückgenommen.
 - Cache-Zeit 10 min setzt GitHub Pages fest.
 - Google misst auf eigenem Rechner; die Zahl dort wird abweichen. Nicht am Tablet gemessen.

@@ -44,6 +44,25 @@ if(typeof CATALOG!=='undefined'&&CATALOG.length){if(document.readyState==='compl
     .map(f => `<link rel="preload" href="assets/fonts/${f}.woff2" as="font" type="font/woff2" crossorigin>`).join('\n');
   swap('<link rel="stylesheet" href="web.css">', fonts + '\n<link rel="stylesheet" href="web.css">');
 
+  // 3b. Hilfetext der Bildsuche sofort sichtbar (Lighthouse: größtes Element, kam erst mit dem letzten Skript).
+  // pb-bildbeschreibung.js (byte-gleich mit Pro) baut die Zeile selbst und bleibt unverändert. Hier steht eine Vorab-
+  // Fassung mit gleichem Aussehen, nicht bedienbar (inert, aria-hidden); sobald die echte Zeile da ist, verschwindet sie.
+  await writeFile(join(dir, 'web.css'), (await readFile(join(dir, 'web.css'), 'utf8')) + '\n/* Vorab-Zeile der Bildsuche */\n'
+    + (await readFile(join(dir, 'help-layout.css'), 'utf8')).split('html.pb-help-ready ').join('#pb-bild-row-vorab '));
+  const box = html.indexOf('<div class="searchbox">', html.indexOf('id="panel-search"'));
+  if (box < 0) throw new Error('pages-speed: Suchfeld nicht gefunden');
+  let depth = 0, end = -1;
+  for (const m of html.slice(box).matchAll(/<div\b|<\/div>/g)) { depth += m[0] === '</div>' ? -1 : 1; if (!depth) { end = box + m.index + 6; break; } }
+  const icon = (d, size, extra = '') => `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="${size}" height="${size}" class="pb-bild-icon">${extra}<path d="${d}"></path></svg>`;
+  const vorab = `\n    <div id="pb-bild-row-vorab" class="pb-bild-row" aria-hidden="true" inert>`
+    + `<button type="button" class="pb-bild-filter" tabindex="-1">${icon('M3 3h18v18H3Z m1 14 5-6 4 4 3-3 5 5 M8 7h.1', 16)}<span class="pb-bild-filter-label">Bildbeschreibung</span></button>`
+    + `<button type="button" class="pb-help-toggle pb-bild-help-toggle" aria-expanded="true" tabindex="-1">${icon('M12 10v7m0-10v.01', 20, '<circle cx="12" cy="12" r="9"></circle>')}</button>`
+    + `<div class="pb-help-content pb-bild-help">Findet Bilder nach dem, was das Modell erkannt hat, und nach deinen eigenen Worten. Ohne Suchwort stehen alle beschriebenen Bilder da.</div></div>`
+    + `\n    <script>(function(){var v=document.getElementById('pb-bild-row-vorab');try{var o=JSON.parse(localStorage.getItem('pb_help_open_v1')||'null');if(document.documentElement.lang!=='de'||(o&&o['bild-filter']===false)){v.remove();return;}}catch(e){}`
+    + `var gone=function(){if(v.isConnected)v.remove();};new MutationObserver(function(r,ob){if(document.getElementById('pb-bild-row')){gone();ob.disconnect();}}).observe(v.parentNode,{childList:true});addEventListener('load',gone,{once:true});})();</script>`;
+  if (end < 0) throw new Error('pages-speed: Ende des Suchfelds nicht gefunden');
+  html = html.slice(0, end) + vorab + html.slice(end);
+
   // 4. Skripte im Seitenkörper ab dem ersten nachgeladenen Skript
   const body = html.indexOf('<body>');
   const first = html.indexOf('<script src=', body);
