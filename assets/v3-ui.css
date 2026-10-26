@@ -70,7 +70,8 @@ html.v3 .mail-notice{padding:6px 12px;font-size:.78rem}
   html.v3 header.top .logo img{width:28px;height:28px}
 }
 /* Dateien: Erklärsätze und die drei Punkte „Liest nur · Schlägt vor · Bewegt nichts“ raus; Knöpfe und Status bleiben. */
-html.v3 .library-setup:not(.v3-help-open) [data-ws="libraryHelp"],html.v3 #drop:not(.v3-help-open) #fsHint,html.v3 #drop:not(.v3-help-open) [data-i18n="dropDnd"],html.v3 #drop:not(.v3-help-open)>[data-i18n="dropP"],html.v3 #drop:not(.v3-help-open)~.native-import-reassurance{display:none!important}
+/* Sitzung 3: mit dem gemeinsamen ⓘ (html.pb-help-ready) entscheidet das ⓘ, ob die Erklärung zu sehen ist. */
+html.v3:not(.pb-help-ready) .library-setup:not(.v3-help-open) [data-ws="libraryHelp"],html.v3:not(.pb-help-ready) #drop:not(.v3-help-open) #fsHint,html.v3:not(.pb-help-ready) #drop:not(.v3-help-open) [data-i18n="dropDnd"],html.v3:not(.pb-help-ready) #drop:not(.v3-help-open)>[data-i18n="dropP"],html.v3:not(.pb-help-ready) #drop:not(.v3-help-open)~.native-import-reassurance{display:none!important}
 html.v3 #panel-intake .note{padding:10px 12px;margin:0 0 10px}
 html.v3 #panel-intake .note h3{font-family:var(--sans);font-size:.95rem;font-weight:600;margin:0 0 6px}
 html.v3 #libraryStatus{font-size:.8rem;color:var(--mut);margin:6px 0 0}
@@ -79,7 +80,7 @@ html.v3 #drop>h2{font-family:var(--sans);font-size:1.05rem;font-weight:600;margi
 html.v3 #drop .btnrow{gap:6px;margin:0}
 html.v3 #drop .btnrow button{min-height:32px;padding:4px 12px}
 /* Symbol vor dem Text, auch bei Knöpfen, die als Block gesetzt sind. */
-html.v3 button.v3-ic,html.v3 .explorer-folder.v3-ic{display:inline-flex!important;align-items:center}
+html.v3 button.v3-ic:not([hidden]),html.v3 .explorer-folder.v3-ic:not([hidden]){display:inline-flex!important;align-items:center}
 html.v3 .explorer-toolbar{display:flex;flex-wrap:wrap;align-items:center}
 html.v3 #explorerFilter{flex:1 1 180px;min-width:0;width:auto}
 html.v3 #explorerSort{flex:0 0 auto;width:auto;max-width:100%}
@@ -176,3 +177,10 @@ html.v3 #panel-search .searchmeta .pb-check-all-button { flex:0 0 auto; margin-l
 .pb-state .pb-state-detail { font-family:var(--sans,inherit); font-size:.8rem; color:var(--mut); overflow-wrap:anywhere; }
 .pb-state .pb-state-catalog { display:none; }
 @media (prefers-reduced-motion:reduce) { .pb-state .pb-state-meter > span { transition:none; } }
+
+/* Sitzung 3 (Klaus 2026-10-26): Katalog und leere Zustände mit Strichsymbolen statt bunter Emojis. */
+html.v3 #groups .grp .ic{display:flex;align-items:center;color:var(--acc)}
+html.v3 #groups .grp .ic .v3-icon{width:26px;height:26px;opacity:.9}
+html.v3 .empty .big .v3-icon{width:34px;height:34px;opacity:.6}
+html.v3 #reorgNote h3.v3-ic .v3-icon{width:18px;height:18px}
+html.v3 [aria-busy="true"]>.v3-icon{color:#c0392b;opacity:1}

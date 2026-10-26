@@ -27,7 +27,7 @@ try{
   await mic.click();
   ok('V3: the first tap asks "Welche Sprache sprichst du?" before listening',await page.locator('#v3SpeechMenu h3').textContent()==='Welche Sprache sprichst du?'&&await page.evaluate(()=>speechCalls.length===0));
   await page.locator('#v3SpeechMenu [data-speech="en-US"]').click();
-  ok('While listening the 🎤 shows 🔴 and is marked busy',await mic.textContent()==='🔴'&&await mic.getAttribute('aria-busy')==='true');
+  ok('While listening the microphone is marked busy and shows a line icon, no emoji (V3: red line microphone)',!/\p{Extended_Pictographic}/u.test(await mic.textContent())&&await mic.locator('svg').count()===1&&await mic.getAttribute('aria-busy')==='true');
   await page.waitForFunction(()=>{const m=document.getElementById('mic');return m.getAttribute('aria-busy')===null&&m.textContent.trim()==='';});
   ok('Afterwards the mic button shows its line symbol again (V3), not an empty button',await mic.evaluate(m=>!!m.querySelector('svg.v3-icon')));
   ok('The recognized words land in the search field',await page.locator('#q').inputValue()==='Rechnung Zahnarzt');
@@ -50,7 +50,7 @@ try{
   ok('Recovery codes get no 🎤',await page.locator('#trShares + .pb-dictate').count()===0);
   await page.evaluate(()=>{speechAnswer={cancelled:false,text:'was steht im Vertrag'};const q=document.getElementById('kiQ');q.value='Bitte sagen:';});
   await dict.evaluate(b=>b.click());
-  await page.waitForFunction(()=>speechCalls.length===4&&document.querySelector('#kiQ + .pb-dictate').textContent==='🎤');
+  await page.waitForFunction(()=>speechCalls.length===4&&!document.querySelector('#kiQ + .pb-dictate').hasAttribute('aria-busy'));
   ok('The spoken words are added at the cursor, typed text stays',await kiQ.inputValue()==='Bitte sagen: was steht im Vertrag');
   await page.evaluate(()=>{const t=document.createElement('textarea');t.id='later';document.body.append(t);});
   await page.waitForFunction(()=>document.querySelector('#later + .pb-dictate'));

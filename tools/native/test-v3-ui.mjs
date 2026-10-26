@@ -147,12 +147,15 @@ try{
   await page.locator('#v3FilterToggle').click();
   ok('412px: the Filter button opens the five filters',await page.locator('#filterbar').evaluate(e=>getComputedStyle(e).display!=='none'));
   await page.locator('#v3FilterToggle').click();await page.locator('[data-tab=intake]').click();
-  ok('412px: import page without the three explanation points and hints',await page.evaluate(()=>['.native-import-reassurance','#fsHint','[data-i18n=dropDnd]','[data-ws=libraryHelp]'].every(s=>{const n=document.querySelector(s);return !n||getComputedStyle(n).display==='none';})));
-  await page.locator('#drop .v3-help').click();
-  ok('412px: "?" in the drop box brings the hints and the three points back, and hides them again',await page.locator('.native-import-reassurance').evaluate(e=>getComputedStyle(e).display!=='none')&&await page.locator('#fsHint').evaluate(e=>getComputedStyle(e).display!=='none')&&await (async()=>{await page.locator('#drop .v3-help').click();return page.locator('.native-import-reassurance').evaluate(e=>getComputedStyle(e).display==='none');})());
-  await page.locator('#panel-intake .library-setup .v3-help').click();
-  ok('412px: "?" in the storage box shows its explanation',await page.locator('[data-ws=libraryHelp]').evaluate(e=>getComputedStyle(e).display!=='none'));
-  await page.locator('#panel-intake .library-setup .v3-help').click();
+  // Sitzung 3 (Klaus 2026-10-26): the explanations sit behind the shared ⓘ (open at first, remembered); closed they are gone.
+  ok('412px: import explanations sit behind ⓘ and disappear when it is closed',await page.evaluate(()=>{
+    for(const b of document.querySelectorAll('#panel-intake [data-pb-help-toggle][aria-expanded=true]'))b.click();
+    return ['.native-import-reassurance','#fsHint','[data-i18n=dropDnd]','[data-ws=libraryHelp]'].every(s=>{const n=document.querySelector(s);return !n||(n.closest('[data-pb-help-content]')&&!n.getClientRects().length);});}));
+  await page.locator('#drop [data-pb-help-toggle]').click();
+  ok('412px: ⓘ in the drop box brings the hints and the three points back, and hides them again',await page.locator('.native-import-reassurance').isVisible()&&await page.locator('#fsHint').isVisible()&&await (async()=>{await page.locator('#drop [data-pb-help-toggle]').click();return !(await page.locator('.native-import-reassurance').isVisible());})());
+  await page.locator('#panel-intake .library-setup [data-pb-help-toggle]').click();
+  ok('412px: ⓘ in the storage box shows its explanation',await page.locator('[data-ws=libraryHelp]').isVisible());
+  await page.locator('#panel-intake .library-setup [data-pb-help-toggle]').click();
   await page.locator('[data-tab=mail]').click();await page.setViewportSize({width:1280,height:800});await page.waitForTimeout(300);
   for(const width of [1100,1000,768,412,360]){
     await page.setViewportSize({width,height:860});await page.waitForTimeout(300);

@@ -27,6 +27,8 @@ try{
   if(method==='readOriginal')return{data:saved.get(args.hash).bytes.subarray(args.offset,args.offset+262144).toString('base64')};
   throw new Error('Unknown fixture method '+method);
  });
+ // Sitzung 3 (Klaus 2026-10-26): help opens by default and remembers it; this suite checks the closed start.
+ await page.addInitScript(()=>{try{localStorage.setItem('pb_help_open_v1',JSON.stringify({'import-library':false,'import-drop':false}));}catch{}});
  await page.addInitScript(()=>{delete window.showDirectoryPicker;const methods=['state','pause','chooseLibrary','chooseSource','readSource','finishSource','copyOriginal'],originals=['listOriginals','beginImport','appendImport','finishImport','abortImport','originalInfo','readOriginal'];const api=list=>Object.fromEntries(list.map(method=>[method,args=>window.folderFixture(method,args)]));window.Capacitor={Plugins:{ProFolders:api(methods),ProFiles:api(originals)}};});
  await page.goto(origin);await page.waitForFunction(()=>window.PBFolders&&typeof db!=='undefined'&&db);
  for(const [lang,labels]of [['de',['Suchen','Dateien','Explorer','Mail']],['en',['Search','Files','Explorer','Mail']],['ru',['Поиск','Файлы','Проводник','Почта']],['pl',['Szukaj','Pliki','Eksplorator','Poczta']]]){
@@ -42,7 +44,7 @@ try{
  await page.click('[data-tab=intake]');
  await page.evaluate(()=>renderFsHint());
  ok('Android folder actions remain visible after the browser fallback runs without showDirectoryPicker',await page.locator('#pickDir').isVisible()&&await page.locator('#chooseLibrary').isVisible()&&await page.evaluate(()=>!('showDirectoryPicker' in window)));
- ok('V3: no explanation cards on the import page (Klaus 2026-10-24: keine Erklärung, was die App kann)',await page.locator('#panel-intake .pillars').count()===0&&await page.locator('.native-import-reassurance').evaluate(e=>getComputedStyle(e).display==='none')&&await page.locator('#fsHint').evaluate(e=>getComputedStyle(e).display==='none'));
+ ok('V3: no explanation cards on the import page (Klaus 2026-10-24: keine Erklärung, was die App kann)',await page.locator('#panel-intake .pillars').count()===0&&!(await page.locator('.native-import-reassurance').isVisible())&&!(await page.locator('#fsHint').isVisible()));  // Sitzung 3: behind the closed ⓘ
  await page.click('#pickDir');await page.locator('.native-folder-consent').waitFor();await page.getByRole('button',{name:'Abbrechen',exact:true}).click();await page.waitForFunction(()=>!document.querySelector('#pickDir').disabled);
  ok('Cancelling the explanation leaves both folder actions usable',chooseCalls===0&&await page.locator('#chooseLibrary').isEnabled()&&await page.locator('#pickDir').isEnabled());
  await page.click('#pickDir');await page.check('#fsNoShow');await page.click('#fsGo');await page.waitForFunction(()=>CATALOG.length===1&&!signing&&!document.querySelector('#pickDir').disabled);
