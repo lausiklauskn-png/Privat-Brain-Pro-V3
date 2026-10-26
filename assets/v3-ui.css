@@ -153,3 +153,26 @@ html.v3.v3-resizing,html.v3.v3-resizing *{cursor:col-resize!important;user-selec
   html.v3 header.top.v3-one-row .native-toolbar-row .main-pages,html.v3 header.top.v3-one-row .native-more>.workspace-tools{gap:2px!important}
   html.v3 header.top.v3-one-row .native-toolbar-row{gap:2px!important}
 }
+/* Klaus 2026-10-26, Sitzung 1, Punkt 1: E-Mails · Dateien · lokal · Katalog · Prüfstand in einer Zeile, schlichte Schrift. */
+html.v3 #panel-search .searchmeta { flex-wrap:nowrap; justify-content:flex-start; align-items:center; gap:0; margin:4px 0 6px; font-size:.8rem; color:var(--mut); }
+html.v3 #panel-search .searchmeta #searchInfo:empty, #panel-search .searchmeta .pb-meta-count:empty { display:none; }
+html.v3 #panel-search .searchmeta .pb-meta-count { white-space:nowrap; }
+html.v3 #panel-search .searchmeta .pb-meta-count:not(:empty) ~ .pb-meta-count:not(:empty)::before { content:"·"; margin:0 7px; opacity:.7; }
+html.v3 #panel-search .searchmeta .pb-check-all-button { flex:0 0 auto; margin-left:auto; font-size:.8rem; }
+@media (max-width:520px) { html.v3 #panel-search .searchmeta { flex-wrap:wrap; row-gap:4px; font-size:.75rem; } }
+/* Klaus 2026-10-26, Sitzung 1, Punkt 8: ☐ Alle · Auswahl · Entfernen – flach wie im Postfach. */
+.pb-dup-all{display:inline-flex;align-items:center;gap:7px;min-height:32px;padding:0 10px 0 4px;font-size:.88rem;cursor:pointer;white-space:nowrap}
+.pb-dup-all input{width:18px;height:18px;margin:0}
+.pb-dup-short{align-items:center;gap:8px!important;flex-wrap:wrap}
+.pb-dup-short #dupRemove{display:inline-flex;align-items:center;gap:6px;margin-left:auto}
+.pb-dup-short #dupRemove svg{width:16px;height:16px;flex:none}
+#dupClearSel[hidden]{display:none!important}
+/* Klaus 2026-10-26, Sitzung 1, Punkt 9c: „Zustand“ mit Speicher-Füllbalken. */
+.pb-state .pb-state-lead { margin:2px 0 8px; font-size:.82rem; color:var(--mut); }
+.pb-state .pb-state-storage { display:flex; flex-direction:column; gap:4px; min-width:0; }
+.pb-state .pb-state-meter { display:block; width:100%; max-width:260px; height:8px; border-radius:999px; background:var(--line); overflow:hidden; }
+.pb-state .pb-state-meter[hidden] { display:none; }
+.pb-state .pb-state-meter > span { display:block; height:100%; width:0; border-radius:inherit; background:var(--acc); transition:width .4s ease; }
+.pb-state .pb-state-detail { font-family:var(--sans,inherit); font-size:.8rem; color:var(--mut); overflow-wrap:anywhere; }
+.pb-state .pb-state-catalog { display:none; }
+@media (prefers-reduced-motion:reduce) { .pb-state .pb-state-meter > span { transition:none; } }
