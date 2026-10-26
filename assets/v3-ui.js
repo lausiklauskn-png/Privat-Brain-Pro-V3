@@ -183,6 +183,9 @@
   }
   function helpButtons() {
     // Suche: kein „?“ mehr (Klaus 2026-10-24: „das erklärt sich selber“); ihre Erklärtexte bleiben verborgen.
+    // Sitzung 3 (Klaus 2026-10-26, Punkt 7): Dateien hinzufügen nutzt jetzt das gemeinsame ⓘ (native/native-help.js),
+    // das sich den Zustand merkt; das „?“ entfällt dort. Ohne das gemeinsame ⓘ (z. B. alte Bauten) bleibt das „?“.
+    if (window.PBHelp) return;
     const lib = document.querySelector('#panel-intake .library-setup'); if (lib) helpButton(lib, b => lib.append(b));
     const drop = document.getElementById('drop'); if (drop) helpButton(drop, b => drop.append(b));
   }

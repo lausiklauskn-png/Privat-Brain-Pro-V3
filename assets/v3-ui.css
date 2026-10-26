@@ -70,7 +70,8 @@ html.v3 .mail-notice{padding:6px 12px;font-size:.78rem}
   html.v3 header.top .logo img{width:28px;height:28px}
 }
 /* Dateien: Erklärsätze und die drei Punkte „Liest nur · Schlägt vor · Bewegt nichts“ raus; Knöpfe und Status bleiben. */
-html.v3 .library-setup:not(.v3-help-open) [data-ws="libraryHelp"],html.v3 #drop:not(.v3-help-open) #fsHint,html.v3 #drop:not(.v3-help-open) [data-i18n="dropDnd"],html.v3 #drop:not(.v3-help-open)>[data-i18n="dropP"],html.v3 #drop:not(.v3-help-open)~.native-import-reassurance{display:none!important}
+/* Sitzung 3: mit dem gemeinsamen ⓘ (html.pb-help-ready) entscheidet das ⓘ, ob die Erklärung zu sehen ist. */
+html.v3:not(.pb-help-ready) .library-setup:not(.v3-help-open) [data-ws="libraryHelp"],html.v3:not(.pb-help-ready) #drop:not(.v3-help-open) #fsHint,html.v3:not(.pb-help-ready) #drop:not(.v3-help-open) [data-i18n="dropDnd"],html.v3:not(.pb-help-ready) #drop:not(.v3-help-open)>[data-i18n="dropP"],html.v3:not(.pb-help-ready) #drop:not(.v3-help-open)~.native-import-reassurance{display:none!important}
 html.v3 #panel-intake .note{padding:10px 12px;margin:0 0 10px}
 html.v3 #panel-intake .note h3{font-family:var(--sans);font-size:.95rem;font-weight:600;margin:0 0 6px}
 html.v3 #libraryStatus{font-size:.8rem;color:var(--mut);margin:6px 0 0}
