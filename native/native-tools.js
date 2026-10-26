@@ -17,7 +17,7 @@
   const L = ['de', 'en', 'ru', 'pl'];
   const li = () => Math.max(0, L.indexOf(String(document.documentElement.lang || 'de').slice(0, 2)));
   const W = {
-    head: ['🧰 Werkzeuge', '🧰 Tools', '🧰 Инструменты', '🧰 Narzędzia'],
+    head: ['Werkzeuge', 'Tools', 'Инструменты', 'Narzędzia'],
     soon: ['kommt bald', 'coming soon', 'скоро', 'wkrótce'],
     lockedAsk: ['Dieses Werkzeug ist gesperrt. Den Freischalt-Code gibst du in den Einstellungen unter „🔑 Werkzeuge freischalten“ ein.', 'This tool is locked. Enter the unlock code in Settings under "🔑 Unlock tools".', 'Инструмент закрыт. Введите код в настройках: «🔑 Открыть инструменты».', 'Narzędzie zablokowane. Wpisz kod w Ustawieniach: „🔑 Odblokuj narzędzia”.'],
     back: ['← Zurück zu Private Brain V3 Pro', '← Back to Private Brain V3 Pro', '← Назад', '← Wróć'],
@@ -32,6 +32,8 @@
   };
   const t = k => (W[k] || [k])[li()] || W[k][0];
   const make = (tag, text, cls) => { const e = document.createElement(tag); if (text) e.textContent = text; if (cls) e.className = cls; return e; };
+  // Line lock instead of an emoji (Klaus 2026-10-26: "Strichgrafiken … kein Bilderbuch").
+  const lockMark = open => { const e = make('span', '', 'pb-tools-lock'); if (!open) { e.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 10h14v11H5Z M8 10V7a4 4 0 0 1 8 0v3"/></svg>'; } return e; };
 
   // ---------- the tool window ----------
   let frameBox = null;
@@ -113,7 +115,7 @@
     for (const e of entries) {
       const ready = Boolean(PAGES[e.id] || LINKS[e.id]), open = e.free || license.unlocked(e.id);
       const b = make('button', null, 'ghost pb-tools-item');
-      b.append(make('span', open ? '' : '🔒', 'pb-tools-lock'), license.toolIcon(e), make('span', e.name + (ready ? (LINKS[e.id] ? ' ↗' : '') : ' · ' + t('soon')), 'pb-tools-name'));
+      b.append(lockMark(open), license.toolIcon(e), make('span', e.name + (ready ? (LINKS[e.id] ? ' ↗' : '') : ' · ' + t('soon')), 'pb-tools-name'));
       b.type = 'button'; b.dataset.tool = e.id; b.dataset.open = String(open); b.disabled = !ready && open;
       if (LINKS[e.id]) b.title = t('link');
       b.onclick = () => e.free ? window.Capacitor?.Plugins?.ProLinks?.open({ url: LINKS[e.id] }) : openTool(e.id);

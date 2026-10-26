@@ -49,6 +49,13 @@
 
   // ---------- Strichsymbole ----------
   const ICONS = {
+    unlock: 'M5 10h14v11H5Z M8 10V7a4 4 0 0 1 8 0',
+    download: 'M12 3v12 M7 10l5 5 5-5 M4 20h16',
+    warning: 'M12 3 2 20h20Z M12 9v5 M12 17h.01',
+    lab: 'M9 3h6 M10 3v6L4 20h16L14 9V3 M7 14h10',
+    network: 'M3 4h7v6H3Z M14 4h7v6h-7Z M8.5 14h7v6h-7Z M6.5 10v2h11v-2 M12 12v2',
+    seal: 'M12 3a6 6 0 1 0 0 12 6 6 0 0 0 0-12 M12 6.5l1.1 2.2 2.4.3-1.8 1.7.5 2.4-2.2-1.2-2.2 1.2.5-2.4-1.8-1.7 2.4-.3Z M8.5 14 7 21l5-2.5 5 2.5-1.5-7',
+    tip: 'M9 18h6 M10 21h4 M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3',
     all: 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M2 21c0-4 3-6.5 7-6.5s7 2.5 7 6.5 M16 3.5a4 4 0 0 1 0 7.5 M18 14.8c2.4.6 4 2.6 4 6.2',
     inbox: 'M3 13 6 5h12l3 8v6H3Z M3 13h5l1 3h6l1-3h5',
     draft: 'M14 5l5 5 M4 20l5-1L20 8l-4-4L5 15Z',
@@ -73,11 +80,23 @@
     dash: 'M4 20V10m8 10V4m8 16v-7',
     images: 'M3 3h18v18H3Z m1 14 5-6 4 4 3-3 5 5 M8 7h.01',
     file: 'M6 3h8l4 4v14H6Z M14 3v4h4',
-    clipK: 'M20 11l-8.5 8.5a5 5 0 0 1-7-7L13 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L14 7'
+    clipK: 'M20 11l-8.5 8.5a5 5 0 0 1-7-7L13 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L14 7',
+    // Klaus 2026-10-26 (Sitzung 3): keine bunten Emojis im Katalog und im Explorer, nur Striche.
+    box: 'M3 7l9-4 9 4v10l-9 4-9-4Z M3 7l9 4 9-4 M12 11v10',
+    note: 'M6 3h12v18H6Z M9 8h6M9 12h6M9 16h4',
+    person: 'M20 21v-2a6 6 0 0 0-6-6h-4a6 6 0 0 0-6 6v2 M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0',
+    shuffle: 'M3 6h3l12 12h3m-3-3 3 3-3 3 M3 18h3l4-4m4-4 4-4h3m-3-3 3 3-3 3',
+    catalog: 'M4 4h16v16H4Z M8 4v16m3-11h6m-6 5h6',
+    receipt: 'M6 3h12v18l-3-2-3 2-3-2-3 2Z M9 8h6M9 12h6',
+    chat: 'M3 4h18v13H9l-6 4Z M7 8h10m-10 4h7',
+    chart: 'M4 3v17h17 M7 15l4-5 4 2 5-7',
+    done: 'M5 12l5 5 9-10',
+    presentation: 'M3 3h18v13H3Z M12 16v5m-5 0 5-5 5 5',
   };
   // Alte Emojis → Strichsymbol (nur diese; Pfeile wie ↕ ← → bleiben).
   const EMOJI = { '💾':'save','🛡':'shield','🔗':'link','🔎':'search','🔍':'search','📁':'folder','📂':'folder','🎤':'mic',
-    '📥':'intake','🔐':'lock','🔒':'lock','🔑':'key','🌐':'globe','✉':'mail','📧':'mail','📊':'dash','🖼':'images','📄':'file','📎':'clipK' };
+    '📥':'intake','🔐':'lock','🔒':'lock','🔑':'key','🌐':'globe','✉':'mail','📧':'mail','📊':'dash','🖼':'images','📄':'file','📎':'clipK',
+    '📦':'box','📝':'note','👤':'person','🔀':'shuffle','🗂':'catalog','🧾':'receipt','📜':'file','💬':'chat','📈':'chart','📊':'chart','📽':'presentation','📋':'note','✨':'done','🔓':'unlock','⬇':'download','🗑':'trash','⚠':'warning','🔬':'lab','🖧':'network','🔏':'seal','💡':'tip','🗄':'archive','🔴':'mic' };
   const NS = 'http://www.w3.org/2000/svg';
   function svg(key) {
     const s = document.createElementNS(NS, 'svg');
@@ -103,7 +122,7 @@
     stripEmoji(button);
     if (!button.querySelector(':scope>svg.v3-icon')) button.append(svg(folderKey(button)));
   }
-  const GENERIC = '#panel-search button, #panel-search label > span, #panel-explorer .explorer-toolbar button, #panel-explorer .explorer-toolbar label > span, #panel-intake button, #panel-intake h3, #panel-settings h3';
+  const GENERIC = '#panel-search button, #panel-search label > span, #panel-explorer .explorer-toolbar button, #panel-explorer .explorer-toolbar label > span, #panel-intake button, #panel-intake h3, #panel-settings h3, .pb-dictate, #panel-dupes .fname, #panel-order .fname, #panel-settings .btnrow > button, #panel-settings .hint, #panel-intake .hint, #groups .grp .ic, #reorgNote h3, #panel-order .empty .big, #panel-dupes .empty .big, #explorerTree button, #explorerFiles .explorer-row strong, #explorerFiles .explorer-dir strong, #explorerPath button, #explorerPath span';
   function firstText(el) { for (const n of el.childNodes) { if (n.nodeType === 3) { if (n.nodeValue.trim()) return n; } else return null; } return null; }
   // Schutz gegen Endlosschleifen: schreibt fremder Code denselben Knopf immer wieder neu, hört V3 dort auf (200 in 2 s; eine echte Schleife macht Tausende, Fortschrittsanzeigen nur Dutzende).
   const seen = new WeakMap();
@@ -112,16 +131,29 @@
     if (now - s.t > 2000) { s.t = now; s.n = 0; }
     s.n++; seen.set(el, s); return s.n > 200;
   }
+  // Klaus 2026-10-26: keine Emojis, auch nicht mitten in Überschriften. Bekannte werden Strichsymbole,
+  // unbekannte am Anfang fallen weg; Dateinamen (in Zeilen) behalten alles außer dem vorangestellten Zeichen.
+  const PICTO = /\s*\p{Extended_Pictographic}[\uFE0F\u200D\p{Extended_Pictographic}]*\s*/gu;
   function decorateGeneric(el) {
-    const t = firstText(el); if (!t) return;
     if (tooOften(el)) return;
-    const m = t.nodeValue.match(/^\s*(\p{Extended_Pictographic})\uFE0F?\s*/u);
-    if (!m || !EMOJI[m[1]]) return;
-    t.nodeValue = t.nodeValue.slice(m[0].length);
-    el.dataset.v3Emoji = m[1]; el.classList.add('v3-ic');
-    if (!el.querySelector(':scope>svg.v3-icon')) el.append(svg(EMOJI[m[1]]));
+    const t = firstText(el);
+    const m = t?.nodeValue.match(/^\s*(\p{Extended_Pictographic})\uFE0F?\s*/u);
+    if (m) {
+      t.nodeValue = t.nodeValue.slice(m[0].length); el.dataset.v3Emoji = m[1];
+      if (EMOJI[m[1]] && !el.matches('.hint')) { el.classList.add('v3-ic'); if (!el.querySelector(':scope>svg.v3-icon')) el.append(svg(EMOJI[m[1]])); }
+    }
+    if (el.matches('h2,h3')) for (const n of el.childNodes) if (n.nodeType === 3 && PICTO.test(n.nodeValue)) { PICTO.lastIndex = 0; n.nodeValue = n.nodeValue.replace(PICTO, ' ').replace(/^ +/, ''); }
+    PICTO.lastIndex = 0;
+  }
+  // Tooltips (title) tragen kein Emoji (Klaus 2026-10-26: „Katalog · 7“ statt „🗂️ Katalog · 7“).
+  function stripTitle(el) {
+    for (const name of ['title', 'aria-label']) {
+      const t = el?.getAttribute?.(name); if (!t) continue;
+      const m = t.match(LEAD); if (m && /\p{Extended_Pictographic}/u.test(m[1])) el.setAttribute(name, t.slice(m[0].length));
+    }
   }
   function decorate(root) {
+    if (root.getAttribute) { stripTitle(root); root.querySelectorAll?.('[title],[aria-label]').forEach(stripTitle); }
     root.querySelectorAll?.('.mail-folders .mail-folder').forEach(decorateFolder);
     root.querySelectorAll?.(GENERIC).forEach(decorateGeneric);
     if (root.matches?.(GENERIC)) decorateGeneric(root);
@@ -357,6 +389,8 @@
         }
       }
     }).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+  new MutationObserver(list => { for (const m of list) stripTitle(m.target); })
+    .observe(document.documentElement, { subtree: true, attributes: true, attributeFilter: ['title', 'aria-label'] });
   function start() {
     document.documentElement.classList.add('v3');
     decorate(document);

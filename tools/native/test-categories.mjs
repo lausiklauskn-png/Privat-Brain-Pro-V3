@@ -5,6 +5,8 @@ import {createServer} from 'node:http';
 import {readFile,mkdir} from 'node:fs/promises';
 import {resolve,extname,sep} from 'node:path';
 import {chromium} from 'playwright-core';
+// V3 shows line icons instead of emojis (Klaus 2026-10-26); compare the words.
+const plain=s=>s.replace(/\p{Extended_Pictographic}\uFE0F?\s*/gu,'').replace(/\s+/g,' ').trim();
 const root=resolve('www');
 const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.woff2':'font/woff2','.json':'application/json'};
 const server=createServer(async(req,res)=>{
@@ -45,20 +47,20 @@ try{
   ok('Nothing is created before Klaus decides',await page.locator('#explorerTree [data-topic]').count()===0);
   const before=await page.evaluate(()=>JSON.stringify(CATALOG.map(r=>[r.hash,r.path,r.dirId])));
   await suggest.first().getByRole('button',{name:'Anlegen'}).click();
-  ok('"Anlegen" adds "🧾 Rechnungen (3)" to the folder tree',(await page.locator('#explorerTree [data-topic=invoice]').textContent())==='🧾 Rechnungen (3)');
+  ok('"Anlegen" adds "🧾 Rechnungen (3)" to the folder tree',plain(await page.locator('#explorerTree [data-topic=invoice]').textContent())==='Rechnungen (3)');
   ok('No file was moved or renamed',await page.evaluate(()=>JSON.stringify(CATALOG.map(r=>[r.hash,r.path,r.dirId])))===before);
   await page.locator('#explorerTree [data-topic=invoice]').click();
   const names=()=>page.locator('#explorerFiles .explorer-row strong').allTextContents().then(a=>a.map(x=>x.replace(/^\S+\s/,'')));
   ok('The category shows exactly the invoices, newest on top',JSON.stringify(await names())===JSON.stringify(['Rechnung-Stadtwerke-Oktober.pdf','Telefon-Oktober.pdf','Baumarkt-Beleg.pdf']));
   ok('Mails from "Alle Konten" stay out of categories',!(await names()).includes('Newsletter'));
   await page.evaluate(async()=>{await addDoc('Rechnung-Versand.pdf',0,'Rechnungsnummer 99, zahlbar bis 5.11.');PBWorkspace.refresh();});
-  ok('A new matching file joins by itself',(await names())[0]==='Rechnung-Versand.pdf'&&(await page.locator('#explorerTree [data-topic=invoice]').textContent())==='🧾 Rechnungen (4)');
+  ok('A new matching file joins by itself',(await names())[0]==='Rechnung-Versand.pdf'&&plain(await page.locator('#explorerTree [data-topic=invoice]').textContent())==='Rechnungen (4)');
   await page.locator('#explorerFiles .explorer-row').filter({hasText:'Baumarkt-Beleg.pdf'}).locator('[data-topic-not=invoice]').click();
   await page.waitForFunction(()=>!document.querySelector('#explorerFiles')?.textContent.includes('Baumarkt-Beleg.pdf'));
   ok('"Gehört nicht hierher" takes the file out and keeps it in the catalog',await page.evaluate(()=>{const r=CATALOG.find(x=>x.name==='Baumarkt-Beleg.pdf');return r&&r.topicNo.includes('invoice');}));
   await page.reload();await page.waitForFunction(()=>window.PBExplorerTopics&&typeof db!=='undefined'&&db&&CATALOG.length>=8);
   await page.locator('[data-tab="explorer"]').click();await page.locator('#explorerTree [data-topic=invoice]').click();
-  ok('After restart the category and the correction remain',(await page.locator('#explorerTree [data-topic=invoice]').textContent())==='🧾 Rechnungen (3)'&&!(await names()).includes('Baumarkt-Beleg.pdf'));
+  ok('After restart the category and the correction remain',plain(await page.locator('#explorerTree [data-topic=invoice]').textContent())==='Rechnungen (3)'&&!(await names()).includes('Baumarkt-Beleg.pdf'));
   await page.fill('#explorerFilter','stadtwerke');
   ok('The explorer search also works inside a category',JSON.stringify(await names())===JSON.stringify(['Rechnung-Stadtwerke-Oktober.pdf']));
   await page.fill('#explorerFilter','');
