@@ -1,5 +1,6 @@
 import { adaptRecovery } from './adapt-recovery.mjs';
 import { bundleSemanticModel } from './fetch-semantic-model.mjs';
+import { bundleCaptionModel } from './fetch-caption-model.mjs';
 import { prerenderV3 } from './v3-prerender.mjs';
 import { bundleFilms } from './fetch-films.mjs';
 import { cp, mkdir, readFile, rm, writeFile, lstat, readdir } from 'node:fs/promises';
@@ -110,4 +111,7 @@ await bundleFilms(out);   // Anleitungsvideo fest in der App (filme/), geprüft 
 // The same fixed hashes and sources for loading the model with the switch in the app.
 await cp(join(root, 'native/tool-icons'), join(out, 'tool-icons'), { recursive: true });   // own icons of the tools (☰)
 await cp(join(root, 'tools/native/semantic-model.json'), join(out, 'semantic-model.json'));
+// Bildbeschreibung (Sitzung 4): the image model is never in the bundle; its fingerprints travel with the app for the switch (ProCaption).
+await bundleCaptionModel(out);
+await cp(join(root, 'tools/native/caption-model.json'), join(out, 'caption-model.json'));
 console.log('Native web bundle prepared from explicit public inputs.');
