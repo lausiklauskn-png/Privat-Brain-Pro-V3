@@ -4,6 +4,7 @@
 //   node tools/native/prepare-pages.mjs [verzeichnis]
 import { readFile, writeFile, cp, rm } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
+import { speedUpPages } from './pages-speed.mjs';
 import { fileURLToPath } from 'node:url';
 import { join, resolve } from 'node:path';
 const root = fileURLToPath(new URL('../../', import.meta.url));
@@ -85,5 +86,7 @@ swap('</head>', pagesBits);
 // KI-Schlüssel nur verschlüsselt im Tresor (Klaus 2026-10-25), nur in der Browserfassung; nach dem App-Code, damit
 // die Datei loadAI() und die Felder vorfindet.
 swap('<script src="assets/filme.js"></script>\n</body>', '<script src="assets/filme.js"></script>\n<script src="assets/ki-tresor.js"></script>\n</body>');
+// Schneller Start (Klaus 2026-10-26, Lighthouse): kleines Logo, Modell später, Skripte nach dem Zeichnen, verkleinert.
+html = await speedUpPages(dir, root, html);
 await writeFile(join(dir, 'index.html'), html);
 console.log('Pages-Fassung vorbereitet in ' + dir + ' (Stand ' + version + ').');
