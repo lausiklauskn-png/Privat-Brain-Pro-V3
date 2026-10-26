@@ -122,6 +122,9 @@ export async function prerenderV3(html, root, { version } = {}) {
   // Platz (native-check.js übernimmt den Knopf und schreibt nur, wenn sich der Text ändert).
   swap('<span id="searchInfo" data-i18n="searchInfo">', '<span id="searchInfo" class="v3-quiet" data-i18n="searchInfo">');
   swap('<span id="corpusInfo"></span>', '<span id="corpusInfo"></span><button class="ghost pb-check-all-button" type="button" data-text="🛡 Alle geprüft">🛡 Alle geprüft</button>');
+  // Klaus 2026-10-26 (Sitzung 1, Punkt 1): E-Mails · Dateien · lokal · Katalog in einer Zeile mit dem Prüfstand.
+  swap('    <div class="search-totals"><span id="searchMailCount"></span><span id="searchDocCount"></span><span id="searchLocalCount"></span></div>\n', '');
+  swap('<span id="corpusInfo"></span>', '<span id="searchMailCount" class="pb-meta-count"></span><span id="searchDocCount" class="pb-meta-count"></span><span id="searchLocalCount" class="pb-meta-count"></span><span id="corpusInfo" class="pb-meta-count"></span>');
   // Führende Emojis in der Suche → Liniensymbol (wie decorateGeneric).
   const search = /<section class="panel on" id="panel-search">[\s\S]*?<\/section>/.exec(html);
   if (!search) throw new Error('v3-prerender: Suchseite fehlt');

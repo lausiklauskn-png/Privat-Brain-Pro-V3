@@ -1,3 +1,5 @@
+**Designumbau in Sitzungen, gemeinsam mit Pro; Unterlagen im Pro-Repo (Klaus 2026-10-26):** zehn Punkte für alle sechs Varianten (Pro + V3, je Android/Windows/PWA), [Sammlung und Sitzungsplan](https://github.com/lausiklauskn-png/Privat-Brain-Pro/blob/main/docs/design/aenderungen-2026-10-26/SAMMLUNG.md). **Sitzung 1 erledigt** (Zählerzeile, Mail-Ordnerleiste, Doppelte kurz, Zustand/Speicher, Workflow PDF frei): [Abschluss](https://github.com/lausiklauskn-png/Privat-Brain-Pro/blob/main/docs/design/aenderungen-2026-10-26/ABSCHLUSS-SITZUNG-01.md). **Nächste: Sitzung 2** – [Brief](https://github.com/lausiklauskn-png/Privat-Brain-Pro/blob/main/BRIEF_SITZUNG-02_EXPLORER-ANORDNUNG.md). Sitzungen fortlaufend nummerieren, nichts ohne Klaus' Wort veröffentlichen.
+
 # Private Brain Pro V3 — Sitzungs-Anker
 
 **2026-10-25 abends (Filme · Geschenk · Kim-sync):** Pro 1.0.38 und V3 3.0.0-preview.7 veröffentlicht (Android +
