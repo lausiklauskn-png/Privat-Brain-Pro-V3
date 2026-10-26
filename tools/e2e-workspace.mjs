@@ -83,13 +83,14 @@ try{
   ok('Explorer liest nach Neustart aus dem Ordner statt aus Sitzungsspeicher',await page.evaluate(()=>SESSION_FILES.size===0 && openedLocalFile==='Schwarzes Fahrzeug: Radstand 2820 mm.'));
   await page.fill('#explorerFilter','angebot');
   ok('Explorer filtert die Dateiliste',await page.locator('.explorer-row').count()===1);
-  await page.click('#explorerHome');
+  // Sitzung 2 (2026-10-26): ⌂ ist die Ansichtswahl, der kleine ↑ entfällt, der Pfad ist der Rückweg.
+  await page.locator('#pb-explorer-view>summary').click();await page.locator('#pb-explorer-view [data-view-path=""]').click();
   await page.locator('#explorerTree button').filter({hasText:'Lokale-Ablage'}).first().click();
-  ok('Ordnernavigation und übergeordneter Ordner funktionieren',await page.locator('#explorerUp').isEnabled());
-  await page.click('#explorerUp');
-  ok('Eine Ebene höher steht die Art des Ordners (Ordnerbaum wie im Explorer)',(await page.locator('#explorerPath').textContent()).endsWith('📝 Notizen'));
-  await page.click('#explorerUp');
-  ok('Zurück zur Wurzel',await page.locator('#explorerUp').isDisabled());
+  ok('Ordnernavigation funktioniert, der kleine ↑ ist nicht mehr zu sehen',(await page.locator('#explorerPath').textContent()).includes('Lokale-Ablage')&&await page.locator('#explorerUp').isHidden());
+  await page.locator('#explorerPath .explorer-crumb').last().click();
+  ok('Eine Ebene höher über den Pfad steht die Art des Ordners (Ordnerbaum wie im Explorer)',(await page.locator('#explorerPath').textContent()).endsWith('📝 Notizen'));
+  await page.locator('#explorerPath .explorer-crumb').first().click();
+  ok('Zurück zur Wurzel über den Pfad',(await page.evaluate(()=>PBWorkspace.explorerState().path))==='');
   for(const lang of ['en','ru','pl','de']){
     await page.evaluate(lang=>document.documentElement.lang=lang,lang);
     await page.waitForTimeout(30);
