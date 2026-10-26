@@ -55,6 +55,8 @@
       const value=(captions[document.documentElement.lang]||captions.de)[pages.indexOf(node.dataset.tab)];
       let caption=node.querySelector(':scope>.compact-caption');if(!caption){caption=make('span','compact-caption');caption.setAttribute('aria-hidden','true');node.append(caption);}
       if(caption.textContent!==value)caption.textContent=value;
+      // Vorgelesener Name enthält das sichtbare Wort („Mail – Postfach“), sonst findet Sprachsteuerung den Knopf nicht (Lighthouse).
+      if(!label.toLowerCase().includes(value.toLowerCase())){const name=value+' – '+label.replace(/[\p{Extended_Pictographic}\uFE0F]/gu,'').trim();node.setAttribute('aria-label',name);node.title=name;}
     }
   }
   // WebView does not reliably display the browser's title popup. Render our own,

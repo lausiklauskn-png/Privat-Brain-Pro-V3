@@ -113,7 +113,7 @@ export async function prerenderV3(html, root, { version } = {}) {
   const micTag = /<button id="mic" class="ghost"([^>]*)>🎤<\/button>/.exec(html);
   if (!micTag) throw new Error('v3-prerender: Mikrofon-Knopf fehlt');
   const chip = 'Sprech-Sprache: Deutsch (noch nicht gewählt)';
-  swap(micTag[0], `<button id="mic" class="ghost v3-ic"${micTag[1]} data-v3-emoji="🎤">${svgV('mic')}</button><button type="button" id="v3SpeechChip" class="ghost v3-speech-chip v3-speech-unset" title="${chip}" aria-label="${chip}">DE</button>`);
+  swap(micTag[0], `<button id="mic" class="ghost v3-ic"${micTag[1]} data-v3-emoji="🎤">${svgV('mic')}</button><button type="button" id="v3SpeechChip" class="ghost v3-speech-chip v3-speech-unset" title="${chip}" aria-label="DE – ${chip}">DE</button>`);
   swap('<button class="on" data-m="mean" data-i18n="modeMean">Bedeutungssuche</button>\n      </div>',
     '<button class="on" data-m="mean" type="button" data-v3-toggle="1" aria-pressed="true" title="Bedeutungssuche an. Tippen schaltet aus (dann Suche nach Namen).">'
     + `<span class="v3-mean-label">Bedeutung</span>${svgV('search', ' v3-after')}</button>\n      </div>`

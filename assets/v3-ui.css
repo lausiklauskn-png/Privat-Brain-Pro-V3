@@ -131,7 +131,7 @@ html.v3 #panel-search #mode,html.v3 #panel-search #mode [data-m="mean"],html.v3 
   html.v3 #panel-search .searchbox>input[type=search]+*~*{margin-top:0}
   html.v3 #panel-search .searchbox::after{content:"";order:2;flex-basis:100%;height:0}
 }
-html.v3 .v3-speech-chip.v3-speech-unset{opacity:.6;font-weight:500}
+html.v3 .v3-speech-chip.v3-speech-unset{font-weight:500;text-decoration:underline dotted;text-underline-offset:3px} /* nicht blass: Kontrast */
 
 /* Verstellbare Spaltenbreiten (Klaus 2026-10-24): Trennlinie mit ↔-Zeiger. */
 html.v3 .v3-split{position:relative}
