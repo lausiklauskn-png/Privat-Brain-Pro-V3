@@ -75,6 +75,15 @@
     "markLoaded",
     "clearCrash"
   ],
+  "ProCaption": [
+    "getState",
+    "install",
+    "cancel",
+    "remove",
+    "markLoading",
+    "markLoaded",
+    "clearCrash"
+  ],
   "ProShare": [
     "pending",
     "read",

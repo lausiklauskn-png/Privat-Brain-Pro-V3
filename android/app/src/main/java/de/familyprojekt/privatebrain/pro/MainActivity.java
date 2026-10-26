@@ -21,6 +21,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(ProSpeechPlugin.class);
         registerPlugin(ProSharePlugin.class);
         registerPlugin(ProSemanticPlugin.class);
+        registerPlugin(ProCaptionPlugin.class);
         super.onCreate(state);
         google = new GmailAuthorization(this);
         bridge.getWebView().getSettings().setBlockNetworkLoads(AppNetwork.isOffline());
@@ -40,9 +41,10 @@ public class MainActivity extends BridgeActivity {
             @Override public android.webkit.WebResourceResponse shouldInterceptRequest(android.webkit.WebView view, android.webkit.WebResourceRequest request) {
                 // Modul 03's library and model addresses are answered from the app, before the offline switch: they are local.
                 String address = request.getUrl().toString();
-                if (BundledLibrary.covers(address)) return BundledLibrary.respond(getAssets(), ProSemanticPlugin.model(MainActivity.this), address);
+                if (BundledLibrary.covers(address)) return BundledLibrary.respond(getAssets(), address, ProSemanticPlugin.model(MainActivity.this), ProCaptionPlugin.model(MainActivity.this));
                 if (BundledLibrary.coversModel(address)) return BundledLibrary.respondModel(ProSemanticPlugin.model(MainActivity.this), address);
-                if (address.startsWith(BundledLibrary.REMOTE_MODEL_PREFIX)) return BundledLibrary.missing();
+                if (BundledLibrary.coversCaptionModel(address)) return BundledLibrary.respondCaptionModel(ProCaptionPlugin.model(MainActivity.this), address);
+                if (BundledLibrary.remoteModel(address)) return BundledLibrary.missing();
                 if (AppNetwork.isOffline() && AppNetwork.external(request.getUrl().toString()))
                     return new android.webkit.WebResourceResponse("text/plain", "UTF-8", 503, "App offline",
                         java.util.Collections.emptyMap(), new java.io.ByteArrayInputStream(new byte[0]));
@@ -56,6 +58,7 @@ public class MainActivity extends BridgeActivity {
                 // The view's process ended (for example out of memory while the meaning model starts).
                 // Remember it and open the app again instead of letting Android close it.
                 ProSemanticPlugin.rendererGone(MainActivity.this, detail.didCrash(), detail.rendererPriorityAtExit());
+                ProCaptionPlugin.rendererGone(MainActivity.this, detail.didCrash(), detail.rendererPriorityAtExit());
                 android.util.Log.w("PrivateBrainPro", "WebView renderer gone: crash=" + detail.didCrash() + " priority=" + detail.rendererPriorityAtExit());
                 if (view.getParent() instanceof android.view.ViewGroup) ((android.view.ViewGroup) view.getParent()).removeView(view);
                 view.destroy();
