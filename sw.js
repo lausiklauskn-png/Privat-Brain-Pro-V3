@@ -1,6 +1,6 @@
 /* Private Brain — Service Worker (offline App-Schale, cache-first).
    Fremde Origins werden durchgereicht (z. B. bewusst freigeschaltete EU-KI). */
-const CACHE = "private-brain-v96";
+const CACHE = "private-brain-v97";
 
 /* ⚠ NUR EIGENE VORRAETE AUFRAEUMEN — `caches` gehoert dem URSPRUNG, nicht dem
  * Pfad. Auf lausiklauskn-png.github.io liegen rund zwanzig Apps; ein Filter,
@@ -25,6 +25,10 @@ const SHELL = [
   "./assets/pb-arrange.css",
   "./assets/pb-bildbeschreibung.js",
   "./assets/pb-bildbeschreibung.css",
+  "./assets/pb-3d.js",
+  "./assets/pb-3d.css",
+  "./assets/pb-zielordner.js",
+  "./assets/pb-zielordner.css",
   "./assets/v3-translate.js",
   "./assets/mail-workspace.js",
   "./assets/live-mail.js",
