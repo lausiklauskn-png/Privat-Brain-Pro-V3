@@ -2,7 +2,7 @@
 
 Sitzung `session_01BHMn6XzYQ4DtsRudfL8uJ8` (Claude). Sie begann mit V3-Oberfläche, Tresor und Videos
 ([Brief](BRIEF_NACHFOLGE_2026-10-25_GMAIL-TRESOR-VIDEOS.md)) und endete mit dem Geschenk für Jens und Kim-sync.
-Erkenntnisse: [Forschung 2026-10-25](docs/FORSCHUNG-2026-10-25.md). Weiter: [Brief](BRIEF_NACHFOLGE_2026-10-26_KIMSYNC-GESCHENK.md).
+Erkenntnisse: [Forschung 2026-10-25](https://github.com/lausiklauskn-png/Kimhub/blob/main/forschung/messungen/privat-brain-v3-2026-10-25.md). Weiter: [Brief](BRIEF_NACHFOLGE_2026-10-26_KIMSYNC-GESCHENK.md).
 
 ## Veröffentlicht
 

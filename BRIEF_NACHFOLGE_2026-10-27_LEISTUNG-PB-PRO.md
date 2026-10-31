@@ -5,7 +5,7 @@
 Ziel: bessere Lighthouse-Werte auf Family Projekt und PWA Toolpoint (dort Leistung, Bedienbarkeit, Gute Praxis,
 Auffindbarkeit; nächtliche Messung, Lighthouse 13.5, Handy).
 
-Pflichtlektüre zuerst: [Forschung](docs/FORSCHUNG-2026-10-26-LEISTUNG.md) (Lehren 1–8!),
+Pflichtlektüre zuerst: [Forschung](https://github.com/lausiklauskn-png/Kimhub/blob/main/forschung/messungen/privat-brain-v3-2026-10-26-leistung.md) (Lehren 1–8!),
 [Umsetzung und Zahlen V3](docs/LEISTUNG-PAGES-2026-10-26.md), die Vorlage
 [`tools/native/pages-speed.mjs`](tools/native/pages-speed.mjs).
 

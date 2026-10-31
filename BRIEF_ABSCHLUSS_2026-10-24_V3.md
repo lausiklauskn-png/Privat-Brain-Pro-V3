@@ -31,4 +31,4 @@ Dazu: Pages-Quelle auf „GitHub Actions“ umgestellt (Klaus), sonst überschri
 - Herausgeber-Studio: öffentlichen Schlüssel in `native/license-keys.json` eintragen (in der nativen App erzeugen).
 - Pro PR #75 (nur Unterlagen) wartet auf Klaus; regelmäßige Kontrollen beendet.
 
-Erkenntnisse der Sitzung: [docs/FORSCHUNG-2026-10-24.md](docs/FORSCHUNG-2026-10-24.md).
+Erkenntnisse der Sitzung: [Kimhub forschung/messungen/privat-brain-v3-2026-10-24.md](https://github.com/lausiklauskn-png/Kimhub/blob/main/forschung/messungen/privat-brain-v3-2026-10-24.md).
