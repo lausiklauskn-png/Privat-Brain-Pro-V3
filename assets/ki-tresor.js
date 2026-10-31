@@ -94,29 +94,19 @@
     } catch {}
   }
 
-  // Beim Start der App legen mehrere Module ihre Schubladen über Versionssprünge der Datenbank an (Modul 01).
-  // Fragt in genau so einem Sprung jemand die Datenbank neu an, bleibt Modul 01 auf einer gescheiterten Öffnung
-  // stehen („requested version … is less than the existing version“), bis die Seite neu lädt. Modul 01 ist
-  // byte-gepinnt; hier wird nur geheilt: ein leerer Versionssprung von außen löst dessen onversionchange aus,
-  // der die alte Verbindung schließt und die gescheiterte Öffnung vergisst. Danach öffnet Modul 01 frisch.
-  // Kein Abfragen im Kreis: das würde selbst in einen laufenden Sprung fallen.
+  // Beim Start der App legen mehrere Module ihre Schubladen über Versionssprünge der Datenbank an (Modul 01). Eine
+  // Speicher-Aktion mitten in so einem Sprung kann scheitern; Modul 01 holt das mit dem nächsten Sprung selbst nach.
+  // Hier wird darum nur gewartet und wiederholt, nie selbst ein Versionssprung ausgelöst.
+  // Befund 2026-10-31 (V3 #32, CI rot an dieser Probe): bis dahin stand hier eine „Heilung“, die die Datenbank von
+  // außen eine Version höher öffnete. Öffnet Modul 01 genau dann, scheitert seine Öffnung und bleibt bis zum Neuladen
+  // gemerkt, ohne offene Verbindung, die sie vergessen könnte; jeder weitere Sprung von außen ändert daran nichts.
+  // Nachgestellt im Browser: mit Sprung von außen 20 von 20 Zugriffen „Re-Open mit Version … less than existing“, ohne 0.
   const pause = ms => new Promise(r => setTimeout(r, ms));
-  async function heal() {
-    const name = window.SbkimStorage?._meta?.dbName;
-    if (!name || !window.indexedDB) return;
-    const open = v => new Promise(res => {
-      let r; try { r = v ? indexedDB.open(name, v) : indexedDB.open(name); } catch { return res(0); }
-      r.onsuccess = () => { const ver = r.result.version; try { r.result.close(); } catch {} res(ver); };
-      r.onerror = () => res(0);
-    });
-    const now = await open(0);
-    if (now) await open(now + 1);
-  }
-  // Wiederholt eine Speicher-Aktion nach dem Heilen, höchstens dreimal.
+  // Wiederholt eine Speicher-Aktion, solange der Speicher beim Start noch umbaut (höchstens fünfmal, wachsende Pausen).
   async function healthy(job) {
     for (let i = 0; ; i++) {
       try { return await job(); }
-      catch (e) { if (!storageTrouble(e) || i >= 2) throw e; await heal(); await pause(250); }
+      catch (e) { if (!storageTrouble(e) || i >= 4) throw e; await pause(300 * (i + 1)); }
     }
   }
   // Die Schublade sbkim_safe allein anlegen (hinter allen anderen Sprüngen der Kette), damit putSecret keinen Sprung braucht.
