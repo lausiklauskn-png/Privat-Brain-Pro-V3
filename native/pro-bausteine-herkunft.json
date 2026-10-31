@@ -1,0 +1,12 @@
+{
+  "_": "Gemeinsame Bausteine der Pro-Apps in Private Brain V3. Quelle: Private Brain Pro. Nie von Hand ändern.",
+  "quelle": "lausiklauskn-png/Privat-Brain-Pro",
+  "commit": "abf2e85",
+  "fassung": 6,
+  "dateien": {
+    "pro-bedienung.js": "63bddbcbcd19004d79845704cf6500c7dcd22dab2f92506be7a9dea11675994c",
+    "pro-bedienung.css": "cd2b3e6307a3c68fdc828f59d5e950085268678463a027ced64562100e2b67d5",
+    "pro-ueberall.css": "524f0829ebb22b3c3af06c0cd368c2281bfe10bfa2eaab0d2c4b06a153215231",
+    "pro-chefcode.js": "9bbd9957581573b8c87eb403fa067a041cbead8ccbc1a96346199dda8cad4674"
+  }
+}
