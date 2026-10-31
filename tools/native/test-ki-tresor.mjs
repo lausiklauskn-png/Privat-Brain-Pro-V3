@@ -51,6 +51,9 @@ const ready=async page=>{
 const shown=(page,id)=>page.locator(`[data-ki-tresor=${id}]`).isVisible();
 try{
   const pagesHtml=await readFile(join(dir,'index.html'),'utf8'),nativeHtml=await readFile('www/index.html','utf8');
+  // Befund 2026-10-31 (V3 #32): ein Versionssprung von außen, während Modul 01 öffnet, lässt Modul 01 bis zum Neuladen hängen.
+  const glue=(await readFile('assets/ki-tresor.js','utf8')).replace(/\/\/.*$/gm,'');
+  ok('The vault glue never opens IndexedDB itself (no version jump from outside while module 01 opens)',!/indexedDB\s*\.\s*open/.test(glue));
   ok('Only the browser version loads the vault glue; the app bundle does not',pagesHtml.includes('src="assets/ki-tresor.js"')&&!nativeHtml.includes('ki-tresor.js'));
   browser=await chromium.launch({executablePath:process.env.CB_CHROMIUM||'/usr/bin/chromium',args:['--no-sandbox']});
   const ctx=await browser.newContext({viewport:{width:1280,height:900}});
