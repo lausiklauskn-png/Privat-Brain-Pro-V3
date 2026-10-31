@@ -1,7 +1,7 @@
 # Brief für die nächste Sitzung (ab 2026-10-26): Kim-sync am Gerät, Geschenk, offene Reste
 
 Stand: [Abschlussbericht 2026-10-25 abends](BRIEF_ABSCHLUSS_2026-10-25_FILME-GESCHENK-KIMSYNC.md),
-Erkenntnisse: [Forschung 2026-10-25](docs/FORSCHUNG-2026-10-25.md).
+Erkenntnisse: [Forschung 2026-10-25](https://github.com/lausiklauskn-png/Kimhub/blob/main/forschung/messungen/privat-brain-v3-2026-10-25.md).
 
 ## 1. Kim-sync mit Klaus am Gerät prüfen (zuerst)
 

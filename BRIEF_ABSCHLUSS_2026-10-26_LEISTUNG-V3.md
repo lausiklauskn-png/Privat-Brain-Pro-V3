@@ -39,5 +39,5 @@ In 2 von 6 Läufen einer früheren Reihe kippte Lighthouse auf ~75 (zählte die 
 - **Nächste Sitzungen:** dieselbe Verbesserung für **Private Brain** (PWA) und **Private Brain Pro**, jeweils getrennt,
   wenn das Budget wieder da ist. Brief: [BRIEF_NACHFOLGE_2026-10-27_LEISTUNG-PB-PRO.md](BRIEF_NACHFOLGE_2026-10-27_LEISTUNG-PB-PRO.md).
 
-Forschung: [docs/FORSCHUNG-2026-10-26-LEISTUNG.md](docs/FORSCHUNG-2026-10-26-LEISTUNG.md) ·
+Forschung: [Kimhub forschung/messungen/privat-brain-v3-2026-10-26-leistung.md](https://github.com/lausiklauskn-png/Kimhub/blob/main/forschung/messungen/privat-brain-v3-2026-10-26-leistung.md) ·
 Messung und Umsetzung: [docs/LEISTUNG-PAGES-2026-10-26.md](docs/LEISTUNG-PAGES-2026-10-26.md).

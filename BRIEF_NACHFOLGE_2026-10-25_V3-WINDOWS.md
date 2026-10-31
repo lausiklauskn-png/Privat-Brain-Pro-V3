@@ -6,7 +6,7 @@ Installer) nur, wenn Klaus sie ausdrücklich will; den Download-Link danach wie 
 
 ## Pflichtlektüre
 
-1. `CLAUDE.md` (V3-Anker oben), `BRIEF_ABSCHLUSS_2026-10-24_V3.md`, `docs/FORSCHUNG-2026-10-24.md`.
+1. `CLAUDE.md` (V3-Anker oben), `BRIEF_ABSCHLUSS_2026-10-24_V3.md`, Kimhub forschung/messungen/privat-brain-v3-2026-10-24.md.
 2. Die Pro-Methode: `docs/BAUSTAND-WINDOWS.md`, `docs/GESCHENKPAKET-WINDOWS.md`, `windows/README.md`,
    `.github/workflows/windows-app.yml`. Vorbild-Release in Pro: `windows-v1.0.0-preview.29`
    (Tauri 2, WebView2, NSIS pro Benutzer, unsigniert, eigene Java-Laufzeit für die Mail-Maschine).
