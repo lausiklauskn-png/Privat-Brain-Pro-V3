@@ -1,6 +1,6 @@
 {
   "name":"private-brain-v3-windows",
-  "version":"3.0.0-preview.8",
+  "version":"3.0.0-preview.9",
   "private":true,
   "type":"module",
   "scripts":{"tauri":"tauri","test:engine":"node engine/test.mjs"},
