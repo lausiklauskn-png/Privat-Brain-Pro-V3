@@ -632,3 +632,30 @@ header .brand h1 .pb-version { display:inline-block; vertical-align:middle; min-
 /* Klaus 2026-10-25: der Mycel-Knopf im geöffneten Siegel war dunkel auf dunkel. Helle Schrift auf dem Siegel-Braun. */
 .native-mycel-in-seal button { background:#3a2a14!important; color:#f6e7c4!important; border:1px solid #c9a35a!important; }
 .native-mycel-in-seal button:hover, .native-mycel-in-seal button:focus-visible { background:#4a3618!important; color:#fff4da!important; }
+
+/* Aus Private Brain Pro 1.0.58 übernommen (Mail): */
+/* Generalprüfung 16.11.2026 – Mail am Handy.
+   Menü „Weitere Aktionen“: hing mit der rechten Kante am Knopf und ragte links aus dem Bild. Im schmalen Fenster richtet es
+   sich an der Kopfzeile des Postfachs aus (ganze Breite); der Knopf zeigt dort nur die drei Punkte, sein Name bleibt für Vorlesen und
+   Tooltip. So bekommt die Kontoauswahl den Platz. Alle Einträge bleiben. */
+@media(max-width:650px) {
+  #mailWorkspace .live-mail>.mail-head { position:relative; }
+  #mailWorkspace .live-mail>.mail-head .mail-account-tools { position:static; }
+  #mailWorkspace .live-mail>.mail-head .mail-account-menu { left:4px; right:4px; width:auto; max-width:none; min-width:min(280px,calc(100vw - 40px)); }
+  #mailWorkspace .live-mail>.mail-head .mail-account-tools>summary>.compact-caption { display:none; }
+  /* „Alle Konten“ vor dem ersten Abruf: Überschrift in einer Zeile, der blaue Abruf-Knopf darunter in ganzer Breite. */
+  .mail-all-head { flex-wrap:wrap; }
+  .mail-all-head > h2 { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .mail-all-head > .mail-primary { order:9; flex:1 1 100%; justify-content:center; white-space:normal; }
+  .mail-all-head > details > summary > .compact-caption { display:none; }
+}
+/* „Alle Konten“ als drittes Konto im Postfach (Klaus 22.11.2026) */
+.live-mail .mail-account-tag { display:flex; align-items:center; gap:4px; font-size:.78rem; color:var(--mut); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.live-mail .mail-account-dot { flex:none; width:8px; height:8px; border-radius:50%; display:inline-block; }
+.live-mail .mail-files { flex:none; }
+.live-mail .mail-folders > .mail-folder-group { margin:8px 8px 2px; padding-top:6px; border-top:1px solid var(--line); font-size:.78rem; color:var(--mut); }
+.live-mail .mail-all-embedded { border:0; box-shadow:none; margin:0; padding:0; background:transparent; min-height:0; }
+.live-mail .mail-all-embedded > .mail-head { padding:6px 8px; }
+.live-mail label[data-mail-from], .live-mail .mail-reader > label.mail-muted select { margin-left:4px; }
+/* Die geöffnete Mail ist in der Liste markiert (in Pro über design-layout.css; V3 hatte sie durchsichtig). */
+#mailWorkspace .live-mail .mail-item button[aria-current=true] { background:var(--look-mail-soft,var(--mail-soft,var(--card2))); }

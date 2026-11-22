@@ -34,7 +34,7 @@ try{
     }};
   });
   await page.goto(origin);await page.waitForFunction(()=>window.PBNetwork?.ready&&window.PBWorkspace&&typeof db!=='undefined'&&db&&document.querySelector('.native-toolbar-row'));
-  await page.click('[data-tab=mail]');await page.locator('#mailWorkspace [data-live-text=connect]').click();await page.locator('[data-live-uid="7"]').click();
+  await page.click('[data-tab=mail]');/* Seit Pro 1.0.54 öffnet das Postfach mit gespeichertem Konto von selbst. */if(await page.locator('#mailWorkspace [data-live-text=connect]').isVisible())await page.locator('#mailWorkspace [data-live-text=connect]').click();await page.locator('[data-live-uid="7"]').click();
   await page.locator('.live-mail .mail-html').waitFor();
   ok('320px touch: Pro name with version fits and the green offline information is removed',await page.locator('.brand h1').evaluate(e=>[...e.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim())==='Private Brain V3 Pro'&&await page.locator('#pbVersion').isVisible()&&await page.locator('.badge-off').count()===0&&await page.locator('.brand h1').evaluate(e=>e.getBoundingClientRect().right<=document.querySelector('header .tools').getBoundingClientRect().left));
   // Klaus 2026-10-21: only the round Siegel floats (lamps not shown); tools/native/test-mycel.mjs covers drag, snap, ✕.

@@ -43,6 +43,9 @@
     if(value.kind==='speech'){
       $('title').textContent=({de:'Sprechen Sie jetzt',en:'Speak now',ru:'Говорите',pl:'Mów teraz'}[value.language]||'Speak now');
       $('help').textContent=({de:'Lokale Windows-Spracherkennung. Ende nach einem Satz oder spätestens einer Minute.',en:'Local Windows speech recognition. Ends after one phrase or at most one minute.',ru:'Локальное распознавание Windows: одна фраза, не дольше минуты.',pl:'Lokalne rozpoznawanie Windows: jedna fraza, maksymalnie minuta.'}[value.language]||'Local Windows speech recognition.');
+      // Klaus 2026-10-27: say which microphone is listening, never leave it to chance unseen.
+      const mic=typeof value.microphone==='string'&&value.microphone?value.microphone:({de:'Windows-Standardmikrofon',en:'Windows default microphone',ru:'Микрофон Windows по умолчанию',pl:'Domyślny mikrofon Windows'}[value.language]||'Windows default microphone');
+      $('help').textContent+=' '+({de:'Mikrofon: ',en:'Microphone: ',ru:'Микрофон: ',pl:'Mikrofon: '}[value.language]||'Microphone: ')+mic;
       $('account').hidden=false;$('provider').closest('label').hidden=true;$('account-fields').hidden=true;
       for(const id of ['password-label','repeat-label','notice-label','remember-label','submit'])$(id).hidden=true;
       $('cancel').textContent=words[0];return;
@@ -59,9 +62,19 @@
     const create=value.kind==='password'&&value.mode==='create';
     $('repeat-label').hidden=$('notice-label').hidden=!create;$('remember-label').hidden=value.kind!=='password';
     $('title').textContent=value.kind==='key'?({de:'Schutzanbieter-Schlüssel',en:'Protection provider key',ru:'Ключ сервиса защиты',pl:'Klucz usługi ochrony'}[value.language]||'Protection provider key')+' · '+value.service:value.kind==='account'?words[5]:words[{create:2,open:3,unlock:4}[value.mode]||4];
+    if(value.kind==='password'&&value.context==='pro-verbund'){
+      const w=({de:['Gemeinsamen Pro-Tresor anlegen','Gemeinsamen Pro-Tresor entsperren','Dasselbe Tresorpasswort wie in Familienakte Pro, Workflow PDF Pro und BookLedgerPro.','Ohne Passwort oder Ersatzschlüssel kein Zugang. Ich bewahre beides sicher auf.'],en:['Create common Pro vault','Unlock common Pro vault','Use the same vault password as in Familienakte Pro, Workflow PDF Pro and BookLedgerPro.','No access without password or recovery keys. I will keep them safe.'],ru:['Создать общий Pro-сейф','Разблокировать общий Pro-сейф','Тот же пароль сейфа, что в Familienakte Pro, Workflow PDF Pro и BookLedgerPro.','Без пароля или ключей восстановления доступа нет. Я сохраню их.'],pl:['Utwórz wspólny sejf Pro','Odblokuj wspólny sejf Pro','To samo hasło sejfu co w Familienakte Pro, Workflow PDF Pro i BookLedgerPro.','Bez hasła lub kluczy odzyskiwania nie ma dostępu. Zachowam je bezpiecznie.']}[value.language]||[]);
+      $('title').textContent=w[create?0:1];$('help').textContent=w[2];$('notice-caption').textContent=w[3];
+    }
     if(value.kind==='account'){
       $('provider').replaceChildren(...(value.providers||[]).map(p=>{const option=document.createElement('option');option.value=p.id;option.textContent=p.label;return option;}));
-      provider();$('provider').focus();
+      provider();
+      if(value.renew){
+        // Passwort erneuern: Anbieter und Adresse stehen fest, gefragt wird nur das neue Passwort.
+        $('title').textContent=({de:'Passwort erneuern',en:'Renew password',ru:'Обновить пароль',pl:'Odnów hasło'}[value.language]||'Renew password');
+        $('provider').disabled=true;$('email').value=value.renew.email||'';$('email').readOnly=true;$('user').value=value.renew.user||'';$('user').readOnly=true;
+        $('password').focus();
+      }else $('provider').focus();
     }else $('password').focus();
   });
 })();
