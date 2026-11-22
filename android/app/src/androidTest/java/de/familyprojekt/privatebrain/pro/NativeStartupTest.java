@@ -314,7 +314,7 @@ public class NativeStartupTest {
                 onView(withText("Verbinden und prüfen")).inRoot(isDialog()).perform(click());
                 onView(androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom(android.widget.Spinner.class)).inRoot(isDialog())
                     .check(matches(androidx.test.espresso.matcher.ViewMatchers.isEnabled()));
-                onView(withText("Anmeldung fehlgeschlagen. E-Mail-Adresse, E-Mail-Passwort und Servernamen prüfen.")).inRoot(isDialog())
+                onView(withText("Bitte die E-Mail-Adresse vollständig eintragen.")).inRoot(isDialog())
                     .perform(androidx.test.espresso.action.ViewActions.scrollTo()).check(matches(isDisplayed()));
             }
             chooseMailProvider("Hetzner");
