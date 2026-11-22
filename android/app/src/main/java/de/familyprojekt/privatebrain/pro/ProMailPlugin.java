@@ -117,30 +117,65 @@ public class ProMailPlugin extends Plugin {
     @PluginMethod public void openOriginal(PluginCall call) {
         perform(call, () -> {
             byte[] bytes = engine.raw(account(call), required(call, "folder"), required(call, "validity"), call.getData().optLong("uid", -1));
-            File file = staged(bytes, "mail.eml");
+            // Name aus dem Betreff (von der Seite, `emlName()`), bereinigt; sonst „mail.eml“ wie bisher.
+            String name = emlDateiname(call.getString("name", ""));
+            File file = staged(bytes, name);
             android.net.Uri uri = FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".fileprovider", file);
             Intent intent = new Intent(Intent.ACTION_SEND).setType("message/rfc822").putExtra(Intent.EXTRA_STREAM, uri)
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             getActivity().runOnUiThread(() -> {
-                try { getActivity().startActivity(Intent.createChooser(intent, "mail.eml")); }
+                try { getActivity().startActivity(Intent.createChooser(intent, name)); }
                 catch (ActivityNotFoundException ignored) { /* No compatible external app installed. */ }
             });
             return new JSONObject().put("ok", true);
         });
     }
+    /** Dateiname für eine geteilte .eml: bereinigt, immer mit Endung „.eml“, höchstens 120 Zeichen. */
+    static String emlDateiname(String wunsch) throws Exception {
+        String name = wunsch == null ? "" : wunsch.trim();
+        if (name.toLowerCase(java.util.Locale.ROOT).endsWith(".eml")) name = name.substring(0, name.length() - 4);
+        if (name.length() > 116) name = name.substring(0, 116);
+        name = name.trim();
+        return name.isEmpty() ? "mail.eml" : MailMime.filename(name + ".eml");
+    }
+    /** Unveränderte Quelle einer Mail (MIME mit eingebetteten Anhängen) für die Übergabe an die Familienakte
+     *  über den gemeinsamen Pro-Tresor (Vertrag familienakte-uebergabe/1, höchstens 20 MiB). */
+    @PluginMethod public void original(PluginCall call) {
+        perform(call, () -> {
+            byte[] bytes = engine.raw(account(call), required(call, "folder"), required(call, "validity"), call.getData().optLong("uid", -1));
+            if (bytes.length > 20 * 1024 * 1024) throw new MailFailure("MESSAGE_TOO_LARGE");
+            return new JSONObject().put("sourceBase64", android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)).put("groesse", bytes.length);
+        });
+    }
+    // V3: der Ablageweg in den gemeinsamen Tresorordner (tresorMailAblegen) kommt mit dem Schritt „Tresor und Ablage“ aus Pro.
     private File staged(byte[] data, String name) throws Exception {
         File exports = new File(getContext().getCacheDir(), "exports");
         if (!exports.isDirectory() && !exports.mkdirs()) throw new MailFailure("FILE_UNAVAILABLE");
+        long now = System.currentTimeMillis(), used = 0;
         File[] old = exports.listFiles();
-        if (old != null) for (File file : old) if (file.isFile() && file.getName().startsWith("mail-") &&
-                System.currentTimeMillis() - file.lastModified() > 24L * 60 * 60 * 1000) file.delete();
-        long used = 0;
-        File[] remaining = exports.listFiles();
-        if (remaining != null) for (File file : remaining) used += file.length();
+        if (old != null) for (File entry : old) {
+            if (entry.getName().startsWith("mail-") && now - entry.lastModified() > 24L * 60 * 60 * 1000) { entfernen(entry); continue; }
+            if (entry.isFile() || entry.getName().startsWith("mail-")) used += groesse(entry);   // fremde Unterordner (vault, files) zählen nicht
+        }
         if (used + data.length > 32L * 1024 * 1024) throw new MailFailure("FILE_UNAVAILABLE");
-        File file = new File(exports, "mail-" + UUID.randomUUID() + "-" + MailMime.filename(name));
+        // Eigener Unterordner je Datei: die empfangende App sieht nur den bereinigten Namen
+        // (vorher „mail-<uuid>-mail.eml“, Klaus 2026-11-09).
+        File folder = new File(exports, "mail-" + UUID.randomUUID());
+        if (!folder.mkdirs()) throw new MailFailure("FILE_UNAVAILABLE");
+        File file = new File(folder, MailMime.filename(name));
         try (FileOutputStream output = new FileOutputStream(file)) { output.write(data); }
         return file;
+    }
+    private static long groesse(File entry) {
+        if (entry.isFile()) return entry.length();
+        long sum = 0; File[] inner = entry.listFiles();
+        if (inner != null) for (File file : inner) if (file.isFile()) sum += file.length();
+        return sum;
+    }
+    private static void entfernen(File entry) {
+        File[] inner = entry.isDirectory() ? entry.listFiles() : null;
+        if (inner != null) for (File file : inner) if (file.isFile()) file.delete();
+        entry.delete();
     }
 
     @PluginMethod public void openAttachment(PluginCall call) {
@@ -212,19 +247,23 @@ public class ProMailPlugin extends Plugin {
             dialog.setOnCancelListener(d -> { password.setText(""); synchronized (finished) { if (finished.compareAndSet(false, true)) call.reject("Account setup cancelled", "CANCELLED"); } });
             dialog.setOnDismissListener(d -> { password.setText(""); synchronized (finished) { if (finished.compareAndSet(false, true)) call.reject("Account setup cancelled", "CANCELLED"); } });
             dialog.setOnShowListener(d -> {
+                // Klaus 19.11.2026: Telekom steht oben und ist beim Öffnen schon gewählt. Der Spinner meldet dann keinen Wechsel,
+                // die Serverfelder blieben leer und jede Anmeldung scheiterte sofort. Darum den gewählten Anbieter gleich einmal anwenden.
+                java.util.function.IntConsumer applyPreset = position -> {
+                    password.setText("");user.setText("");status.setText("");
+                    MailProvider preset=MailProvider.values()[position];boolean gmail=preset==MailProvider.GOOGLE;
+                    for (EditText field : new EditText[] {email,user,password,imap,smtp}) showField(field, !gmail&&preset.ready());
+                    showField(user,!gmail&&preset.ready()&&preset.customUser());
+                    imap.setText(preset.imap);
+                    smtp.setText(preset.smtp);
+                    imap.setEnabled(preset.editable);smtp.setEnabled(preset.editable);
+                    help.setText(gmail&&!gmailReady?GMAIL_NOT_SET_UP[language]:preset.help(language));
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setText(!preset.ready()||(gmail&&!gmailReady)?MailProvider.setupLabel(language):gmail?GOOGLE_SIGN_IN[language]:t[4]);
+                };
+                applyPreset.accept(Math.max(0, provider.getSelectedItemPosition()));
                 provider.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
                     public void onNothingSelected(android.widget.AdapterView<?> parent) { }
-                    public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                        password.setText("");user.setText("");status.setText("");
-                        MailProvider preset=MailProvider.values()[position];boolean gmail=preset==MailProvider.GOOGLE;
-                        for (EditText field : new EditText[] {email,user,password,imap,smtp}) showField(field, !gmail&&preset.ready());
-                        showField(user,!gmail&&preset.ready()&&preset.customUser());
-                        imap.setText(preset.imap);
-                        smtp.setText(preset.smtp);
-                        imap.setEnabled(preset.editable);smtp.setEnabled(preset.editable);
-                        help.setText(gmail&&!gmailReady?GMAIL_NOT_SET_UP[language]:preset.help(language));
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setText(!preset.ready()||(gmail&&!gmailReady)?MailProvider.setupLabel(language):gmail?GOOGLE_SIGN_IN[language]:t[4]);
-                    }
+                    public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) { applyPreset.accept(position); }
                 });
                 GradientDrawable background = new GradientDrawable(); background.setColor(Color.parseColor(dark ? "#171d25" : "#faf6f0"));
                 background.setCornerRadius(18 * activity.getResources().getDisplayMetrics().density);
@@ -267,10 +306,78 @@ public class ProMailPlugin extends Plugin {
                         input.put("provider", preset.id)
                             .put("email", email.getText().toString()).put("user", preset.customUser()?user.getText().toString():email.getText().toString())
                             .put("password", password.getText().toString()).put("imap", imap.getText().toString()).put("smtp", smtp.getText().toString());
-                    } catch (Exception error) { testing.set(false);formBusy.accept(false);status.setText(t[8]);return; }
+                    } catch (Exception error) { testing.set(false);formBusy.accept(false);status.setText(MISSING[language]);return; }
                     status.setText(t[7]); dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
                     try { verifySetup(call, new MailAccount(input), activity, dialog, status, t, language, testing, finished,()->formBusy.accept(false)); }
-                    catch (Exception error) { testing.set(false);formBusy.accept(false);status.setText(t[8]);dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true); }
+                    catch (Exception error) { testing.set(false);formBusy.accept(false);status.setText(missing(email.getText().toString(),password.getText().toString(),imap.getText().toString(),smtp.getText().toString(),language));dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true); }
+                });
+            });
+            dialog.show();
+        });
+    }
+    private static final String[] MISSING = {"Bitte E-Mail-Adresse, Passwort und Servernamen vollständig eintragen.", "Please fill in email address, password and server names.", "Заполните адрес, пароль и серверы.", "Uzupełnij adres, hasło i serwery."};
+    /** Sagt, welches Feld fehlt, statt „Anmeldung fehlgeschlagen“ – die App hat dann gar nicht beim Anbieter gefragt. */
+    static String missing(String email, String password, String imap, String smtp, int language) {
+        String[][] w = {{"Bitte die E-Mail-Adresse vollständig eintragen.", "Bitte das Passwort eintragen.", "Bitte die Servernamen eintragen (IMAP und SMTP).", "Eingaben bitte prüfen: die E-Mail-Adresse ist so nicht gültig."},
+            {"Please enter the full email address.", "Please enter the password.", "Please enter the server names (IMAP and SMTP).", "Please check: the email address is not valid."},
+            {"Введите полный адрес почты.", "Введите пароль.", "Введите серверы (IMAP и SMTP).", "Проверьте: адрес почты недействителен."},
+            {"Wpisz pełny adres e-mail.", "Wpisz hasło.", "Wpisz serwery (IMAP i SMTP).", "Sprawdź: adres e-mail jest nieprawidłowy."}};
+        String[] m = w[Math.max(0, Math.min(3, language))];
+        if (email.trim().isEmpty()) return m[0];
+        if (password.isEmpty()) return m[1];
+        if (imap.trim().isEmpty() || smtp.trim().isEmpty()) return m[2];
+        return m[3];
+    }
+    private static final String[] REPLY = {"Antwort des Servers: ", "Server reply: ", "Ответ сервера: ", "Odpowiedź serwera: "};
+    /** Wortlaut des Servers bei abgelehnter Anmeldung (enthält nie das Passwort), gekürzt; sonst leer. */
+    static String serverReply(Throwable error) {
+        for (int i = 0; i < 15 && error != null; i++) {
+            if (error instanceof AuthenticationFailedException && error.getMessage() != null) {
+                String text = error.getMessage().replaceAll("[\\r\\n\\t]+", " ").trim();
+                return text.length() > 160 ? text.substring(0, 160) + " …" : text;
+            }
+            error = error.getCause() != null ? error.getCause() : error instanceof MessagingException ? ((MessagingException) error).getNextException() : null;
+        }
+        return "";
+    }
+    private static final String[] RENEW_TITLE = {"Passwort erneuern", "Renew password", "Обновить пароль", "Odnów hasło"};
+    /** Neues Passwort für ein vorhandenes Passwort-Konto: nur das Passwort wird abgefragt, geprüft und ersetzt (gleiche Kennung). */
+    @PluginMethod public void renewPassword(PluginCall call) {
+        Activity activity = getActivity();
+        MailAccount existing; MailProvider preset;
+        try {
+            existing = engine.account(required(call, "account")); preset = MailProvider.find(existing.provider);
+            if (!existing.authType.equals("password")) throw new MailFailure("INVALID_INPUT");
+        } catch (Exception error) { call.reject(code(error), code(error)); return; }
+        activity.runOnUiThread(() -> {
+            int language = ArraysIndex.language(call.getString("language", "de"));
+            String[] t = WORDS[language];
+            boolean dark = call.getBoolean("dark", false);
+            ContextThemeWrapper context = new ContextThemeWrapper(activity, dark ?
+                androidx.appcompat.R.style.Theme_AppCompat_Dialog_Alert : androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+            LinearLayout form = new LinearLayout(context); form.setOrientation(LinearLayout.VERTICAL);
+            int padding = Math.round(20 * activity.getResources().getDisplayMetrics().density);
+            form.setPadding(padding, padding / 2, padding, padding / 2);
+            TextView address = new TextView(context); address.setText(existing.email); form.addView(address);
+            EditText password = field(form, t[3], InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            TextView help = new TextView(context); help.setText(preset.help(language)); form.addView(help);
+            TextView status = new TextView(context); status.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE); form.addView(status);
+            ScrollView scroll = new ScrollView(context); scroll.setFillViewport(true); scroll.addView(form);
+            AlertDialog dialog = new AlertDialog.Builder(context).setTitle(RENEW_TITLE[language]).setView(scroll)
+                .setPositiveButton(t[4], null).setNegativeButton(t[5], null).create();
+            AtomicBoolean finished = new AtomicBoolean(false), testing = new AtomicBoolean(false);
+            dialog.setOnCancelListener(d -> { password.setText(""); synchronized (finished) { if (finished.compareAndSet(false, true)) call.reject("Password renewal cancelled", "CANCELLED"); } });
+            dialog.setOnDismissListener(d -> { password.setText(""); synchronized (finished) { if (finished.compareAndSet(false, true)) call.reject("Password renewal cancelled", "CANCELLED"); } });
+            dialog.setOnShowListener(d -> {
+                GradientDrawable background = new GradientDrawable(); background.setColor(Color.parseColor(dark ? "#171d25" : "#faf6f0"));
+                background.setCornerRadius(18 * activity.getResources().getDisplayMetrics().density);
+                if (dialog.getWindow() != null) dialog.getWindow().setBackgroundDrawable(background);
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                    if (password.getText().length() == 0) { status.setText(missing(existing.email,"",existing.imap,existing.smtp,language)); return; }
+                    if (!testing.compareAndSet(false, true)) return;
+                    password.setEnabled(false);
+                    try { verifySetup(call, engine.renewed(existing.id, password.getText().toString()), activity, dialog, status, t, language, testing, finished, () -> password.setEnabled(true), true); }
+                    catch (Exception error) { testing.set(false); password.setEnabled(true); status.setText(t[8]); }
                 });
             });
             dialog.show();
@@ -293,6 +400,10 @@ public class ProMailPlugin extends Plugin {
     }
     private void verifySetup(PluginCall call, MailAccount account, Activity activity, AlertDialog dialog, TextView status,
             String[] t, int language, AtomicBoolean testing, AtomicBoolean finished, Runnable restoreForm) {
+        verifySetup(call, account, activity, dialog, status, t, language, testing, finished, restoreForm, false);
+    }
+    private void verifySetup(PluginCall call, MailAccount account, Activity activity, AlertDialog dialog, TextView status,
+            String[] t, int language, AtomicBoolean testing, AtomicBoolean finished, Runnable restoreForm, boolean replace) {
         status.setText(t[7]);dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
         worker.execute(() -> {
             if(finished.get())return;
@@ -301,7 +412,7 @@ public class ProMailPlugin extends Plugin {
                 JSONObject saved;
                 synchronized (finished) {
                     if (finished.get()) return;
-                    saved = engine.saveAccount(account);finished.set(true);
+                    saved = replace ? engine.replaceAccount(account) : engine.saveAccount(account);finished.set(true);
                 }
                 backup();
                 activity.runOnUiThread(() -> {
@@ -310,10 +421,11 @@ public class ProMailPlugin extends Plugin {
                     dialog.dismiss();
                 });
             } catch (Exception error) {
-                String code = code(error);
+                String code = code(error), server = serverReply(error);
                 activity.runOnUiThread(() -> {
                     if (finished.get()) return;
-                    status.setText(code.startsWith("GMAIL_") ? googleError(code, language) : t[code.equals("TLS_FAILED") ? 9 : code.equals("VAULT_UNAVAILABLE") ? 11 : code.equals("AUTH_FAILED") || code.equals("INVALID_INPUT") ? 8 : 10]);
+                    status.setText((code.startsWith("GMAIL_") ? googleError(code, language) : t[code.equals("TLS_FAILED") ? 9 : code.equals("VAULT_UNAVAILABLE") ? 11 : code.equals("AUTH_FAILED") || code.equals("INVALID_INPUT") ? 8 : 10])
+                        + (server.isEmpty() ? "" : "\n" + REPLY[language] + server));
                     testing.set(false);restoreForm.run();dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                 });
             }

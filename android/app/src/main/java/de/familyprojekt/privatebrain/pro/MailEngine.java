@@ -94,6 +94,30 @@ final class MailEngine {
         store.write("accounts", new JSONObject().put("items", values));
         return account.publicJson();
     }
+    /**
+     * Neues Passwort für ein vorhandenes Konto (Klaus 19.11.2026: nach einem neuen Telekom-„Passwort für E-Mail-Programme“ musste das
+     * Konto sonst neu angelegt werden). Nur Passwort-Konten; Kennung, Anbieter, Adresse, Benutzername und Server bleiben. Wird erst nach
+     * erfolgreicher Anmeldeprobe gerufen.
+     */
+    MailAccount renewed(String id, String password) throws Exception {
+        MailAccount existing = account(id);
+        if (!existing.authType.equals("password")) throw new MailFailure("INVALID_INPUT");
+        return new MailAccount(existing.privateJson().put("password", password));
+    }
+    JSONObject replaceAccount(MailAccount account) throws Exception {
+        JSONObject root = store.read("accounts");
+        JSONArray values = root == null ? new JSONArray() : root.getJSONArray("items");
+        for (int n = 0; n < values.length(); n++) {
+            MailAccount existing = new MailAccount(values.getJSONObject(n));
+            if (!existing.id.equals(account.id)) continue;
+            if (!existing.provider.equals(account.provider) || !existing.email.equals(account.email) || !existing.user.equals(account.user)
+                || !existing.imap.equals(account.imap) || !existing.smtp.equals(account.smtp)) throw new MailFailure("INVALID_INPUT");
+            values.put(n, account.privateJson());
+            store.write("accounts", new JSONObject().put("items", values));
+            return account.publicJson();
+        }
+        throw new MailFailure("ACCOUNT_MISSING");
+    }
     void removeAccount(String id) throws Exception {
         account(id);
         JSONArray values = store.read("accounts").getJSONArray("items"), result = new JSONArray();
@@ -267,7 +291,9 @@ final class MailEngine {
                     MailIndex.Body body;
                     try { body = MailIndex.body(message); }
                     catch (Exception unreadable) { body = new MailIndex.Body(); /* Listed by header only. */ }
-                    items.put(new JSONObject().put("uid", uid).put("text", body.text).put("html", body.html).put("attachments", body.attachments));
+                    JSONArray files = new JSONArray();
+                    for (MailIndex.FileInfo f : body.files) files.put(new JSONObject().put("name", f.name).put("type", f.type).put("size", f.size));
+                    items.put(new JSONObject().put("uid", uid).put("text", body.text).put("html", body.html).put("attachments", body.attachments).put("files", files));
                 }
                 return new JSONObject().put("items", items);
             } finally { folder.close(false); }
@@ -285,7 +311,15 @@ final class MailEngine {
         }
     }
     JSONObject message(MailAccount account, String name, String validity, long uid) throws Exception {
-        if (vaultMode()) return vaultMessage(account, name, validity, uid);
+        if (vaultMode()) {
+            try { return vaultMessage(account, name, validity, uid); }
+            catch (VaultCrypto.Failure error) {
+                // Klaus 15.11.2026 (1.0.50): Ist der Speicherort nicht erreichbar (Zugriff auf den Ordner verloren), bleibt die Mail
+                // trotzdem lesbar – direkt vom Server, nur im Arbeitsspeicher, nirgends ersatzweise gespeichert. Die Seite sagt es.
+                if (!"VAULT_FOLDER_UNAVAILABLE".equals(error.getMessage())) throw error;
+                return MailMime.parse(raw(account, name, validity, uid), session()).put("vaultUnavailable", true);
+            }
+        }
         return MailMime.parse(raw(account, name, validity, uid), session());
     }
     /**

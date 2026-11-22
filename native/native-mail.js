@@ -28,7 +28,9 @@
     nativeLimit: ['Anhänge zusammen höchstens 5 MB, vollständige Nachricht höchstens 8 MB.', 'Attachments up to 5 MB total, complete message up to 8 MB.', 'Вложения до 5 МБ суммарно, письмо до 8 МБ.', 'Załączniki łącznie do 5 MB, całe wiadomości do 8 MB.'],
     oversized: ['Nachricht über 8 MB – bitte beim Anbieter öffnen', 'Message over 8 MB – open with provider', 'Письмо больше 8 МБ — откройте у провайдера', 'Wiadomość powyżej 8 MB — otwórz u dostawcy'],
     detailsPending: ['Details beim Öffnen laden', 'Load details when opening', 'Загрузить сведения при открытии', 'Pobierz szczegóły przy otwarciu'],
-    download: ['Original teilen / sichern', 'Share / save original', 'Поделиться / сохранить оригинал', 'Udostępnij / zapisz oryginał']
+    download: ['Original teilen / sichern', 'Share / save original', 'Поделиться / сохранить оригинал', 'Udostępnij / zapisz oryginał'],
+    bookledger: ['An BookLedgerPro teilen', 'Share with BookLedgerPro', 'Передать в BookLedgerPro', 'Udostępnij do BookLedgerPro'],
+    familienakte: ['An Familienakte teilen', 'Share with Familienakte', 'Передать в Familienakte', 'Udostępnij do Familienakte']
   };
   const messages = {
     APP_OFFLINE: ['Die App ist vom Internet getrennt. Im App-Menü den Internetzugriff wieder erlauben.', 'The app is disconnected from the internet. Allow internet access again in the app menu.', 'Приложение отключено от интернета. Разрешите доступ в меню приложения.', 'Aplikacja jest odłączona od internetu. Zezwól na dostęp w menu aplikacji.'],
@@ -79,7 +81,7 @@
       return result;
     }
     catch (error) {
-      if (error?.code === 'CANCELLED' && method === 'addAccount') return null;
+      if (error?.code === 'CANCELLED' && (method === 'addAccount' || method === 'renewPassword')) return null;
       // Folder mode: ask once for the folder password (native dialog), then repeat the same request.
       if (error?.code === 'VAULT_LOCKED' && !retried && window.PBVault && await window.PBVault.unlock().catch(() => false)) return invoke(method, args, true);
       const known=Object.hasOwn(messages,error?.code);
@@ -104,10 +106,20 @@
     text,
     accounts: async () => withItems(await invoke('accounts')).items,
     addAccount: () => invoke('addAccount', {language:document.documentElement.lang, dark:document.documentElement.dataset.theme === 'dunkel'}),
+    renewPassword: account => invoke('renewPassword', {account, language:document.documentElement.lang, dark:document.documentElement.dataset.theme === 'dunkel'}),
     saved: async account => withItems(await invoke('saved', {account})).items,
     savedDraft: (account,id) => invoke('savedDraft',{account,id}),
     openAttachment: args => invoke('openAttachment', args),
     openOriginal: args => invoke('openOriginal', args),
+    // „An BookLedgerPro teilen“: mit verbundenem Tresorordner fragt native-tresorordner.js, ob die Mail ins Eingangsfach soll.
+    shareBookLedger: (args, meta) => window.PBTresorordner?.mailAnBookLedger ? PBTresorordner.mailAnBookLedger(args, meta) : invoke('openOriginal', {...args, name: meta?.name || ''}),
+    tresorMailAblegen: args => invoke('tresorMailAblegen', args),
+    // „An Familienakte“: unveränderte Quelle der Mail (MIME mit Anhängen) für den gemeinsamen Pro-Tresor (höchstens 20 MiB).
+    original: args => invoke('original', args),
+    // meta.still (Mail-Liste): ohne Pro-Tresor geht nichts hinaus, auch nicht über die Teilen-Auswahl.
+    shareFamilienakte: (args, meta) => window.PBProVerbund?.mailAnFamilienakte ? PBProVerbund.mailAnFamilienakte(args, meta) : meta?.still ? Promise.resolve({ergebnis:'fehler',grund:'gesperrt'}) : invoke('openOriginal', {...args, name: meta?.name || ''}),
+    familienakteTresor: async () => window.PBProVerbund?.familienakteTresor ? PBProVerbund.familienakteTresor() : {vorhanden:false,offen:false},
+    familienakteOeffnen: async () => window.PBProVerbund?.familienakteOeffnen ? PBProVerbund.familienakteOeffnen() : false,
     forgetMessage: args => invoke('forgetMessage', args),
     // Sorting index for all accounts: headers since a date, then readable text of a few mails.
     index: async args => {

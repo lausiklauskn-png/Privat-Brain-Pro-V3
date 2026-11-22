@@ -33,6 +33,7 @@
   ],
   "ProMail": [
     "accounts",
+    "renewPassword",
     "removeAccount",
     "folders",
     "createFolder",

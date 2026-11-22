@@ -96,7 +96,7 @@
   // Alte Emojis → Strichsymbol (nur diese; Pfeile wie ↕ ← → bleiben).
   const EMOJI = { '💾':'save','🛡':'shield','🔗':'link','🔎':'search','🔍':'search','📁':'folder','📂':'folder','🎤':'mic',
     '📥':'intake','🔐':'lock','🔒':'lock','🔑':'key','🌐':'globe','✉':'mail','📧':'mail','📊':'dash','🖼':'images','📄':'file','📎':'clipK',
-    '📦':'box','📝':'note','👤':'person','🔀':'shuffle','🗂':'catalog','🧾':'receipt','📜':'file','💬':'chat','📈':'chart','📊':'chart','📽':'presentation','📋':'note','✨':'done','🔓':'unlock','⬇':'download','🗑':'trash','⚠':'warning','🔬':'lab','🖧':'network','🔏':'seal','💡':'tip','🗄':'archive','🔴':'mic' };
+    '📦':'box','📝':'note','👤':'person','🔀':'shuffle','🗂':'catalog','🧾':'receipt','📜':'file','💬':'chat','📈':'chart','📊':'chart','📽':'presentation','📋':'note','✨':'done','🔓':'unlock','⬇':'download','🗑':'trash','⚠':'warning','🔬':'lab','🖧':'network','🔏':'seal','💡':'tip','🗄':'archive','🔴':'mic','📭':'mail' };
   const NS = 'http://www.w3.org/2000/svg';
   function svg(key) {
     const s = document.createElementNS(NS, 'svg');
@@ -122,7 +122,7 @@
     stripEmoji(button);
     if (!button.querySelector(':scope>svg.v3-icon')) button.append(svg(folderKey(button)));
   }
-  const GENERIC = '#panel-search button, #panel-search label > span, #panel-explorer .explorer-toolbar button, #panel-explorer .explorer-toolbar label > span, #panel-intake button, #panel-intake h3, #panel-settings h3, .pb-dictate, #panel-dupes .fname, #panel-order .fname, #panel-settings .btnrow > button, #panel-settings .hint, #panel-intake .hint, #groups .grp .ic, #reorgNote h3, #panel-order .empty .big, #panel-dupes .empty .big, #explorerTree button, #explorerFiles .explorer-row strong, #explorerFiles .explorer-dir strong, #explorerPath button, #explorerPath span';
+  const GENERIC = '#panel-search button, #panel-search label > span, #panel-explorer .explorer-toolbar button, #panel-explorer .explorer-toolbar label > span, #panel-intake button, #panel-intake h3, #panel-settings h3, .pb-dictate, #panel-dupes .fname, #panel-order .fname, #panel-settings .btnrow > button, #panel-settings .hint, #panel-intake .hint, #groups .grp .ic, #reorgNote h3, #panel-order .empty .big, #panel-dupes .empty .big, #explorerTree button, #explorerFiles .explorer-row strong, #explorerFiles .explorer-dir strong, #explorerPath button, #explorerPath span, #pb-mail-all button, #pb-mail-all h3, #pb-mail-all .mail-subject, #pb-mail-all .mail-undo > span';  // „Alle Konten“: Nach Absender und Aufräumen (22.11.2026)
   function firstText(el) { for (const n of el.childNodes) { if (n.nodeType === 3) { if (n.nodeValue.trim()) return n; } else return null; } return null; }
   // Schutz gegen Endlosschleifen: schreibt fremder Code denselben Knopf immer wieder neu, hört V3 dort auf (200 in 2 s; eine echte Schleife macht Tausende, Fortschrittsanzeigen nur Dutzende).
   const seen = new WeakMap();
