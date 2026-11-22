@@ -229,6 +229,10 @@ try {
   );
   await page.locator('[data-lang="de"]').click();
   await settled();
+  // Seit 2026-11-16 werden die Anhänge nach dem Anzeigen der Mail geprüft: auf das Ergebnis warten.
+  await page.waitForFunction(
+    () => !document.querySelector("#pb-live-reader").hasAttribute("data-mail-checking"),
+  );
   ok(
     "Text- und Anhangprüfung sichtbar",
     (await page.locator("#pb-live-reader .mail-report").innerText()).includes(
@@ -242,12 +246,59 @@ try {
     "Originalanhang ist herunterladbar",
     (await download).suggestedFilename() === "notiz.txt",
   );
+  await page.evaluate(() => {
+    window.__geteilt = [];
+    navigator.canShare = (d) => !!d?.files?.length;
+    navigator.share = async (d) => { window.__geteilt.push({ n: d.files.length, name: d.files[0].name, type: d.files[0].type, size: d.files[0].size }); };
+  });
+  await page.getByRole("button", { name: "An BookLedgerPro teilen", exact: true }).click();
+  await settled();
+  const geteilt = await page.evaluate(() => window.__geteilt);
+  ok(
+    "„An BookLedgerPro teilen“ gibt genau die Original-Mail als .eml-Datei (message/rfc822) an Web Share",
+    geteilt.length === 1 && geteilt[0].n === 1 && geteilt[0].type === "message/rfc822" && /\.eml$/.test(geteilt[0].name) && geteilt[0].size > 100,
+  );
+  await page.evaluate(() => { navigator.canShare = () => false; });
+  page.once("dialog", (d) => d.accept());
+  const emlDownload = page.waitForEvent("download");
+  await page.getByRole("button", { name: "An BookLedgerPro teilen", exact: true }).click();
+  ok(
+    "Ohne Web Share wird die .eml gespeichert und der Weg (Belege hochladen) genannt",
+    /\.eml$/.test((await emlDownload).suggestedFilename()),
+  );
+  await settled();
   await page.getByRole("button", { name: "Antworten", exact: true }).click();
   await settled();
   ok(
     "Antwort verwendet Reply-To",
     (await page.locator("#pb-live-to").inputValue()) === "reply@example.test",
   );
+  ok(
+    "Senden ist beschriftete Hauptaktion oberhalb der Empfängerfelder",
+    await page.locator('.mail-compose-actions [data-live-text="send"]').evaluate(b =>
+      b.classList.contains('mail-primary') && b.textContent === 'Senden' &&
+      b.getBoundingClientRect().bottom <= document.getElementById('pb-live-to').getBoundingClientRect().top),
+  );
+  ok("Leere Cc-/Bcc-Felder sind zunächst eingeklappt", !await page.locator('#pb-live-cc').isVisible());
+  await page.locator('.mail-copy-fields > summary').click();
+  await page.locator('#pb-live-cc').fill('copy@example.test');
+  await page.locator('#pb-live-bcc').fill('hidden@example.test');
+  await page.locator('.mail-copy-fields > summary').click();
+  const attachmentChooser = page.waitForEvent('filechooser');
+  await page.locator('.mail-compose-actions [data-live-text="attach"]').click();
+  await (await attachmentChooser).setFiles({name:'compose-note.txt',mimeType:'text/plain',buffer:Buffer.from('Notiz zum Entwurf.')});
+  await settled();
+  ok("Cc/Bcc bleiben nach Einklappen und Anhang-Neuzeichnen erhalten",
+    await page.locator('#pb-live-cc').inputValue()==='copy@example.test' &&
+    await page.locator('#pb-live-bcc').inputValue()==='hidden@example.test' &&
+    !await page.locator('#pb-live-cc').isVisible());
+  for (const [lang, caption] of [['en','Cc / Bcc'],['ru','Копия / скрытая копия'],['pl','DW / UDW'],['de','Cc / Bcc']]) {
+    await page.evaluate(lang => { document.documentElement.lang = lang; }, lang);
+    await page.waitForFunction(caption => document.querySelector('.live-mail .mail-copy-fields > summary').textContent === caption, caption);
+    ok(lang + ': aufklappbare Empfängerfelder übersetzen ohne Werteverlust',
+      await page.locator('.mail-copy-fields > summary').textContent() === caption &&
+      await page.locator('#pb-live-bcc').inputValue() === 'hidden@example.test');
+  }
   await page.locator("#pb-live-to").fill("recipient@example.test");
   await page.locator("#pb-live-subject").fill("Antwort");
   await page.locator("#pb-live-text").fill("Antworttext");
@@ -263,13 +314,16 @@ try {
     requests.some((r) => r.path.endsWith("/draft")) &&
       !requests.some((r) => r.path.endsWith("/send")),
   );
+  ok("Eingeklappte Cc/Bcc werden im Entwurf gespeichert",
+    requests.find(r=>r.path.endsWith('/draft')).body.cc==='copy@example.test' &&
+    requests.find(r=>r.path.endsWith('/draft')).body.bcc==='hidden@example.test');
   page.on("dialog", (d) => d.accept());
-  await page.getByRole("button", { name: "Jetzt senden", exact: true }).click();
+  await page.getByRole("button", { name: "Senden", exact: true }).click();
   await settled();
   await page.waitForFunction(() =>
     document
       .querySelector("#pb-live-reader")
-      .textContent.includes("Mailserver hat"),
+      .textContent.includes("Gesendet."),
   );
   const submission = requests.find((r) => r.path.endsWith("/send"));
   ok(
@@ -277,9 +331,24 @@ try {
     submission.body.submission.length === 36 &&
       submission.body.inReplyTo === "<message@example.test>",
   );
+  ok("Senden übernimmt eingeklappte Cc/Bcc genau einmal",
+    submission.body.cc==='copy@example.test' && submission.body.bcc==='hidden@example.test' &&
+    requests.filter(r=>r.path.endsWith('/send')).length===1);
   ok(
     "Versanderfolg wird erst nach Serverantwort angezeigt",
-    (await page.locator("#pb-live-reader").innerText()).includes("angenommen"),
+    (await page.locator("#pb-live-reader").innerText()).includes("Gesendet."),
+  );
+  // Generalprüfung 16.11.2026: nach dem Senden keine Sackgasse – klarer Satz, Liste wieder da, Weg zurück vorhanden.
+  ok(
+    "Nach dem Senden: klarer Satz mit Empfänger in der Hinweiszeile, Nachrichtenliste steht wieder da, „← Nachrichtenliste“ über der Meldung",
+    await page.evaluate(() => {
+      const app = document.querySelector(".live-mail");
+      return app.dataset.view === "list" &&
+        app.querySelector(":scope > .mail-notice").textContent.startsWith("Gesendet. An: ") &&
+        !/SMTP/.test(app.querySelector(":scope > .mail-notice").textContent) &&
+        Boolean(app.querySelector('#pb-live-reader > [data-live-text="back"]')) &&
+        app.querySelectorAll(".mail-list [data-live-uid]").length > 0;
+    }),
   );
   await page
     .getByRole("button", { name: "Aktualisieren", exact: true })
@@ -310,7 +379,7 @@ try {
   await page.locator('[data-live-uid="2"]').click();
   await settled();
   await page
-    .getByRole("button", { name: "Nachricht katalogisieren", exact: true })
+    .getByRole("button", { name: "In Katalog", exact: true })
     .click();
   await settled();
   await page.waitForFunction(() =>
