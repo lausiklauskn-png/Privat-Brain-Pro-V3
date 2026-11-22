@@ -12,11 +12,12 @@
   };
   const copy = () => words[String(root.lang || 'de').slice(0,2)] || words.de;
   // Klaus 2026-10-26 (Sitzung 3, Punkt 7): one tap opens, a second closes; the choice stays, also after a restart.
-  // Whoever never touches it sees the explanation open.
+  // Klaus 2026-11-16 (Gerätetest 1.0.52, Punkt 22): whoever never touches it sees the explanation closed,
+  // as in Familienakte, Workflow PDF Pro and BookLedgerPro. An explicit choice is still remembered.
   const STORE = 'pb_help_open_v1';
   let remembered = {};
   try { const v = JSON.parse(localStorage.getItem(STORE) || 'null'); if (v && typeof v === 'object') remembered = v; } catch {}
-  const wasOpen = key => typeof remembered[key] === 'boolean' ? remembered[key] : true;
+  const wasOpen = key => typeof remembered[key] === 'boolean' ? remembered[key] : false;
   const remember = (key, value) => { remembered[key] = !!value; try { localStorage.setItem(STORE, JSON.stringify(remembered)); } catch {} };
   const one = (host, selector) => host?.querySelector(selector);
   function symbol() {
@@ -171,7 +172,7 @@
     information('vault-limits',one(vault,':scope>.native-vault-limits'),one(vault,'h3'));
     information('protection-limits',one(protection,':scope>.native-vault-limits'),one(protection,'h3'));
     // V3 keeps its own order of the settings (Klaus asked for the ⓘ, not for a new order).
-    if(!root.classList.contains('v3'))settingsOrder(settings,[document.getElementById('pb-input-language-settings'),vault,protection,offline,ocr,tresor,provider,image,attachments,folders,catalog,merge,mycel,document.getElementById('pb-license'),one(settings,':scope>.native-updates')],[document.getElementById('stFiles')?.closest('.note'),document.getElementById('vaultNote')]);
+    if(!root.classList.contains('v3'))settingsOrder(settings,[document.getElementById('pb-input-language-settings'),vault,tresor,protection,offline,ocr,provider,image,attachments,folders,catalog,merge,mycel,document.getElementById('pb-license'),one(settings,':scope>.native-updates')],[document.getElementById('stFiles')?.closest('.note'),document.getElementById('vaultNote')]);
     for(const entry of entries.values())label(entry);
     if(!root.classList.contains('pb-help-ready'))root.classList.add('pb-help-ready');
   }

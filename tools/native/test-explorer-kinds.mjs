@@ -90,7 +90,7 @@ try{
   await page.setInputFiles('#fileInput',[{name:'Kaufvertrag.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-1.4\n%%EOF')},{name:'Einkauf.txt',mimeType:'text/plain',buffer:Buffer.from('Milch, Brot')}]);
   await page.waitForFunction(()=>!signing&&document.getElementById('pbImportDone')&&!document.getElementById('pbImportDone').hidden);
   const done=page.locator('#pbImportDone');
-  ok('After adding, the note names each kind',(await done.textContent()).includes('So ist es eingeordnet')&&(await done.locator('[data-kind="doc"]').textContent()).includes('📄 Dokumente: 1')&&(await done.locator('[data-kind="note"]').textContent()).includes('📝 Notizen: 1'));
+  ok('After adding, the note names each kind',(await done.textContent()).includes('So ist es eingeordnet')&&(await done.locator('[data-kind="doc"]').textContent()).includes('Dokumente: 1')&&(await done.locator('[data-kind="note"]').textContent()).includes('Notizen: 1'));
   await done.locator('[data-show="note"]').click();
   ok('"Im Explorer zeigen" opens the explorer on that kind with the new file',await page.locator('#panel-explorer').evaluate(p=>p.classList.contains('on'))&&JSON.stringify((await rows.locator('strong').allTextContents()).map(plain))===JSON.stringify(['Einkauf.txt']));
   await page.locator('[data-tab="intake"]').click();

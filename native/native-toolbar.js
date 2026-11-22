@@ -135,7 +135,7 @@
     button.onclick=()=>{if(page==='explorer')window.PBWorkspace.restoreExplorer({path:'',filter:'',sort:'name'});window.PBWorkspace.navigate(page);document.querySelector('#panel-'+page+' button,#panel-'+page+' input')?.focus();};
   }
   const pillars=document.querySelector('#panel-intake .pillars');
-  if(pillars){const hint=make('p','native-import-reassurance');for(const node of [...pillars.children]){if(hint.childNodes.length)hint.append(document.createTextNode(' · '));hint.append(...node.childNodes);}document.getElementById('drop').after(hint);pillars.remove();}
+  if(pillars){const hint=make('div','native-import-reassurance'),principles=make('p','native-import-principles'),library=document.querySelector('#panel-intake [data-ws="libraryHelp"]');for(const node of [...pillars.children]){if(principles.childNodes.length)principles.append(document.createTextNode(' · '));principles.append(...node.childNodes);}if(library)hint.append(library);hint.append(principles);document.getElementById('drop').after(hint);pillars.remove();}
   let queued=false;
   function enhance(){
     queued=false;

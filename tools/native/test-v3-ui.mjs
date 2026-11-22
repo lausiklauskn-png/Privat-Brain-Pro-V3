@@ -153,9 +153,10 @@ try{
     return ['.native-import-reassurance','#fsHint','[data-i18n=dropDnd]','[data-ws=libraryHelp]'].every(s=>{const n=document.querySelector(s);return !n||(n.closest('[data-pb-help-content]')&&!n.getClientRects().length);});}));
   await page.locator('#drop [data-pb-help-toggle]').click();
   ok('412px: ⓘ in the drop box brings the hints and the three points back, and hides them again',await page.locator('.native-import-reassurance').isVisible()&&await page.locator('#fsHint').isVisible()&&await (async()=>{await page.locator('#drop [data-pb-help-toggle]').click();return !(await page.locator('.native-import-reassurance').isVisible());})());
-  await page.locator('#panel-intake .library-setup [data-pb-help-toggle]').click();
-  ok('412px: ⓘ in the storage box shows its explanation',await page.locator('[data-ws=libraryHelp]').isVisible());
-  await page.locator('#panel-intake .library-setup [data-pb-help-toggle]').click();
+  // Pro 1.0.53 (V3 Schritt 2): die Ablage steht als eine Zeile, ihre Erklärung liegt mit hinter dem ⓘ der Ablagefläche.
+  await page.locator('#drop [data-pb-help-toggle]').click();
+  ok('412px: ⓘ in the drop box also shows the storage explanation',await page.locator('[data-ws=libraryHelp]').isVisible());
+  await page.locator('#drop [data-pb-help-toggle]').click();
   await page.locator('[data-tab=mail]').click();await page.setViewportSize({width:1280,height:800});await page.waitForTimeout(300);
   for(const width of [1100,1000,768,412,360]){
     await page.setViewportSize({width,height:860});await page.waitForTimeout(300);

@@ -246,6 +246,9 @@ header.top .tools { display:flex;flex:none;flex-wrap:nowrap;align-items:center;g
 .native-import-reassurance { padding:10px 12px;margin:10px 0;font-size:.76rem;line-height:1.5;color:var(--mut);border:1px solid var(--line);border-radius:8px; }
 .native-import-reassurance b { font:inherit;font-weight:600;margin-right:4px; }
 .native-import-reassurance .ic { display:none; }
+/* Klaus 2026-11-16 (V3): one heading with one ⓘ, a large drop area, the library as one line. */
+.native-import-reassurance p { margin:0 0 6px; }
+.native-import-reassurance p:last-child { margin-bottom:0; }
 #panel-intake .library-setup { padding:12px;margin-top:8px; }
 #panel-intake .library-setup h3 { font-size:1.1rem;margin:0 0 6px; }
 #panel-intake .library-setup p { font-size:.85rem;line-height:1.5;margin:6px 0; }

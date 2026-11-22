@@ -4,7 +4,7 @@
    app, checks each file while it is added, keeps the result at the catalog entry and shows it:
    a mark at every file (search, catalog, explorer) and a report on tap.
    Nothing is removed or changed; a finding is marked, not deleted. Never "virenfrei": this is no virus scan.
-   Text inside images needs the text recognition, which is not in the app yet: that part says "not checked". */
+   Local text recognition is shared with the search import. Missing, uncertain and limited parts stay unchecked. */
 (() => {
   'use strict';
   const PDFJS = 'vendor/pdfjs/';
@@ -27,6 +27,15 @@
     clean: ['✓ Geprüft · kein Fund', '✓ Checked · nothing found', '✓ Проверено · ничего', '✓ Sprawdzono · brak'],
     found: ['⚠ Fund: ', '⚠ Found: ', '⚠ Найдено: ', '⚠ Znaleziono: '],
     partly: ['◐ Teilweise geprüft', '◐ Partly checked', '◐ Проверено частично', '◐ Sprawdzono częściowo'],
+    mailClean: ['✓ Mailtext geprüft · kein Fund', '✓ Email text checked · nothing found', '✓ Текст письма проверен · находок нет', '✓ Tekst wiadomości sprawdzony · brak znalezisk'],
+    mailFound: ['⚠ Mailtext: ', '⚠ Email text: ', '⚠ Текст письма: ', '⚠ Tekst wiadomości: '],
+    mailPartly: ['◐ Mailtext teilweise geprüft', '◐ Email text partly checked', '◐ Текст письма проверен частично', '◐ Tekst wiadomości sprawdzony częściowo'],
+    mailOpen: ['○ Mailtext noch nicht geprüft · prüfen', '○ Email text not checked yet · check', '○ Текст письма не проверен · проверить', '○ Tekst wiadomości niesprawdzony · sprawdź'],
+    mailEarlier: ['Früherer Mailtext-Prüfstand · ', 'Earlier email text check · ', 'Прежняя проверка текста письма · ', 'Wcześniejsza kontrola tekstu wiadomości · '],
+    earlier: ['Früherer Prüfstand · ', 'Earlier check result · ', 'Прежний результат проверки · ', 'Wcześniejszy wynik kontroli · '],
+    mailChanged: ['Der gespeicherte Mailtext oder seine Angaben wurden geändert. Dieser Bericht gilt für die frühere Fassung; bitte erneut prüfen.', 'The stored email text or its details changed. This report applies to the earlier version; please check again.', 'Сохранённый текст или сведения изменились. Отчёт относится к прежней версии; проверьте снова.', 'Zapisany tekst lub dane wiadomości zmieniły się. Raport dotyczy wcześniejszej wersji; sprawdź ponownie.'],
+    mailNone: ['Im geprüften Mailtext wurde nichts gefunden, was täuschen soll.', 'Nothing meant to deceive was found in the checked email text.', 'В проверенном тексте письма ничего обманного не найдено.', 'W sprawdzonym tekście wiadomości nie znaleziono niczego zwodniczego.'],
+    mailNoText: ['Es ist kein Mailtext gespeichert. Geprüft wurden nur die vorhandenen Mailangaben; Original und Anhänge sind nicht geprüft.', 'No email text is stored. Only the available message details were checked; the original and attachments were not checked.', 'Текст письма не сохранён. Проверены только имеющиеся сведения; оригинал и вложения не проверены.', 'Nie zapisano tekstu wiadomości. Sprawdzono tylko dostępne dane; oryginału i załączników nie sprawdzono.'],
     open: ['○ Noch nicht geprüft · jetzt prüfen', '○ Not checked yet · check now', '○ Ещё не проверено · проверить', '○ Jeszcze nie sprawdzono · sprawdź'],
     running: ['🛡 Wird geprüft …', '🛡 Checking …', '🛡 Проверяется …', '🛡 Sprawdzanie …'],
     report: ['🛡 Prüfbericht', '🛡 Check report', '🛡 Отчёт проверки', '🛡 Raport sprawdzenia'],
@@ -35,7 +44,7 @@
     whatNow: ['Was jetzt tun: die Datei nicht an eine KI geben und beim Absender nachfragen, ob sie so gemeint ist. Die Datei bleibt unverändert.', 'What to do: do not give the file to an AI and ask the sender whether it is meant this way. The file stays unchanged.', 'Что делать: не передавать файл ИИ и спросить отправителя. Файл не изменён.', 'Co zrobić: nie dawać pliku AI i zapytać nadawcę. Plik pozostaje bez zmian.'],
     info: ['Was sonst in der Datei steht (keine Gefahr)', 'What else is in the file (no danger)', 'Что ещё в файле (не опасно)', 'Co jeszcze jest w pliku (bez zagrożenia)'],
     notes: ['Was nicht geprüft werden konnte', 'What could not be checked', 'Что не удалось проверить', 'Czego nie dało się sprawdzić'],
-    imageText: ['Text in Bildern wird noch nicht gelesen: die Texterkennung fehlt in der App (kommt per Schalter).', 'Text in images is not read yet: the text recognition is not in the app (coming as a switch).', 'Текст на изображениях пока не читается: нет распознавания текста.', 'Tekst na obrazach nie jest jeszcze czytany: brak rozpoznawania tekstu.'],
+    imageText: ['Ein Teil des Inhalts konnte nicht zuverlässig geprüft werden. Die Einzelheiten nennen die Grenze.', 'Part of the content could not be checked reliably. Details explain the limit.', 'Часть содержимого не удалось надёжно проверить. Ограничение указано в подробностях.', 'Części zawartości nie udało się wiarygodnie sprawdzić. Szczegóły wyjaśniają ograniczenie.'],
     when: ['Geprüft am ', 'Checked on ', 'Проверено ', 'Sprawdzono '],
     noVirus: ['Das ist keine Virenprüfung.', 'This is not a virus scan.', 'Это не проверка на вирусы.', 'To nie jest skanowanie antywirusowe.'],
     again: ['Erneut prüfen', 'Check again', 'Проверить снова', 'Sprawdź ponownie'],
@@ -53,12 +62,21 @@
     allNone: ['🛡 Alle geprüft', '🛡 All checked', '🛡 Всё проверено', '🛡 Wszystko sprawdzone'],
     allRun: ['🛡 Prüfe {i} / {n} …', '🛡 Checking {i} / {n} …', '🛡 Проверка {i} / {n} …', '🛡 Sprawdzanie {i} / {n} …'],
     allDone: ['🛡 Alle geprüft', '🛡 All checked', '🛡 Всё проверено', '🛡 Wszystko sprawdzone'],
+    hgCheck: ['Prüfen läuft', 'Checking', 'Идёт проверка', 'Trwa sprawdzanie'],
+    hgStand: ['Datei {i} von {n}', 'File {i} of {n}', 'Файл {i} из {n}', 'Plik {i} z {n}'],
     allMissing: [' · {n} ohne Original auf diesem Gerät (nicht prüfbar)', ' · {n} without original on this device (cannot be checked)', ' · {n} без оригинала на устройстве', ' · {n} bez oryginału na urządzeniu'],
     allList: ['Mit Fund:', 'With a finding:', 'С находками:', 'Ze znaleziskiem:'],
-    mailPart: ['Geprüft wurde der Text der E-Mail. Anhänge stehen als eigene Dateien da.', 'The text of the email was checked. Attachments are listed as their own files.', 'Проверен текст письма. Вложения — отдельные файлы.', 'Sprawdzono tekst e-maila. Załączniki są osobnymi plikami.'],
+    mailPart: ['Geprüft wurde nur der gespeicherte Mailtext mit rekonstruierten Absender-, Empfänger- und Betreffangaben. Original-Header und Anhänge wurden in dieser Textprüfung nicht geprüft.', 'Only the stored email text with reconstructed sender, recipient and subject details was checked. Original headers and attachments were not checked in this text check.', 'Проверен только сохранённый текст с восстановленными сведениями об отправителе, получателе и теме. Исходные заголовки и вложения этой проверкой не проверены.', 'Sprawdzono tylko zapisany tekst z odtworzonymi danymi nadawcy, odbiorcy i tematu. Oryginalnych nagłówków i załączników nie sprawdzono w tej kontroli tekstu.'],
     throwAway: ['Wegwerfen (fragt vorher)', 'Throw away (asks first)', 'Удалить (спросит)', 'Wyrzuć (zapyta)'],
     inconspicuous: ['unauffällig', 'inconspicuous', 'без замечаний', 'bez zastrzeżeń'],
     missingBadge: ['⊘ Original fehlt · nicht prüfbar', '⊘ Original missing · cannot be checked', '⊘ Нет оригинала · нельзя проверить', '⊘ Brak oryginału · nie można sprawdzić'],
+    availabilityPending: ['○ Verfügbarkeit wird ermittelt', '○ Checking availability', '○ Проверяется доступность', '○ Sprawdzanie dostępności'],
+    availabilityFailed: ['○ Original derzeit nicht lesbar · nicht prüfbar', '○ Original currently unreadable · cannot be checked', '○ Оригинал недоступен · нельзя проверить', '○ Oryginał niedostępny · nie można sprawdzić'],
+    standIdle: ['🛡 Prüfstand', '🛡 Check status', '🛡 Состояние проверки', '🛡 Stan kontroli'],
+    standUncertain: ['○ Verfügbarkeit von {n} Originalen noch nicht bestätigt', '○ Availability of {n} originals not yet confirmed', '○ Доступность оригиналов не подтверждена: {n}', '○ Dostępność oryginałów niepotwierdzona: {n}'],
+    recheckFailed: ['Erneute Prüfung nicht möglich. Der frühere Prüfbericht bleibt erhalten und bestätigt keinen aktuellen Dateizugriff.', 'A new check is not possible. The earlier report is preserved and does not confirm current file access.', 'Повторная проверка невозможна. Прежний отчёт сохранён и не подтверждает текущий доступ к файлу.', 'Ponowna kontrola niemożliwa. Wcześniejszy raport pozostaje i nie potwierdza obecnego dostępu do pliku.'],
+    notSaved: [' · nicht gespeichert', ' · not saved', ' · не сохранено', ' · niezapisane'],
+    notSavedHint: ['Dieser Prüfbericht konnte nicht gespeichert werden. Er ist nur in dieser Sitzung sichtbar; nach einem Neustart kann wieder der frühere Prüfstand erscheinen.', 'This check report could not be saved. It is visible only in this session; the earlier check result may return after restarting.', 'Отчёт не удалось сохранить. Он виден только в этом сеансе; после перезапуска может вернуться прежний результат.', 'Nie udało się zapisać raportu. Jest widoczny tylko w tej sesji; po ponownym uruchomieniu może wrócić wcześniejszy wynik.'],
     standButton: ['🛡 Prüfstand · ⊘ {n} ohne Original', '🛡 Check status · ⊘ {n} without original', '🛡 Состояние · ⊘ {n} без оригинала', '🛡 Stan · ⊘ {n} bez oryginału'],
     stand: ['🛡 Prüfstand aller {n} Dateien', '🛡 Check status of all {n} files', '🛡 Состояние всех {n} файлов', '🛡 Stan wszystkich {n} plików'],
     standClean: ['✓ {n} ohne Fund', '✓ {n} nothing found', '✓ {n} без находок', '✓ {n} bez znalezisk'],
@@ -73,7 +91,9 @@
     partlyOk: ['Im geprüften Teil wurde nichts gefunden, was täuschen soll.', 'Nothing meant to deceive was found in the part that was checked.', 'В проверенной части ничего обманного не найдено.', 'W sprawdzonej części nie znaleziono niczego zwodniczego.'],
     whyPages: ['Nur die ersten {n} Seiten wurden gelesen.', 'Only the first {n} pages were read.', 'Прочитаны только первые {n} страниц.', 'Przeczytano tylko pierwsze {n} stron.'],
     whyHidden: ['Auf unsichtbaren Text wurden nur die ersten {n} Seiten geprüft.', 'Only the first {n} pages were checked for invisible text.', 'Невидимый текст проверен только на первых {n} страницах.', 'Niewidoczny tekst sprawdzono tylko na pierwszych {n} stronach.'],
-    whyOcr: ['Text in Bildern und auf eingescannten Seiten wurde nicht gelesen: die Texterkennung fehlt in der App noch.', 'Text in images and on scanned pages was not read: the text recognition is not in the app yet.', 'Текст на изображениях не читался: нет распознавания текста.', 'Tekst na obrazach nie był czytany: brak rozpoznawania tekstu.'],
+    whyOcr: ['Die lokale Texterkennung konnte nicht alle Stellen sicher lesen oder prüfen. Ungelesene Seiten und unsichere Zeilen bleiben ungeprüft.', 'Local text recognition could not read or check every part reliably. Unread pages and uncertain lines remain unchecked.', 'Локальное распознавание не смогло надёжно прочитать или проверить всё. Непрочитанные страницы и неуверенные строки остаются непроверенными.', 'Lokalne rozpoznawanie nie odczytało lub nie sprawdziło wszystkiego pewnie. Nieodczytane strony i niepewne wiersze pozostają niesprawdzone.'],
+    whyOcrEarlier: ['Dieser frühere Prüfbericht hat Bild- und Scantext noch nicht gelesen. Mit „Erneut prüfen“ wird die integrierte lokale Texterkennung verwendet.', 'This earlier report did not read image or scanned text. “Check again” uses the built-in local text recognition.', 'В этом прежнем отчёте текст изображений и сканов не прочитан. «Проверить снова» использует встроенное локальное распознавание.', 'W tym wcześniejszym raporcie tekst obrazów i skanów nie został odczytany. „Sprawdź ponownie” użyje wbudowanego lokalnego rozpoznawania.'],
+    ocrRead: ['Bild- und Scantext lokal gelesen', 'Image and scanned text read locally', 'Текст изображений и сканов прочитан локально', 'Tekst obrazów i skanów odczytany lokalnie'],
     whyPacked: ['Ein Teil des Dateiinhalts ist gepackt und wurde nicht ausgepackt.', 'Part of the file content is packed and was not unpacked.', 'Часть содержимого упакована и не распакована.', 'Część zawartości jest spakowana i nie została rozpakowana.'],
     details: ['Einzelheiten (technisch)', 'Details (technical)', 'Подробности (технические)', 'Szczegóły (techniczne)'],
     germanOnly: ['Die Einzelheiten der Funde stehen auf Deutsch.', 'Details of the findings are in German.', 'Подробности находок — на немецком.', 'Szczegóły znalezisk są po niemiecku.']
@@ -86,7 +106,7 @@
     ready = (async () => {
       const A = window.PrueferAnhang;
       if (!A) throw new Error('checker missing');
-      A.pfade({ pdfjs: PDFJS });
+      A.pfade({ pdfjs: PDFJS, tesseract: 'vendor/tesseract/' });
       return A;
     })();
     ready.catch(() => { ready = null; });
@@ -108,29 +128,62 @@
   }
   function stateFor(rec) {
     if (running.has(rec.hash)) return 'running';
-    if (rec.pruefung) return stateOf(rec.pruefung);
+    if (rec.pruefung) {
+      const state = stateOf(rec.pruefung);
+      return state === 'clean' && rec.pruefung.mail && !rec.pruefung.mailStale && !String(rec.mailBody || '').trim() ? 'partly' : state;
+    }
     return canCheck(rec) ? 'open' : 'missing';
   }
-  async function checkBytes(name, bytes) {
+  async function analyzeBytes(name, bytes, options = {}) {
+    if (window.PBOCR) return window.PBOCR.analyze(name, bytes, options);
     const A = await core();
-    const r = await A.pruefe(name, bytes);
+    return A.pruefe(name, bytes);
+  }
+  function checkResult(r) {
     const funde = [], angaben = [];
     for (const b of r.befunde || []) (WARN.includes(b.kennung) ? funde : angaben).push({ k: b.kennung, satz: String(b.satz || '').slice(0, 400) });
-    const hinweise = (r.hinweise || []).map(h => String(h).slice(0, 300));
-    return { zeit: Date.now(), funde, angaben: angaben.slice(0, 30), hinweise: hinweise.slice(0, 12),
-      ungeprueft: Boolean(r.textUngeprueft || r.bildUngeprueft), bild: Boolean(r.bildUngeprueft) };
+    const allNotes = (r.hinweise || []).map(h => String(h).slice(0, 300));
+    const gap = h => /ungeprüft|NICHT|nicht geprüft|Speichergrenze|überschreitet/i.test(h);
+    const hinweise = [...allNotes.filter(gap), ...allNotes.filter(h => !gap(h))];
+    return { zeit: Date.now(), funde, angaben: angaben.slice(0, 30), hinweise: hinweise.slice(0, 24),
+      ungeprueft: Boolean(r.textUngeprueft || r.bildUngeprueft), bild: Boolean(r.bildUngeprueft), ...(r.ocr ? {ocr:r.ocr} : {}) };
   }
-  const running = new Set();
-  async function checkFile(file, rec) {
+  async function checkBytes(name, bytes, options = {}) {
+    return checkResult(await analyzeBytes(name, bytes, options));
+  }
+  const running = new Set(), lastFailures = new Map(), unsaved = new Set();
+  async function checkFile(file, rec, options = {}) {
     if (!rec || running.has(rec.hash)) return rec?.pruefung;
+    const previous = rec.pruefung;
+    let searchChanged = false;
     running.add(rec.hash); paint();
     try {
-      if (file.size > LIMIT) rec.pruefung = { zeit: Date.now(), funde: [], angaben: [], hinweise: [t('tooBig')], ungeprueft: true };
-      else rec.pruefung = await checkBytes(rec.name || file.name, new Uint8Array(await file.arrayBuffer()));
+      if (file.size > LIMIT && previous) { rec.pruefung = previous; lastFailures.set(rec.hash, true); }
+      else {
+        if (file.size > LIMIT) rec.pruefung = { zeit: Date.now(), funde: [], angaben: [], hinweise: [t('tooBig')], ungeprueft: true };
+        else {
+          const bytes = new Uint8Array(await file.arrayBuffer());
+          const result = await analyzeBytes(rec.name || file.name, bytes, options);
+          // The immutable core returns a partial result for OCR engine errors.
+          // Such a failed re-check must never erase an earlier actual finding.
+          if (previous && (result.ocr?.errors?.length || result.ocr?.resourceLimited))
+            throw new Error(result.ocr.errors?.[0] || t('imageText'));
+          rec.pruefung = checkResult(result);
+          if (options.reindex !== false) searchChanged = Boolean(window.PBOCR?.reindex(rec, result, bytes));
+        }
+        lastFailures.delete(rec.hash);
+      }
     } catch (error) {
-      rec.pruefung = { zeit: Date.now(), funde: [], angaben: [], hinweise: [t('failed') + String(error?.message || error).slice(0, 120)], ungeprueft: true };
+      if (previous) { rec.pruefung = previous; lastFailures.set(rec.hash, true); }
+      else rec.pruefung = { zeit: Date.now(), funde: [], angaben: [], hinweise: [t('failed') + String(error?.message || error).slice(0, 120)], ungeprueft: true };
     } finally { running.delete(rec.hash); }
-    try { await idbPut('catalog', rec); } catch { /* the result still shows until restart */ }
+    try { await idbPut('catalog', rec); unsaved.delete(rec.hash); } catch { unsaved.add(rec.hash); }
+    if (searchChanged) {
+      window.rebuildIndex?.();
+      const refresh = window.renderResults?.(document.getElementById('q')?.value || '');
+      refresh?.catch?.(() => {});
+    }
+    if (!unsaved.has(rec.hash) && rec.ocrIndexed && !rec.evec && typeof window.embedBackfill === 'function') void window.embedBackfill();
     paint();
     return rec.pruefung;
   }
@@ -142,8 +195,10 @@
     const r = M.pruefeMail(raw) || { stellen: [], hinweise: [] };
     const funde = [], angaben = [];
     for (const b of r.stellen || []) (WARN.includes(b.kennung) ? funde : angaben).push({ k: b.kennung, satz: String(b.satz || '').slice(0, 400) });
-    rec.pruefung = { zeit: Date.now(), funde, angaben: angaben.slice(0, 30), hinweise: [t('mailPart')], ungeprueft: false, mail: true };
-    try { await idbPut('catalog', rec); } catch { /* shown until restart */ }
+    const mailTextMissing = !String(rec.mailBody || '').trim();
+    rec.pruefung = { zeit: Date.now(), funde, angaben: angaben.slice(0, 30), hinweise: [t('mailPart')], ungeprueft: mailTextMissing, mail: true, ...(mailTextMissing ? {mailTextMissing:true} : {}) };
+    lastFailures.delete(rec.hash);
+    try { await idbPut('catalog', rec); unsaved.delete(rec.hash); } catch { unsaved.add(rec.hash); }
     paint(); return rec.pruefung;
   }
   async function fileOf(rec) { try { return await window.resolveFile?.(rec) || null; } catch { return null; } }
@@ -151,13 +206,13 @@
     if (rec.mail) return checkMail(rec);
     let file = null;
     file = await fileOf(rec);
-    if (!file) { if (!quiet) alert(t('missing')); return null; }
-    return checkFile(file, rec);
+    if (!file) { if (!quiet) alert(t(availability(rec) === 'missing' ? 'missing' : 'availabilityFailed')); return null; }
+    return checkFile(file, rec, {force:true});
   }
 
   // The catalog text of a PDF comes from the same reader (before: raw PDF bytes such as "/Subtype /Image …").
   const originalExtract = window.extractPdf;
-  if (typeof originalExtract === 'function') {
+  if (!window.PBOCR && typeof originalExtract === 'function') {
     window.extractPdf = async function (u8) {
       try {
         if (!window.pdfjsLib) await new Promise((ok, no) => { const s = document.createElement('script'); s.src = PDFJS + 'pdf.min.js'; s.onload = ok; s.onerror = no; document.head.append(s); });
@@ -182,7 +237,7 @@
       const result = await originalSign.apply(this, arguments);
       try {
         const rec = result?.rec || CATALOG.find(r => r.hash === result?.hash);
-        if (rec && !rec.mail && !rec.pruefung) await checkFile(file, rec);
+        if (rec && !rec.mail && !rec.pruefung) await checkFile(file, rec, {reindex:false});
       } catch { /* the import itself must not fail because of the check */ }
       return result;
     };
@@ -200,14 +255,20 @@
 
   // 🛡 Alle prüfen: every entry without a result, one after the other; the files themselves stay unchanged.
   const openOnes = () => CATALOG.filter(r => !r.mailIndex && !r.pruefung && canCheck(r));
-  const missingOnes = () => CATALOG.filter(r => !r.mailIndex && !r.pruefung && !canCheck(r));
+  const availability = rec => window.PBRecordStatus?.availability(rec).key || (!canCheck(rec) ? 'missing' : 'local');
+  const missingOnes = () => CATALOG.filter(r => !r.mail && !r.mailIndex && availability(r) === 'missing');
+  const uncertainOnes = () => CATALOG.filter(r => !r.mail && !r.mailIndex && ['unknown', 'unavailable', 'source'].includes(availability(r)));
   // One honest line over ALL files (not only the ones of this run), with a list of the findings.
   function standBlock(dialog, newly) {
     const recs = CATALOG.filter(r => !r.mailIndex), c = { clean: 0, found: 0, partly: 0, missing: 0, open: 0, running: 0 };
-    for (const r of recs) c[stateFor(r)]++;
+    // A historic finding/clean report and a missing original can coexist.
+    for (const r of recs) if (stateFor(r) !== 'missing') c[stateFor(r)]++;
+    c.missing = missingOnes().length;
     const ul = make('ul', null, 'pb-check-stand'); ul.dataset.total = String(recs.length);
     for (const [k, w] of [['found', 'standFound'], ['partly', 'standPartly'], ['clean', 'standClean'], ['missing', 'standMissing'], ['open', 'standOpen']])
       if (c[k]) { const li = make('li', t(w).replace('{n}', c[k])); li.dataset.state = k; ul.append(li); }
+    const uncertain = uncertainOnes().length;
+    if (uncertain) { const li = make('li', t('standUncertain').replace('{n}', uncertain)); li.dataset.state = 'unavailable'; ul.append(li); }
     dialog.append(make('h3', t('stand').replace('{n}', recs.length)), ul);
     if (newly != null) dialog.append(make('p', t('thisRun').replace('{n}', newly), 'hint'));
     const found = recs.filter(r => stateFor(r) === 'found');
@@ -228,20 +289,25 @@
     }
   }
   let allBusy = false;
+  const hgText = (i, n) => t('hgStand').replace('{i}', Math.max(1, i)).replace('{n}', n);
   async function checkAll(button) {
     if (allBusy) return; allBusy = true;
     const todo = openOnes(); let missing = 0, i = 0;
+    // Pro-Umbau 4: läuft in Android weiter, wenn die App im Hintergrund ist (Mitteilung mit Stand und „Abbrechen“).
+    const hg = await window.ProHintergrund?.beginnen({ art: 'pruefen', titel: t('hgCheck'), text: hgText(0, todo.length) }).catch(() => null);
     try {
       for (const rec of todo) {
+        if (hg?.signal.aborted) break;
         button.textContent = t('allRun').replace('{i}', ++i).replace('{n}', todo.length);
+        hg?.stand(hgText(i, todo.length), i - 1, todo.length);
         if (rec.pruefung) continue;
         try { if (!await checkRecord(rec, true)) missing++; } catch { missing++; }
         if (i % 3 === 0) await new Promise(r => setTimeout(r));
       }
-    } finally { allBusy = false; allButtons(); }
+    } finally { allBusy = false; hg?.ende(); allButtons(); }
     const dialog = make('dialog', null, 'live-dialog pb-check-report pb-check-all');
     dialog.append(make('h2', t('report')));
-    standBlock(dialog, todo.length - missing);
+    standBlock(dialog, i - missing);
     const close = make('button', t('close')); close.type = 'button'; close.onclick = () => dialog.close();
     dialog.append(make('p', t('noVirus'), 'hint'), close); document.body.append(dialog);
     dialog.addEventListener('close', () => dialog.remove()); dialog.showModal();
@@ -253,7 +319,7 @@
       let b = spot.querySelector(':scope > .pb-check-all-button');
       if (!b) { b = make('button', '', 'ghost pb-check-all-button'); b.type = 'button'; b.onclick = () => checkAll(b); spot.append(b); }
       const m = missingOnes().length;
-      if (!allBusy) { const text = n ? t('all') + t('allOpen').replace('{n}', n) : m ? t('standButton').replace('{n}', m) : t('allNone'); if (b.dataset.text !== text) { b.dataset.text = text; b.textContent = text; } if (b.disabled !== !n) b.disabled = !n; }
+      if (!allBusy) { const text = n ? t('all') + t('allOpen').replace('{n}', n) : m ? t('standButton').replace('{n}', m) : uncertainOnes().length ? t('standIdle') : t('allNone'); if (b.dataset.text !== text) { b.dataset.text = text; b.textContent = text; } if (b.disabled !== !n) b.disabled = !n; }
       // Without anything to check the button still opens the honest status of all files.
       if (!n && !allBusy) { b.disabled = false; b.onclick = () => showStand(); } else if (!allBusy) b.onclick = () => checkAll(b);
     }
@@ -268,16 +334,28 @@
     dialog.addEventListener('close', () => dialog.remove()); dialog.showModal();
   }
   const make = (tag, text, cls) => { const e = document.createElement(tag); if (text) e.textContent = text; if (cls) e.className = cls; return e; };
-  function badgeText(rec) {
+  function statusText(rec) {
     const s = stateFor(rec);
     if (s === 'running') return t('running');
-    if (s === 'found') return t('found') + t(rec.pruefung.funde[0].k);
-    if (s === 'missing') return t('missingBadge');
-    return t(s);
+    if (rec.mail || rec.pruefung?.mail) {
+      const text = s === 'found' ? t('mailFound') + t(rec.pruefung.funde[0].k) : t({ clean: 'mailClean', partly: 'mailPartly', open: 'mailOpen' }[s] || s);
+      return (rec.pruefung?.mailStale ? t('mailEarlier') : '') + text;
+    }
+    const historical = rec.pruefung && ['missing', 'unavailable'].includes(availability(rec)) ? t('earlier') : '';
+    if (s === 'found') return historical + t('found') + t(rec.pruefung.funde[0].k);
+    if (s === 'missing') return t(availability(rec) === 'unknown' ? 'availabilityPending' : availability(rec) === 'unavailable' || availability(rec) === 'source' ? 'availabilityFailed' : 'missingBadge');
+    return historical + t(s);
+  }
+  function badgeText(rec) {
+    return statusText(rec) + (unsaved.has(rec.hash) ? t('notSaved') : '');
   }
   function badge(rec) {
     const b = make('button', badgeText(rec), 'pb-check-badge');
     b.type = 'button'; b.dataset.check = stateFor(rec); b.dataset.hash = rec.hash;
+    b.dataset.checkedAt = String(rec.pruefung?.zeit || '');
+    if (rec.mail || rec.pruefung?.mail) b.title = t('mailPart');
+    else if (rec.pruefung?.zeit) b.title = t('when') + new Date(rec.pruefung.zeit).toLocaleString(document.documentElement.lang);
+    if (stateFor(rec) === 'missing' && availability(rec) === 'unknown') b.disabled = true;
     b.onclick = event => {
       event.stopPropagation();
       const s = stateFor(rec);
@@ -288,18 +366,34 @@
   }
   function report(rec) {
     if (!rec.pruefung) return;
-    show(rec.name, rec.pruefung, async () => { rec.pruefung = null; return checkRecord(rec); }, rec.hash);
+    show(rec.name, rec.pruefung, async () => {
+      try { const result = await checkRecord(rec); if (result) return result; }
+      catch { /* a failed recheck never erases the earlier report */ }
+      lastFailures.set(rec.hash, true); paint(); return rec.pruefung;
+    }, rec.hash);
   }
   function show(name, r, recheck, hash) {
     const dialog = make('dialog', null, 'live-dialog pb-check-report'); if (hash) dialog.dataset.hash = hash;
     dialog.append(make('h2', t('report')), make('p', name, 'pb-check-name'));
+    if (hash && window.PBRecordStatus && typeof CATALOG !== 'undefined') {
+      const rec = CATALOG.find(item => item.hash === hash);
+      if (rec) {
+        dialog.append(PBRecordStatus.render(rec));
+        if (r.mail && !r.mailStale && !String(rec.mailBody || '').trim()) r = { ...r, ungeprueft: true, mailTextMissing: true };
+      }
+    }
+    if (r.mail) dialog.append(make('p', t('mailPart'), 'hint pb-check-scope'));
+    if (r.mailStale) dialog.append(make('p', t('mailChanged'), 'pb-check-error'));
+    if (hash && lastFailures.has(hash)) dialog.append(make('p', t('recheckFailed'), 'pb-check-error'));
+    if (hash && unsaved.has(hash)) dialog.append(make('p', t('notSavedHint'), 'pb-check-error pb-check-unsaved'));
     if (r.funde.length) {
       dialog.append(make('h3', '⚠ ' + t('findings')));
       const list = make('ul', null, 'pb-check-found');
       for (const f of r.funde) { const li = make('li'); li.append(make('b', t(f.k)), document.createTextNode(' — ' + f.satz)); li.dataset.k = f.k; list.append(li); }
       dialog.append(list, make('p', t('whatNow'), 'pb-check-whatnow'));
-    } else dialog.append(make('p', '✓ ' + (r.ungeprueft ? t('partlyOk') : t('none')), 'pb-check-clean'));
-    const notes = [...r.hinweise.filter(h => /NICHT|ungeprüft|nicht geprüft|nicht erreichbar|nicht gelesen/i.test(h))];
+    } else dialog.append(make('p', '✓ ' + (r.ungeprueft ? t('partlyOk') : r.mail ? t('mailNone') : t('none')), 'pb-check-clean'));
+    if (r.ocr?.state === 'read') dialog.append(make('p', t('ocrRead'), 'hint pb-check-ocr-read'));
+    const notes = [...r.hinweise.filter(h => /NICHT|ungeprüft|nicht geprüft|nicht erreichbar|nicht gelesen|Speichergrenze|überschreitet/i.test(h))];
     // Klaus 2026-10-22: in plain words first, the technical list folded away underneath.
     const why = plainWhy(r, notes);
     if (why.length) { dialog.append(make('h3', t('partlyWhy'))); const ul = make('ul', null, 'pb-check-why'); for (const w of why) ul.append(make('li', w)); dialog.append(ul); }
@@ -320,9 +414,11 @@
 
   function plainWhy(r, notes) {
     const out = [], all = notes.join('\n'), add = s => { if (!out.includes(s)) out.push(s); };
+    if (r.mailTextMissing) add(t('mailNoText'));
     const read = /NICHT gelesen \(höchstens (\d+)\)/.exec(all); if (read) add(t('whyPages').replace('{n}', read[1]));
     const hidden = /nicht gegengelesen \(höchstens (\d+)\)/.exec(all); if (hidden) add(t('whyHidden').replace('{n}', hidden[1]));
-    if (r.bild || /Texterkennung/.test(all)) add(t('whyOcr'));
+    if (r.ocr && r.ocr.state === 'partial') add(t('whyOcr'));
+    else if (!r.ocr && (r.bild || /Text im Bild ungeprüft|Texterkennung.*(?:fehlt|lief nicht|nicht erreichbar)/i.test(all))) add(t('whyOcrEarlier'));
     if (/gepackte Ströme/.test(all)) add(t('whyPacked'));
     for (const n of notes) if (n === t('tooBig') || n.startsWith(t('failed'))) add(n);
     if (r.ungeprueft && !out.length) add(t('imageText'));
@@ -337,21 +433,31 @@
       allButtons();
       for (const li of document.querySelectorAll('.pb-check-entrance li[data-hash]')) if (!CATALOG.some(r => r.hash === li.dataset.hash)) li.remove();
       const spots = [...document.querySelectorAll('.openBtn[data-hash]')].map(b => ({ hash: b.dataset.hash, after: b }))
-        .concat([...document.querySelectorAll('.explorer-row[data-hash]')].map(row => ({ hash: row.dataset.hash, after: row.querySelector('.explorer-meta') })));
+        .concat([...document.querySelectorAll('.explorer-row[data-hash]')].map(row => ({ hash: row.dataset.hash, after: row.querySelector('.explorer-meta') })))
+        .concat([...document.querySelectorAll('.mail-all-reader .pb-mail-index-status[data-hash]')].map(row => ({ hash: row.dataset.hash, host: row })));
       for (const spot of spots) {
         const rec = CATALOG.find(r => r.hash === spot.hash);
-        if (!rec || rec.mailIndex || !spot.after) continue;
-        const host = spot.after.parentElement;
+        if (!rec || (!spot.after && !spot.host)) continue;
+        const host = spot.host || spot.after.parentElement;
+        if (window.PBRecordStatus) {
+          const state = PBRecordStatus.availability(rec), previous = host.querySelector(':scope > .pb-record-availability');
+          if (!previous || previous.dataset.original !== state.key || previous.textContent !== state.label || previous.title !== state.detail) {
+            const fresh = PBRecordStatus.render(rec);
+            if (previous) previous.replaceWith(fresh); else if (spot.after) spot.after.after(fresh); else host.prepend(fresh);
+          }
+        }
         const old = host.querySelector(':scope > .pb-check-badge');
         const text = badgeText(rec);
-        if (old && old.textContent === text) continue;
+        const disabled = stateFor(rec) === 'missing' && availability(rec) === 'unknown';
+        if (old && old.textContent === text && old.dataset.check === stateFor(rec) && old.disabled === disabled && old.dataset.checkedAt === String(rec.pruefung?.zeit || '')) continue;
         const fresh = badge(rec);
-        if (old) old.replaceWith(fresh); else spot.after.after(fresh);
+        if (old) old.replaceWith(fresh); else if (spot.after) spot.after.after(fresh); else host.append(fresh);
       }
     });
   }
   new MutationObserver(paint).observe(document.body, { childList: true, subtree: true });
   new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  window.addEventListener('pb-originals-change', paint);
 
   // The note after "Dateien hinzufügen" (assets/workspace.js) asks for one line about the check.
   function summary(hashes) {
@@ -399,7 +505,7 @@
     if (!force && sha && vaultMemory()[sha]) return vaultMemory()[sha];
     let result;
     if (entry.size > LIMIT) result = { zeit: Date.now(), funde: [], angaben: [], hinweise: [t('tooBig')], ungeprueft: true };
-    else result = await checkBytes(entry.name, await window.PBVault.bytes(entry));
+    else result = await checkBytes(entry.name, await window.PBVault.bytes(entry), {force});
     if (sha) remember(sha, result);
     return result;
   }
@@ -415,8 +521,15 @@
   async function checkVaultAll(entries, button, done) {
     const todo = entries.filter(e => !vaultMemory()[e.sha256 || e.ref || e.id]); let i = 0;
     button.disabled = true;
-    try { for (const e of todo) { button.textContent = t('allRun').replace('{i}', ++i).replace('{n}', todo.length); try { await checkVault(e); } catch { /* named as not checked */ } } }
-    finally { button.disabled = false; done?.(); }
+    const hg = await window.ProHintergrund?.beginnen({ art: 'pruefen', titel: t('hgCheck'), text: hgText(0, todo.length) }).catch(() => null);
+    try {
+      for (const e of todo) {
+        if (hg?.signal.aborted) break;
+        button.textContent = t('allRun').replace('{i}', ++i).replace('{n}', todo.length); hg?.stand(hgText(i, todo.length), i - 1, todo.length);
+        try { await checkVault(e); } catch { /* named as not checked */ }
+      }
+    }
+    finally { button.disabled = false; hg?.ende(); done?.(); }
   }
   const vaultOpen = entries => entries.filter(e => !vaultMemory()[e.sha256 || e.ref || e.id]).length;
   function vaultBadge(entry) {
@@ -430,5 +543,5 @@
     return b;
   }
 
-  window.PBCheck = { stateFor, canCheck, vaultState: v => { const k = vaultMemory()[v.sha256 || v.ref || v.id]; return k ? stateOf(k) : 'open'; }, showStand, checkAll, checkMail, checkVault, checkVaultAll, vaultOpen, line, vaultBadge, show, checkBytes, checkFile, checkRecord, report, summary, stateOf, badgeText, words: t };
+  window.PBCheck = { stateFor, canCheck, vaultState: v => { const k = vaultMemory()[v.sha256 || v.ref || v.id]; return k ? stateOf(k) : 'open'; }, showStand, checkAll, checkMail, checkVault, checkVaultAll, vaultOpen, line, vaultBadge, show, checkBytes, checkFile, checkRecord, report, summary, stateOf, badgeText, badge, words: t };
 })();
