@@ -122,7 +122,7 @@
     stripEmoji(button);
     if (!button.querySelector(':scope>svg.v3-icon')) button.append(svg(folderKey(button)));
   }
-  const GENERIC = '#panel-search button, #panel-search label > span, #panel-explorer .explorer-toolbar button, #panel-explorer .explorer-toolbar label > span, #panel-intake button, #panel-intake h3, #panel-settings h3, .pb-dictate, #panel-dupes .fname, #panel-order .fname, #panel-settings .btnrow > button, #panel-settings .hint, #panel-intake .hint, #groups .grp .ic, #reorgNote h3, #panel-order .empty .big, #panel-dupes .empty .big, #explorerTree button, #explorerFiles .explorer-row strong, #explorerFiles .explorer-dir strong, #explorerPath button, #explorerPath span, #pb-mail-all button, #pb-mail-all h3, #pb-mail-all .mail-subject, #pb-mail-all .mail-undo > span';  // „Alle Konten“: Nach Absender und Aufräumen (22.11.2026)
+  const GENERIC = '#pb-intake-heading, #panel-search button, #panel-search label > span, #panel-explorer .explorer-toolbar button, #panel-explorer .explorer-toolbar label > span, #panel-intake button, #panel-intake h3, #panel-settings h3, .pb-dictate, #panel-dupes .fname, #panel-order .fname, #panel-settings .btnrow > button, #panel-settings .hint, #panel-intake .hint, #groups .grp .ic, #reorgNote h3, #panel-order .empty .big, #panel-dupes .empty .big, #explorerTree button, #explorerFiles .explorer-row strong, #explorerFiles .explorer-dir strong, #explorerPath button, #explorerPath span, #pb-mail-all button, #pb-mail-all h3, #pb-mail-all .mail-subject, #pb-mail-all .mail-undo > span';  // „Alle Konten“: Nach Absender und Aufräumen (22.11.2026)
   function firstText(el) { for (const n of el.childNodes) { if (n.nodeType === 3) { if (n.nodeValue.trim()) return n; } else return null; } return null; }
   // Schutz gegen Endlosschleifen: schreibt fremder Code denselben Knopf immer wieder neu, hört V3 dort auf (200 in 2 s; eine echte Schleife macht Tausende, Fortschrittsanzeigen nur Dutzende).
   const seen = new WeakMap();
@@ -152,7 +152,17 @@
       const m = t.match(LEAD); if (m && /\p{Extended_Pictographic}/u.test(m[1])) el.setAttribute(name, t.slice(m[0].length));
     }
   }
+  // Pros Explorer und Übersicht zeichnen ihr Symbol in einen eigenen Platz (workspace.js iconText, data-pb-icon);
+  // in V3 steht dort das Strichsymbol statt des Emojis (V3 Schritt 2, 22.11.2026).
+  const SLOT_KEY = { attach: 'clipK', image: 'images', photo: 'images', doc: 'file' };
+  function decorateSlot(slot) {
+    const key = SLOT_KEY[slot.dataset.pbIcon] || slot.dataset.pbIcon;
+    if (slot.firstElementChild?.dataset.v3Slot === key && !slot.textContent.trim()) return;
+    slot.textContent = ''; const s = svg(ICONS[key] ? key : 'folder'); s.dataset.v3Slot = key; slot.append(s);
+  }
   function decorate(root) {
+    if (root.matches?.('.workspace-icon[data-pb-icon]')) decorateSlot(root);
+    root.querySelectorAll?.('.workspace-icon[data-pb-icon]').forEach(decorateSlot);
     if (root.getAttribute) { stripTitle(root); root.querySelectorAll?.('[title],[aria-label]').forEach(stripTitle); }
     root.querySelectorAll?.('.mail-folders .mail-folder').forEach(decorateFolder);
     root.querySelectorAll?.(GENERIC).forEach(decorateGeneric);
@@ -382,9 +392,10 @@
   // Symbole für alles, was während des Aufbaus und danach entsteht (auch übersetzte Texte mit Emoji).
   new MutationObserver(list => {
       for (const m of list) {
-        if (m.type === 'characterData') { const b = m.target.parentElement; if (b?.matches('.mail-folders .mail-folder') && b.firstChild === m.target) stripEmoji(b); else if (b?.matches(GENERIC)) decorateGeneric(b); continue; }
+        if (m.type === 'characterData') { const b = m.target.parentElement; if (b?.matches('.workspace-icon[data-pb-icon]')) { decorateSlot(b); continue; } if (b?.matches('.mail-folders .mail-folder') && b.firstChild === m.target) stripEmoji(b); else if (b?.matches(GENERIC)) decorateGeneric(b); continue; }
         for (const n of m.addedNodes) {
           if (n.nodeType === 1) { if (n.matches?.('.mail-folders .mail-folder')) decorateFolder(n); else decorate(n); }
+          else if (n.nodeType === 3 && n.parentElement?.matches('.workspace-icon[data-pb-icon]')) decorateSlot(n.parentElement);
           else if (n.nodeType === 3 && n.parentElement?.matches('.mail-folders .mail-folder')) stripEmoji(n.parentElement);
           else if (n.nodeType === 3 && n.parentElement?.matches(GENERIC)) decorateGeneric(n.parentElement);
         }

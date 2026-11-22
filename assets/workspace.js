@@ -7,14 +7,14 @@
   const words = {
     search:['🔎 Suche','🔎 Search','🔎 Поиск','🔎 Szukaj'],backSearch:['← Zur Suche','← Back to search','← К поиску','← Do wyszukiwania'],add:['📥 Dateien hinzufügen','📥 Add files','📥 Добавить файлы','📥 Dodaj pliki'],explorer:['📁 Explorer','📁 Explorer','📁 Проводник','📁 Eksplorator'],
     library:['Deine lokale Ablage','Your local library','Локальная папка','Folder lokalny'],
-    libraryHelp:['Wähle einen separaten Ordner auf deinem Gerät. Neue Dateien werden dort als Kopie gespeichert; die Originale bleiben erhalten. Der Explorer öffnet die Kopien aus diesem Ordner.','Choose a separate folder on your device. New files are saved there as copies; originals are preserved. Explorer opens the copies from that folder.','Выберите отдельную папку на устройстве. Новые файлы сохраняются туда как копии; оригиналы остаются. Проводник открывает копии из этой папки.','Wybierz osobny folder na urządzeniu. Nowe pliki są tam zapisywane jako kopie; oryginały pozostają. Eksplorator otwiera kopie z tego folderu.'],
+    libraryHelp:['Ablageordner: Wähle einen separaten Ordner auf deinem Gerät. Neue Dateien werden dort als Kopie gespeichert; die Originale bleiben erhalten. Der Explorer öffnet die Kopien aus diesem Ordner. Ohne Ablageordner bleiben verbundene Ordner erreichbar, einzeln gewählte Dateien nur in dieser Sitzung.','Library folder: choose a separate folder on your device. New files are saved there as copies; originals are preserved. Explorer opens the copies from that folder. Without a library folder, connected folders stay reachable, individually chosen files for this session only.','Папка копий: выберите отдельную папку на устройстве. Новые файлы сохраняются туда как копии; оригиналы остаются. Проводник открывает копии из этой папки. Без папки копий подключённые папки остаются доступны, отдельно выбранные файлы — только в этом сеансе.','Folder kopii: wybierz osobny folder na urządzeniu. Nowe pliki są tam zapisywane jako kopie; oryginały pozostają. Eksplorator otwiera kopie z tego folderu. Bez folderu kopii połączone foldery pozostają dostępne, pojedynczo wybrane pliki tylko w tej sesji.'],
     choose:['Ablageordner wählen','Choose library folder','Выбрать папку','Wybierz folder'],pause:['Kopieren ausschalten','Turn off copying','Отключить копирование','Wyłącz kopiowanie'],
     copyFolder:['📁 Ordner in Ablage kopieren','📁 Copy folder to library','📁 Копировать папку','📁 Kopiuj folder do biblioteki'],linkFolder:['📁 Ordner verbinden','📁 Connect folder','📁 Подключить папку','📁 Połącz folder'],
     up:['↑ Übergeordneter Ordner','↑ Parent folder','↑ На уровень выше','↑ Folder nadrzędny'],all:['Alle Dateien','All files','Все файлы','Wszystkie pliki'],byName:['Name','Name','Имя','Nazwa'],sortBy:['Sortieren nach','Sort by','Сортировать по','Sortuj według'],sortDate:['Datum: neueste zuerst','Date: newest first','Дата: сначала новые','Data: najnowsze najpierw'],sortDateR:['Datum: älteste zuerst','Date: oldest first','Дата: сначала старые','Data: najstarsze najpierw'],sortName:['Name: A → Z','Name: A → Z','Имя: А → Я','Nazwa: A → Z'],sortNameR:['Name: Z → A','Name: Z → A','Имя: Я → А','Nazwa: Z → A'],sortSize:['Größe: größte zuerst','Size: largest first','Размер: сначала большие','Rozmiar: największe najpierw'],sortSizeR:['Größe: kleinste zuerst','Size: smallest first','Размер: сначала маленькие','Rozmiar: najmniejsze najpierw'],byDate:['Datum','Date','Дата','Data'],bySize:['Größe','Size','Размер','Rozmiar'],orderName:['↕ A → Z','↕ A → Z','↕ А → Я','↕ A → Z'],orderNameR:['↕ Z → A','↕ Z → A','↕ Я → А','↕ Z → A'],orderDate:['↕ Neueste oben','↕ Newest first','↕ Сначала новые','↕ Najnowsze u góry'],orderDateR:['↕ Älteste oben','↕ Oldest first','↕ Сначала старые','↕ Najstarsze u góry'],orderSize:['↕ Größte oben','↕ Largest first','↕ Сначала большие','↕ Największe u góry'],orderSizeR:['↕ Kleinste oben','↕ Smallest first','↕ Сначала маленькие','↕ Najmniejsze u góry'],inContent:['🔎 auch im Inhalt','🔎 also in content','🔎 также в содержимом','🔎 także w treści'],
     find:['Was möchtest du finden?','What would you like to find?','Что вы хотите найти?','Co chcesz znaleźć?'],findHelp:['Durchsuche E-Mails, Dokumente und Bilder gemeinsam nach ihrer Bedeutung.','Search emails, documents and images together by meaning.','Ищите письма, документы и изображения вместе по смыслу.','Szukaj wiadomości, dokumentów i obrazów według znaczenia.'],
-    noFolder:['Noch kein Ablageordner gewählt. Einzeln gewählte Dateien sind nur in dieser Sitzung verfügbar. Für dauerhaften Zugriff einen Ordner verbinden oder einen Ablageordner wählen.','No library folder selected. Individually selected files are available for this session only. Connect a folder or choose a library for lasting access.','Папка не выбрана. Отдельно выбранные файлы доступны только в этом сеансе. Подключите папку для постоянного доступа.','Nie wybrano folderu. Wybrane pliki są dostępne tylko w tej sesji. Połącz folder, aby zachować dostęp.'],
+    noFolder:['Ablage: noch kein Ordner gewählt, einzeln gewählte Dateien gelten nur für diese Sitzung.','Library: no folder chosen yet, individually chosen files are kept for this session only.','Папка копий: ещё не выбрана, отдельно выбранные файлы доступны только в этом сеансе.','Folder kopii: jeszcze nie wybrano, pojedynczo wybrane pliki są dostępne tylko w tej sesji.'],
     unsupported:['Dieser Browser unterstützt keine direkte Ordnerablage. Dateiimport und Suche funktionieren; Dateien müssen nach einem Neustart erneut ausgewählt werden. Für lokale Ordner Chrome oder Edge auf einem unterstützten Desktop verwenden.','This browser does not support direct folder storage. File import and search work; select files again after restarting. For local folders use Chrome or Edge on a supported desktop.','Браузер не поддерживает прямую запись в папку. Импорт и поиск работают; после перезапуска выберите файлы снова. Для папок используйте Chrome или Edge на поддерживаемом компьютере.','Przeglądarka nie obsługuje zapisu do folderu. Import i wyszukiwanie działają; po ponownym uruchomieniu wybierz pliki jeszcze raz. Dostęp do folderów wymaga obsługiwanej przeglądarki Chrome lub Edge na komputerze.'],
-    active:['Kopienablage aktiv','Copy storage active','Сохранение копий включено','Zapis kopii włączony'],open:['Öffnen','Open','Открыть','Otwórz'],local:['Lokale Datei','Local file','Локальный файл','Plik lokalny'],session:['Nur diese Sitzung','This session only','Только этот сеанс','Tylko ta sesja'],catalog:['Katalog / Mailtext','Catalog / email text','Каталог / текст письма','Katalog / treść wiadomości'],
+    active:['Ablage: Kopien in','Library: copies in','Папка копий: копии в','Folder kopii: kopie w'],open:['Öffnen','Open','Открыть','Otwórz'],local:['Lokale Datei','Local file','Локальный файл','Plik lokalny'],session:['Nur diese Sitzung','This session only','Только этот сеанс','Tylko ta sesja'],catalog:['Katalog / Mailtext','Catalog / email text','Каталог / текст письма','Katalog / treść wiadomości'],
     empty:['Keine Dateien in dieser Ansicht. Füge Dateien hinzu oder wähle einen anderen Ordner.','No files in this view. Add files or choose another folder.','В этом разделе нет файлов. Добавьте файлы или выберите другую папку.','Brak plików. Dodaj pliki lub wybierz inny folder.'],filter:['Dateiliste filtern','Filter files','Фильтр файлов','Filtruj pliki'],filterShort:['Suche','Search','Поиск','Szukaj'],pdf:['PDF','PDF','PDF','PDF'],sortType:['Typ: A → Z','Type: A → Z','Тип: А → Я','Typ: A → Z'],sortTypeR:['Typ: Z → A','Type: Z → A','Тип: Я → А','Typ: Z → A'],
     permission:['Bitte gib den Zugriff auf den Ablageordner frei. Es wurde nichts kopiert.','Please grant access to the library folder. Nothing was copied.','Разрешите доступ к папке. Ничего не скопировано.','Zezwól na dostęp do folderu. Nic nie skopiowano.'],
     unavailable:['Datei nicht erreichbar. Prüfe den Ordner und seine Freigabe. Der Katalogeintrag bleibt erhalten.','File unavailable. Check the folder and permission. The catalog entry is preserved.','Файл недоступен. Проверьте папку и разрешение. Запись в каталоге сохранена.','Plik niedostępny. Sprawdź folder i uprawnienia. Wpis w katalogu pozostaje.'],
@@ -36,16 +36,40 @@
     files:['Dateien','files','файлов','plików'],oneFile:['Datei','file','файл','plik'],withFind:['mit Fund','with a finding','с находкой','ze znaleziskiem'],
     partlyShort:['teilweise geprüft','partly checked','частично','częściowo'],noOriginal:['Original fehlt','original missing','нет оригинала','brak oryginału'],
     openShort:['noch nicht geprüft','not checked yet','не проверено','niesprawdzone'],
+    accessUnconfirmed:['Zugriff unbestätigt','access unconfirmed','доступ не подтверждён','dostęp niepotwierdzony'],
     collapseAll:['Alle zuklappen','Collapse all','Свернуть всё','Zwiń wszystko'],collapse:['Zuklappen','Collapse','Свернуть','Zwiń'],expand:['Aufklappen','Expand','Развернуть','Rozwiń'],
     hideTree:['Ordnerbaum ausblenden','Hide folder tree','Скрыть дерево папок','Ukryj drzewo folderów'],showTree:['Ordnerbaum zeigen','Show folder tree','Показать дерево папок','Pokaż drzewo folderów'],
-    openFolder:['Ordner öffnen','Open folder','Открыть папку','Otwórz folder'],topicsHead:['Kategorien (Vorschlag)','Categories (suggestion)','Категории (предложение)','Kategorie (propozycja)'],
+    openFolder:['Ordner öffnen','Open folder','Открыть папку','Otwórz folder'],categoriesHead:['Kategorien','Categories','Категории','Kategorie'],uncategorized:['Ohne Kategorie','Uncategorized','Без категории','Bez kategorii'],categoryHelp:['Kategorieansicht. Die Dateien bleiben an ihrem bisherigen Ort.','Category view. Files stay in their existing locations.','Вид по категории. Файлы остаются на своих местах.','Widok kategorii. Pliki pozostają w dotychczasowych miejscach.'],topicsHead:['Kategorien (Vorschlag)','Categories (suggestion)','Категории (предложение)','Kategorie (propozycja)'],
+    // Klaus 15.11.2026: ein Suchfeld für alles (Sortier-Kern, Kästchen, Sortierung nach Absender/Bereich/Art)
+    bySender:['Absender','Sender','Отправитель','Nadawca'],byArea:['Bereich','Area','Раздел','Obszar'],byArt:['Art','Kind','Вид','Rodzaj'],
+    chipRemove:['Kästchen entfernen','Remove filter','Убрать фильтр','Usuń filtr'],chipWord:['Nicht als Kästchen lesen, als Wort suchen','Do not read as a filter, search as a word','Искать как слово','Szukaj jako słowa'],
+    recognized:['erkannt','recognized','распознано','rozpoznano'],inContentFound:['nur im Inhalt gefunden','found in the content only','найдено только в тексте','znaleziono tylko w treści'],
+    partly:['Nichts passt ganz. Diese enthalten einen Teil der Wörter:','Nothing matches fully. These contain some of the words:','Полных совпадений нет. Частично:','Brak pełnych trafień. Częściowo:'],
+    without:['Ohne „{x}“: {n} Treffer','Without “{x}”: {n} results','Без «{x}»: {n}','Bez „{x}”: {n}'],best:['Am besten passend','Best match','Лучшее совпадение','Najlepsze dopasowanie'],more:['Weitere','More','Ещё','Więcej'],
+    meaning:['Ähnlich nach Bedeutung','Similar by meaning','Похоже по смыслу','Podobne znaczeniowo'],noSenderGroup:['Absender unbekannt','Unknown sender','Отправитель неизвестен','Nieznany nadawca'],noGroup:['Ohne Angabe','Not set','Не указано','Brak'],
     doneClose:['Hinweis schließen','Close note','Закрыть','Zamknij'],documents:['Dateien','Files','Файлы','Pliki'],stored:['lokal verknüpft','linked locally','локальные ссылки','powiązane lokalnie']
   };
   function text(key) { return (words[key] || [key])[Math.max(0,['de','en','ru','pl'].indexOf(document.documentElement.lang.slice(0,2)))] || key; }
+  function controlText(node,value) {
+    // A built Pro shell already has its stroke icon and visual caption. Keep
+    // those nodes when translating the original accessible label.
+    const label=node.querySelector(':scope>.compact-label')||node;
+    if(label.textContent!==value)label.textContent=value;
+  }
   const pages=new Set([...document.querySelectorAll('.tab[data-tab]')].map(t=>t.dataset.tab));
+  function syncSearchWelcome(){
+    const welcome=document.querySelector('#panel-search .search-welcome');
+    const hidden=Boolean(el('q').value.trim());
+    if(welcome&&welcome.hidden!==hidden)welcome.hidden=hidden;
+  }
+  // Dictation and saved searches also set the query without an input event.
+  // Update the introduction before the existing result renderer starts work.
+  const renderSearch=window.renderResults;
+  if(typeof renderSearch==='function')window.renderResults=function(){syncSearchWelcome();return renderSearch.apply(this,arguments);};
   function syncNavigation(){
+    syncSearchWelcome();
     const searching=el('panel-search').classList.contains('on'), key=searching?'search':'backSearch';
-    const tab=document.querySelector('[data-tab="search"]');tab.textContent=text(key);
+    const tab=document.querySelector('[data-tab="search"]');controlText(tab,text(key));
     document.querySelectorAll('.tab[data-tab]').forEach(t=>t.setAttribute('aria-current',el('panel-'+t.dataset.tab)?.classList.contains('on')?'page':'false'));
   }
   function navigate(page,{record=true,replace=false}={}){
@@ -59,7 +83,7 @@
     }
     syncNavigation();
   }
-  let folderPath = '', library = null, ready = null;
+  let folderPath = '', library = null, ready = null, revealSelectedPath = true;
   let libraryId = localStorage.getItem('pb_library_id');
   async function permission(handle, mode) {
     if (!handle.queryPermission) return true; // e.g. browser-owned test directory
@@ -148,6 +172,12 @@
     } catch (_) { toast(text('unavailable'),6000); }
   }
   function button(label, action) { const b=document.createElement('button');b.type='button';b.className='ghost';b.textContent=label;b.onclick=action;return b; }
+  // Keep app decoration separate from names. Native Pro replaces only these
+  // explicit slots; the independent PWA keeps its original text fallback.
+  function iconText(target,key,glyph,label){
+    const slot=document.createElement('span');slot.className='workspace-icon';slot.dataset.pbIcon=key;slot.setAttribute('aria-hidden','true');slot.textContent=glyph;
+    target.replaceChildren(slot,document.createTextNode(' '+label));
+  }
   // Klaus 2026-10-24: sorting is ONE field („Sortieren nach“: Datum/Name/Größe with their direction), as usual elsewhere;
   // newest on top by default. The content switch also searches the file text.
   const sortValue=()=>el('explorerSort').value||'date', sortBase=()=>sortValue().replace(/-r$/,''), sortReversed=()=>/-r$/.test(sortValue());
@@ -157,13 +187,30 @@
   const contentText=document.createElement('span');contentLabel.append(contentBox,contentText);orderBox.append(contentLabel);
   el('explorerSort').after(orderBox);
   for(const [value,key] of [['type','sortType'],['type-r','sortTypeR']]){const o=document.createElement('option');o.value=value;o.dataset.ws=key;o.textContent=text(key);el('explorerSort').append(o);}
+  for(const [key,label] of [['absender','bySender'],['bereich','byArea'],['art','byArt']]){const o=document.createElement('option');o.value=key;o.dataset.ws=label;o.textContent=text(label);el('explorerSort').append(o);}
+  // Kästchen im Suchfeld (Punkt 3): fest = per Klick gesetzt, erkannt = aus der Frage gelesen (× liest das Wort als Text)
+  let chips=[],chipIgnore=new Set();
+  // Die Kästchen stehen in einer eigenen Zeile direkt unter dem Suchfeld: das Feld selbst bleibt, wie die Pro-App es anordnet.
+  const chipBar=document.createElement('div');chipBar.className='explorer-chips';chipBar.id='explorerChips';chipBar.hidden=true;
+  el('explorerFilter').closest('.explorer-toolbar').after(chipBar);
+  contentLabel.hidden=true;contentLabel.style.display='none'; // Klaus 15.11.2026: der Inhalt wird von selbst mit durchsucht
+  // Generalprüfung 16.11.2026: eine Datei hat nur eine Kategorie und nur eine eigene Kategorie. Ein zweiter Tipp in derselben Liste
+  // wechselt deshalb (statt eine leere Liste zu zeigen); Kästchen verschiedener Sorten (Kategorie + Absender + Monat …) bleiben kombinierbar.
+  const chipSorte=c=>c.quelle||c.feld==='gruppe'||c.feld==='kategorie'?'kategorie':c.feld==='eigene'?'eigene':'';
+  function setChip(chip){const sorte=chipSorte(chip);if(chips.some(c=>c.feld===chip.feld&&c.wert===chip.wert))return;if(sorte)chips=chips.filter(c=>chipSorte(c)!==sorte);chips.push(chip);}
+  function addChip(chip){setChip(chip);folderPath='';revealSelectedPath=true;renderExplorer();}
+  function chipNode(c,erkannt){const b=document.createElement('button');b.type='button';b.className='explorer-chip'+(erkannt?' explorer-chip-erkannt':'');b.dataset.feld=c.feld;b.dataset.wert=String(c.wert);
+    b.textContent=c.label+' ×';b.title=erkannt?text('recognized')+' · '+text('chipWord'):text('chipRemove');b.setAttribute('aria-label',b.title+': '+c.label);
+    b.onclick=()=>{if(erkannt)chipIgnore.add(c.wort);else chips=chips.filter(x=>x!==c);renderExplorer();el('explorerFilter').focus();};return b;}
   if(!el('explorerSort').dataset.chosen)el('explorerSort').value='date';
   function orderLabel(){contentText.textContent=text('inContent');const s=el('explorerSort'),t=text('sortBy');s.title=t;s.setAttribute('aria-label',t);}
   contentBox.onchange=()=>renderExplorer();
-  function explorerState(){return {path:folderPath,filter:el('explorerFilter').value,sort:sortBase(),reverse:sortReversed(),content:contentBox.checked};}
+  function explorerState(){return {path:folderPath,filter:el('explorerFilter').value,sort:sortBase(),reverse:sortReversed(),content:contentBox.checked,chips:chips.map(c=>({...c})),ignore:[...chipIgnore]};}
   function restoreExplorer(state){
     folderPath=String(state?.path||'');el('explorerFilter').value=String(state?.filter||'');
-    el('explorerSort').value=(['name','date','size','type'].includes(state?.sort)?state.sort:'date')+(state?.reverse===true?'-r':'');
+    revealSelectedPath=true;
+    const sortKey=['name','date','size','type','absender','bereich','art'].includes(state?.sort)?state.sort:'date';el('explorerSort').value=sortKey+(state?.reverse===true&&['name','date','size','type'].includes(sortKey)?'-r':'');
+    chips=Array.isArray(state?.chips)?state.chips.filter(c=>c&&c.feld&&c.label):[];chipIgnore=new Set(Array.isArray(state?.ignore)?state.ignore:[]);
     contentBox.checked=state?.content===true;renderExplorer();
   }
   const foldText=s=>String(s||'').toLocaleLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ß/g,'ss');
@@ -178,11 +225,12 @@
   }
   function openFolder(path,{clear=false}={}){
     if(window.PBNavigation)return window.PBNavigation.folder(path,clear);
-    folderPath=path;if(clear)el('explorerFilter').value='';renderExplorer();
+    folderPath=path;revealSelectedPath=true;if(clear)el('explorerFilter').value='';renderExplorer();
   }
   // What kind an entry is, so the explorer and the import note can say where a file is.
   const KINDS=[['mail','✉️'],['doc','📄'],['photo','🖼️'],['note','📝'],['attach','📎']];
   const kindIcon=k=>(KINDS.find(x=>x[0]===k)||KINDS[1])[1];
+  const kindKey=k=>({mail:'mail',doc:'file',photo:'images',note:'note',attach:'attach'}[k]||'file');
   const ATTACH_DIR='Mail-Anhang', MAIL_DIR='Mail';
   function attachSender(path){const p=String(path||'').split('/'),i=p.indexOf(ATTACH_DIR);return i>=0&&p.length>i+2?p[i+1]:'';}
   function kindOf(r,path){
@@ -220,7 +268,7 @@
       const c=counts.get(key);if(!c)continue;
       const line=document.createElement('p');line.dataset.kind=key;
       const label=document.createElement('span');
-      label.textContent=icon+' '+text('kind_'+key)+': '+(c.fresh+c.known)+(c.known?' ('+c.known+' '+text('doneKnown')+')':'');
+      iconText(label,kindKey(key),icon,text('kind_'+key)+': '+(c.fresh+c.known)+(c.known?' ('+c.known+' '+text('doneKnown')+')':''));
       const go=button('→ '+text('showIn'),()=>showKind(key));go.dataset.show=key;
       line.append(label,go);box.append(line);
     }
@@ -246,15 +294,15 @@
   function buildModel(all){
     const nodes=new Map(), shown=new Map();
     const node=(path,label,parent,extra)=>{let n=nodes.get(path);if(!n){n={path,label,parent,kids:[],files:[],vault:[],...(extra||{})};nodes.set(path,n);if(parent!=null)nodes.get(parent).kids.push(n);}return n;};
-    node('','📁 '+text('all'),null);
-    for(const [k,icon] of TOP)node('kind:'+k,icon+' '+text('kind_'+k),'',{kind:k});
+    node('','📁 '+text('all'),null,{iconKey:'folder',glyph:'📁'});
+    for(const [k,icon] of TOP)node('kind:'+k,icon+' '+text('kind_'+k),'',{kind:k,iconKey:kindKey(k),glyph:icon});
     const seen=new Set(),list=[];
     for(const e of all){if(seen.has(e.r.hash))continue;seen.add(e.r.hash);list.push(e);}
-    const senderNode=(key,label)=>{if(!shown.has(key))shown.set(key,label);return node('mail:'+key,'👤 '+(key?shown.get(key):text('unknownSender')),'kind:mail',{sender:key});};
+    const senderNode=(key,label)=>{if(!shown.has(key))shown.set(key,label);return node('mail:'+key,'👤 '+(key?shown.get(key):text('unknownSender')),'kind:mail',{sender:key,iconKey:'person',glyph:'👤'});};
     const mailsOf=new Map(), mailByHash=new Map();
     for(const e of list){if(!e.r.mail)continue;const seg=e.path.split('/')[1]||e.r.mail.from||'';const key=senderKey(seg);
       mailByHash.set(e.r.hash,{e,key});if(!mailsOf.has(key))mailsOf.set(key,[]);mailsOf.get(key).push(e);senderNode(key,tidy(String(seg).slice(0,40)));}
-    const mailNode=(m)=>node('msg:'+m.e.r.hash,'✉️ '+m.e.r.name,'mail:'+m.key,{mail:m.e});
+    const mailNode=(m)=>node('msg:'+m.e.r.hash,'✉️ '+m.e.r.name,'mail:'+m.key,{mail:m.e,iconKey:'mail',glyph:'✉️'});
     const attachTo=new Map();
     for(const e of list){
       const kind=kindOf(e.r,e.path);
@@ -264,10 +312,10 @@
         let m=e.r.fromMail&&mailByHash.get(e.r.fromMail);
         if(!m&&(mailsOf.get(key)||[]).length===1)m=mailByHash.get(mailsOf.get(key)[0].r.hash);
         if(m){mailNode(m).files.push(e);continue;}
-        senderNode(key,tidy(seg));node('loose:'+key,'📎 '+text('looseAttach'),'mail:'+key,{loose:true}).files.push(e);continue;
+        senderNode(key,tidy(seg));node('loose:'+key,'📎 '+text('looseAttach'),'mail:'+key,{loose:true,iconKey:'attach',glyph:'📎'}).files.push(e);continue;
       }
       const dir=e.path.split('/').slice(0,-1);let parent='kind:'+kind;
-      for(let i=0;i<dir.length;i++){const p='dir:'+kind+':'+dir.slice(0,i+1).join('/');node(p,'📁 '+dir[i],parent,{dir:true});parent=p;}
+      for(let i=0;i<dir.length;i++){const p='dir:'+kind+':'+dir.slice(0,i+1).join('/');node(p,'📁 '+dir[i],parent,{dir:true,iconKey:'folder',glyph:'📁'});parent=p;}
       nodes.get(parent).files.push(e);
     }
     // Attachments kept in the storage folder from mails opened in the mailbox (native/native-vault.js).
@@ -276,15 +324,21 @@
       const key=senderKey(String(v.from||'').replace(/[<>\/]/g,' ').trim());
       senderNode(key,tidy(String(v.from||'').slice(0,40)));
       const match=(mailsOf.get(key)||[]).find(e=>(e.r.mail.subject||e.r.name)===v.subject);
-      const n=match?mailNode(mailByHash.get(match.r.hash)):node('pmsg:'+key+'|'+(v.subject||''),'✉️ '+(v.subject||text('noSubject')),'mail:'+key,{postbox:true});
+      const n=match?mailNode(mailByHash.get(match.r.hash)):node('pmsg:'+key+'|'+(v.subject||''),'✉️ '+(v.subject||text('noSubject')),'mail:'+key,{postbox:true,iconKey:'mail',glyph:'✉️'});
       n.vault.push(v);
     }
     for(const [key,ms] of mailsOf)for(const e of ms){const n=nodes.get('msg:'+e.r.hash);if(n)n.files.unshift(e);else nodes.get('mail:'+key).files.push(e);}
     // Counts and check state, from the bottom up.
     const stateOf=e=>window.PBCheck?.stateFor?PBCheck.stateFor(e.r):'open';
     const vaultState=v=>window.PBCheck?.vaultState?PBCheck.vaultState(v):'open';
-    const tally=n=>{const t={n:0,found:0,partly:0,missing:0,open:0,clean:0};
-      for(const e of n.files){t.n++;t[stateOf(e)]=(t[stateOf(e)]||0)+1;}
+    const tally=n=>{const t={n:0,found:0,partly:0,missing:0,open:0,clean:0,unconfirmed:0};
+      for(const e of n.files){
+        t.n++;const state=stateOf(e),availability=window.PBRecordStatus?.availability(e.r).key;
+        if(state!=='missing'||!availability)t[state]=(t[state]||0)+1;
+        // A saved check result does not prove that its original is still here.
+        if(availability==='missing')t.missing++;
+        else if(['unknown','unavailable','source'].includes(availability))t.unconfirmed++;
+      }
       for(const v of n.vault){t.n++;t[vaultState(v)]=(t[vaultState(v)]||0)+1;}
       for(const k of n.kids){const s=tally(k);for(const x in s)t[x]=(t[x]||0)+s[x];}
       n.tally=t;return t;};
@@ -293,12 +347,56 @@
     return nodes;
   }
   function allFiles(n){const out={files:[...n.files],vault:[...n.vault]};for(const k of n.kids){const s=allFiles(k);out.files.push(...s.files);out.vault.push(...s.vault);}return out;}
+  // Use the same unique records as the explorer tree, rather than counting
+  // duplicate source locations as additional files in the overview.
+  // Eine alte Kategorie, die auch eine Art des Sortier-Kerns ist (Rechnung, Vertrag, Angebot), umfasst beides: die alte Kategorie ODER die Art.
+  const ART_AUS_KATEGORIE={Rechnung:'Rechnung',Vertrag:'Vertrag',Angebot:'Angebot/Werbung'};
+  function gruppePasst(r,category){const art=ART_AUS_KATEGORIE[category];return String(r.category||'')===category||(!!art&&window.PBSuchFrage?.artVon?.(r)===art);}
+  function categoryViews(all){
+    const groups=new Map(),seen=new Set();
+    for(const entry of all){
+      if(seen.has(entry.r.hash))continue;seen.add(entry.r.hash);
+      const category=String(entry.r.category||'');
+      if(!groups.has(category))groups.set(category,[]);
+    }
+    // Generalprüfung 16.11.2026: Zahl und Liste nach derselben Regel (gruppePasst) – die Kachel „Rechnung“ zählt, was der Tipp darauf zeigt.
+    const unique=all.filter(entry=>seen.delete(entry.r.hash));
+    return [...groups.keys()].map(category=>{const match=r=>gruppePasst(r,category),list=unique.filter(entry=>match(entry.r));
+      return {key:'category:'+encodeURIComponent(category),label:category||text('uncategorized'),category:true,count:list.length,files:list,match};}).sort((a,b)=>a.label.localeCompare(b.label));
+  }
+  function overviewSummary(){
+    const nodes=buildModel(entries()),root=nodes.get(''),all=allFiles(root);
+    const sizeOf=value=>Number.isSafeInteger(value)&&value>=0?value:null;
+    function sum(files,vault=[]){
+      let bytes=0,unknownSizes=0,localCount=0,localBytes=0,localUnknownSizes=0;
+      for(const entry of files){
+        const size=sizeOf(entry.r.size);
+        if(size!==null&&Number.isSafeInteger(bytes+size))bytes+=size;else unknownSizes++;
+        const local=window.PBOriginals?.statusFor?.(entry.r.hash)==='local'||(!window.PBOriginals?.statusFor&&window.PBOriginals?.stored?.has(entry.r.hash));
+        if(local){localCount++;if(size!==null&&Number.isSafeInteger(localBytes+size))localBytes+=size;else localUnknownSizes++;}
+      }
+      for(const entry of vault){const size=sizeOf(entry.size);if(size!==null&&Number.isSafeInteger(bytes+size))bytes+=size;else unknownSizes++;}
+      return {count:files.length+vault.length,knownBytes:bytes,unknownSizes,localCount,localBytes,localUnknownSizes};
+    }
+    const cleanLabel=node=>{const prefix=(node.glyph||'')+' ';return node.glyph&&node.label.startsWith(prefix)?node.label.slice(prefix.length):node.label;};
+    const folders=[];
+    const walk=(node,depth)=>{for(const child of node.kids){if(child.tally.n){const contents=allFiles(child);folders.push({path:child.path,parent:child.parent,label:cleanLabel(child),icon:child.iconKey||'folder',depth,...sum(contents.files,contents.vault)});walk(child,depth+1);}}};
+    walk(root,0);
+    const categories=categoryViews(all.files).map(view=>({path:view.key,label:view.label,...sum(view.files)}));
+    const topics=(window.PBExplorerTopics?.views?.()||[]).map(view=>{
+      const definition=window.PBExplorerTopics.DEFS?.find(item=>item.key===view.key),prefix=definition?.icon+' ';
+      return {path:'topic:'+view.key,label:prefix&&view.label.startsWith(prefix)?view.label.slice(prefix.length):view.label,...sum(all.files.filter(entry=>view.match(entry.r)))};
+    });
+    const snapshot=window.PBOriginals?.snapshot?.();
+    return {total:sum(all.files,all.vault),folders,categories,topics,originalsReady:snapshot?.ready===true,originalsError:snapshot?.error===true};
+  }
   function tallyText(t){
     const P=window.PBCheck?.words||(k=>k);
     const parts=[t.n+' '+text(t.n===1?'oneFile':'files')];
     if(t.found)parts.push('⚠ '+t.found+' '+text('withFind'));
     if(t.partly)parts.push('◐ '+t.partly+' '+text('partlyShort'));
     if(t.missing)parts.push('⊘ '+t.missing+' '+text('noOriginal'));
+    if(t.unconfirmed)parts.push('○ '+t.unconfirmed+' '+text('accessUnconfirmed'));
     if(t.open)parts.push('○ '+t.open+' '+text('openShort'));
     return parts.join(' · ');
   }
@@ -309,14 +407,17 @@
     return '';
   }
   function chain(nodes,path){const out=[];for(let n=nodes.get(path);n;n=n.parent==null?null:nodes.get(n.parent))out.unshift(n);return out;}
+  function nodeLabel(target,n,suffix=''){
+    const prefix=n.glyph+' ',label=n.label.startsWith(prefix)?n.label.slice(prefix.length):n.label;
+    iconText(target,n.iconKey||'folder',n.glyph||'📁',label+suffix);
+  }
   function crumbs(nodes,path){
     const box=el('explorerPath');box.replaceChildren();
     const parts=chain(nodes,path);
     parts.forEach((n,i)=>{
       if(i){const s=document.createElement('span');s.className='explorer-crumb-sep';s.textContent=' › ';box.append(s);}
-      const label=i?n.label:'📁 '+text('all');
-      if(i===parts.length-1){const s=document.createElement('span');s.className='explorer-crumb-here';s.textContent=label;box.append(s);}
-      else{const b=button(label,()=>openFolder(n.path));b.className='ghost explorer-crumb';box.append(b);}
+      if(i===parts.length-1){const s=document.createElement('span');s.className='explorer-crumb-here';nodeLabel(s,n);box.append(s);}
+      else{const b=button('',()=>openFolder(n.path));nodeLabel(b,n);b.className='ghost explorer-crumb';box.append(b);}
     });
   }
   function treeView(nodes,tree){
@@ -330,7 +431,7 @@
       if(n.kids.length){const tw=button(isOpen?'▾':'▸',()=>{isOpen?openNodes.delete(n.path):openNodes.add(n.path);saveOpen();renderExplorer();});
         tw.className='ghost explorer-twisty';tw.dataset.toggle=n.path;tw.setAttribute('aria-expanded',String(isOpen));tw.title=tw.ariaLabel=text(isOpen?'collapse':'expand');row.append(tw);}
       else{const sp=document.createElement('span');sp.className='explorer-twisty-space';row.append(sp);}
-      const b=button(n.path?n.label+' ('+n.tally.n+')':n.label,()=>{openNodes.add(n.path);saveOpen();openFolder(n.path);});
+      const b=button('',()=>{openNodes.add(n.path);saveOpen();openFolder(n.path);});nodeLabel(b,n,n.path?' ('+n.tally.n+')':'');
       b.dataset.path=n.path;b.classList.add('explorer-folder');if(n.kind)b.dataset.kind=n.kind;
       if(n.tally.found)b.dataset.found=String(n.tally.found);
       b.setAttribute('aria-current',n.path===folderPath?'location':'false');b.title=tallyText(n.tally);
@@ -351,7 +452,7 @@
   function folderRow(n){
     const row=document.createElement('article');row.className='explorer-dir';row.dataset.path=n.path;if(n.tally.found)row.dataset.found='1';
     const info=document.createElement('div'),name=document.createElement('strong'),meta=document.createElement('div');
-    name.textContent=n.label;meta.className='explorer-meta';meta.textContent=tallyText(n.tally);
+    nodeLabel(name,n);meta.className='explorer-meta';meta.textContent=tallyText(n.tally);
     info.append(name,meta);
     const go=button('›',()=>{openNodes.add(n.path);saveOpen();openFolder(n.path);});go.className='ghost explorer-dir-open';go.title=go.ariaLabel=text('openFolder');
     row.append(info,go);row.onclick=ev=>{if(ev.target===row||info.contains(ev.target))go.click();};
@@ -361,13 +462,34 @@
     const row=document.createElement('article');row.className='explorer-row';row.dataset.hash=e.r.hash;
     const info=document.createElement('div'), name=document.createElement('strong'), meta=document.createElement('div');
     const kind=kindOf(e.r,e.path),sender=kind==='attach'?attachSender(e.path):'';row.dataset.kind=kind;
-    name.textContent=kindIcon(kind)+' '+(e.dirId && !e.r.mail?e.path.split('/').pop():e.r.name);meta.className='explorer-meta';
+    iconText(name,kindKey(kind),kindIcon(kind),e.dirId && !e.r.mail?e.path.split('/').pop():e.r.name);meta.className='explorer-meta';
     const date=e.r.date?new Date(e.r.date).toLocaleDateString(document.documentElement.lang):'';
-    const where=window.PBOriginals?.stored.has(e.r.hash)?PBOriginals.label():e.dirId?text('local'):SESSION_FILES.has(e.r.hash)?text('session'):text('catalog');
+    const where=window.PBRecordStatus?'':window.PBOriginals?.stored.has(e.r.hash)?PBOriginals.label():e.dirId?text('local'):SESSION_FILES.has(e.r.hash)?text('session'):text('catalog');
     const from=kind==='attach'?'📎 '+text('fromMail')+' '+senderLabel(sender).slice(3):kind==='mail'?text('from')+' '+tidy(e.r.mail?.from||e.path.split('/')[1]||'?'):'';
     meta.textContent=[from,kind==='mail'||kind==='attach'?'':e.path.split('/').slice(0,-1).join('/'),fmtKB(e.r.size||0),date,where].filter(Boolean).join(' · ');
-    info.append(name,meta);row.append(info,button(text('open'),()=>openEntry(e)));if(view&&!view.filetype)row.append(window.PBExplorerTopics.rowTool(e.r,view.key));
+    // Einordnung des Sortier-Kerns (Klaus 15.11.2026): Art · Absender · Bereich, eigene Kategorie zuerst
+    const k=e.r.kern,art=window.PBSuchFrage?PBSuchFrage.artVon(e.r):'';
+    if(k||e.r.eigeneKategorie){const kz=document.createElement('div');kz.className='explorer-kern';kz.textContent=[e.r.eigeneKategorie,art&&art!=='Unklar'?art.replace('/Werbung',''):'',kind==='mail'?'':k?.absender,k?.bereich].filter(Boolean).join(' · ');if(kz.textContent)info.append(kz);}
+    info.prepend(name,meta);row.append(info,button(text('open'),()=>openEntry(e)));if(view&&!view.category)row.append(window.PBExplorerTopics.rowTool(e.r,view.key));
+    window.PBEigeneKategorien?.zeile?.(row,e.r);
     return row;
+  }
+  // Punkt 5: unter den sicheren Treffern „Ähnlich nach Bedeutung“ – mit dem Modell, das die App ohnehin lädt (Modul 03 bzw.
+  // das zweite Modell der Pro-App). Dieselben Kästchen gelten. Ohne Modell fehlt der Abschnitt.
+  let meaningRun=0;
+  async function meaningRows(found,files,shown,pool){
+    const run=++meaningRun;
+    if(typeof embedQueryCached!=='function')return;
+    const qe=await embedQueryCached(found.frage.rest.join(' '));
+    if(!qe||run!==meaningRun||!files.isConnected)return;
+    const score=r=>typeof ecoOf==='function'?ecoOf(qe,r):(Array.isArray(r.evec)&&typeof cosineE==='function'?cosineE(qe,r.evec):0);
+    const seen=new Set(),frage={...found.frage,rest:[],bonus:[]};
+    const near=pool.filter(e=>!shown.has(e.r.hash)&&!seen.has(e.r.hash)&&seen.add(e.r.hash)&&window.PBSuchFrage.passt(e.r,frage,found.kaestchen,found.ctx))
+      .map(e=>({e,s:score(e.r)})).filter(x=>x.s>=0.78).sort((a,b)=>b.s-a.s).slice(0,8);
+    if(!near.length)return;
+    files.querySelector('.explorer-empty')?.remove();
+    const h=heading(text('meaning'));h.classList.add('explorer-group','explorer-meaning');files.append(h);
+    for(const x of near){const row=fileRow(x.e,null);row.dataset.hit='bedeutung';files.append(row);}
   }
   let lastModel=null,currentView=null;
   // Klaus 2026-10-26 (Sitzung 2, Punkt 3): the explorer's choice of view also offers „PDF“; nothing is moved.
@@ -387,22 +509,33 @@
   }
   // A view (category, PDF) keeps a way back over the path: „Alle Dateien › PDF“.
   function viewCrumbs(nodes,label){
-    const box=el('explorerPath'),back=button('📁 '+text('all'),()=>openFolder(''));back.className='ghost explorer-crumb';
+    const box=el('explorerPath'),back=button('',()=>openFolder(''));nodeLabel(back,nodes.get(''));back.className='ghost explorer-crumb';
     const sep=document.createElement('span');sep.className='explorer-crumb-sep';sep.textContent=' › ';
     const here=document.createElement('span');here.className='explorer-crumb-here';here.textContent=label;
     box.replaceChildren(back,sep,here);
   }
+  // Ein Kategorie-Kästchen (feld „gruppe“) filtert hier nach gruppePasst – derselben Regel, nach der Kachel und linke Liste zählen.
+  function categoryChip(label,key){const raw=decodeURIComponent(String(key).replace(/^category:/,''));
+    const name=String(label).startsWith('category:')?raw:label;
+    return {feld:'gruppe',wert:raw,label:name,quelle:key};}
   function renderExplorer() {
+    if(folderPath.startsWith('category:')){setChip(categoryChip(folderPath,folderPath));folderPath='';}
     const all=entries(), tree=el('explorerTree'), files=el('explorerFiles');
     tree.replaceChildren(); files.replaceChildren();
     const nodes=buildModel(all);lastModel=nodes;
-    const topics=window.PBExplorerTopics, views=topics?.views()||[];
+    const topics=window.PBExplorerTopics, views=topics?.views()||[], categories=categoryViews(all);
     const view=folderPath===PDF_VIEW.key?PDF_VIEW:folderPath.startsWith('topic:')?views.find(v=>'topic:'+v.key===folderPath):null;currentView=view||null;
-    if(!view){const real=resolvePath(nodes,folderPath);if(real!==folderPath)folderPath=real;}
+    if(!view){const real=resolvePath(nodes,folderPath);if(real!==folderPath){folderPath=real;revealSelectedPath=true;}}
     const here=view?null:nodes.get(folderPath);
-    if(here)for(const n of chain(nodes,folderPath))openNodes.add(n.path);
+    if(here&&revealSelectedPath)for(const n of chain(nodes,folderPath))openNodes.add(n.path);
+    revealSelectedPath=false;
     treeView(nodes,tree);
+    // The existing catalog categories are direct explorer views as well.
+    if(categories.length)tree.append(heading(text('categoriesHead')));
+    for(const category of categories){const b=button('',()=>addChip(categoryChip(category.label,category.key)));iconText(b,'folder','📁',category.label+' ('+category.count+')');b.dataset.category=category.key;b.setAttribute('aria-current',chips.some(c=>c.quelle===category.key)?'location':'false');tree.append(b);}
     // Categories (native): views over the catalog, nothing is moved. Path "topic:<key>".
+    // Eigene Kategorien (Klaus 15.11.2026): links mit Zahl, Klick setzt ein Kästchen
+    window.PBEigeneKategorien?.baum?.(tree,heading,chips);
     if(views.length)tree.append(heading(text('topicsHead')));
     for(const v of views){const b=button(v.label+' ('+v.count+')',()=>openFolder('topic:'+v.key));b.dataset.topic=v.key;b.setAttribute('aria-current',folderPath==='topic:'+v.key?'location':'false');tree.append(b);}
     el('panel-explorer').classList.toggle('explorer-tree-hidden',treeHidden);
@@ -413,23 +546,63 @@
     el('explorerUp').disabled=!folderPath;
     orderLabel();
     if(!folderPath)topics?.notice(files);
-    if(view&&!view.filetype)topics.head(files,view.key);
+    if(view&&!view.category)topics.head(files,view.key);
+    else if(view&&!view.filetype){const help=document.createElement('p');help.className='hint';help.textContent=text('categoryHelp');files.append(help);}
     const words=foldText(el('explorerFilter').value).split(/\s+/).filter(Boolean);
     const sort=sortBase(), flip=sortReversed()?-1:1;
     const typeKey=r=>String(r.ext||String(r.name||'').match(/\.([^./]+)$/)?.[1]||r.type||'').replace(/^\./,'').trim().toLocaleLowerCase();
-    const order=(a,b)=>flip*(sort==='date'?(b.r.date||0)-(a.r.date||0):sort==='size'?(b.r.size||0)-(a.r.size||0):sort==='type'?(typeKey(a.r).localeCompare(typeKey(b.r))||a.r.name.localeCompare(b.r.name)):a.r.name.localeCompare(b.r.name));
+    const SF=window.PBSuchFrage, artOf=r=>SF?SF.artVon(r):String(r.category||'');
+    const groupKey=sort==='absender'?r=>r.kern?.absender||(r.mail?.from&&SF?SF.mailName(r.mail.from):''):sort==='bereich'?r=>r.kern?.bereich||'':sort==='art'?r=>artOf(r):null;
+    const byGroup=(a,b)=>{const x=groupKey(a.r),y=groupKey(b.r);return (!x)-(!y)||x.localeCompare(y);};
+    const order=(a,b)=>flip*(sort==='date'||groupKey?(b.r.date||0)-(a.r.date||0):sort==='size'?(b.r.size||0)-(a.r.size||0):sort==='type'?(typeKey(a.r).localeCompare(typeKey(b.r))||a.r.name.localeCompare(b.r.name)):a.r.name.localeCompare(b.r.name));
     const extra=window.PBExplorerExtra;
     if(here?.kind==='mail')extra?.head?.(files);
-    // "Alle Dateien" holds everything; a search looks through the whole folder below; otherwise one level.
-    let list, vaultList=[];
-    if(view){const seen=new Set();list=all.filter(e=>!seen.has(e.r.hash)&&seen.add(e.r.hash)&&view.match(e.r)&&explorerMatch(e,words));}
-    else if(!folderPath||words.length){const a=allFiles(here);list=a.files.filter(e=>explorerMatch(e,words));
-      const needle=foldText(el('explorerFilter').value);vaultList=a.vault.filter(v=>!needle||foldText(v.name+' '+(v.subject||'')+' '+(v.from||'')).includes(needle));}
+    // Klaus 15.11.2026: ein Suchfeld für alles. Die Frage wird gelesen (Füllwörter weg, Kästchen für Art, Absender, Monat …);
+    // gesucht wird in Name, Feldern des Sortier-Kerns und von selbst im Inhalt. Ohne PBSuchFrage bleibt die alte Wortsuche.
+    let list, vaultList=[], found=null;
+    const searching=words.length||chips.length;
+    const gruppen=chips.filter(c=>c.feld==='gruppe'),sfChips=chips.filter(c=>c.feld!=='gruppe');
+    const inGruppen=(e,ohne)=>gruppen.every(c=>c===ohne||gruppePasst(e.r,String(c.wert)));
+    const pool0=view?(()=>{const seen=new Set();return all.filter(e=>!seen.has(e.r.hash)&&seen.add(e.r.hash)&&view.match(e.r));})():(!folderPath||searching)?(()=>{const a=allFiles(here);vaultList=a.vault;return a.files;})():null;
+    const pool=pool0&&gruppen.length?pool0.filter(e=>inGruppen(e)):pool0;
+    if(pool&&searching&&SF){
+      const first=new Map();for(const e of pool)if(!first.has(e.r.hash))first.set(e.r.hash,e);
+      const byHash=new Map(CATALOG.map(r=>[r.hash,r])),ctx=SF.kontext(CATALOG,r=>r.fromMail?byHash.get(r.fromMail):null);
+      found=SF.suchen([...first.values()].map(e=>e.r),el('explorerFilter').value,sfChips,ctx,chipIgnore);
+      // „Ohne Rechnung: n Treffer“ auch für ein Kategorie-Kästchen, wenn sonst nichts passt.
+      if(!found.treffer.length)for(const g of gruppen){const seen=new Set(),rest=pool0.filter(e=>!seen.has(e.r.hash)&&seen.add(e.r.hash)&&inGruppen(e,g)).map(e=>e.r);
+        const n=SF.suchen(rest,el('explorerFilter').value,sfChips,ctx,chipIgnore);if(n.treffer.length&&!n.teilweise)found.ohne.unshift({k:g,n:n.treffer.length});}
+      found.ctx=ctx;list=found.treffer.map(t=>Object.assign(first.get(t.r.hash),{hit:t.p}));
+      const needle=foldText(el('explorerFilter').value);vaultList=chips.length?[]:vaultList.filter(v=>!needle||foldText(v.name+' '+(v.subject||'')+' '+(v.from||'')).includes(needle));
+    }else if(pool){list=pool.filter(e=>explorerMatch(e,words));
+      const needle=foldText(el('explorerFilter').value);vaultList=vaultList.filter(v=>!needle||foldText(v.name+' '+(v.subject||'')+' '+(v.from||'')).includes(needle));}
     else{list=[...here.files];vaultList=[...here.vault];}
-    if(!view&&!words.length)for(const k of here.kids)if(k.tally.n)files.append(folderRow(k));
+    chipBar.replaceChildren(...chips.map(c=>chipNode(c,false)),...(found?found.frage.kaestchen.map(c=>chipNode(c,true)):[]));
+    chipBar.hidden=!chipBar.childElementCount;
+    // Ohne sichtbaren Inhalt (Pro-App: ↕ im Sortier-Menü, Haken entfallen) nimmt die leere Hülle keinen Platz ein.
+    orderBox.style.display=[...orderBox.children].some(c=>getComputedStyle(c).display!=='none')?'':'none';
+    if(!view&&!searching)for(const k of here.kids)if(k.tally.n)files.append(folderRow(k));
     if(here?.mail){list=list.filter(e=>e!==here.mail);files.append(fileRow(here.mail,null));}
-    list.sort(order);
-    for(const e of list)files.append(fileRow(e,view));
+    // Reihenfolge: mit Suchwörtern zuerst nach Passung; Einzahl („Rechnung“) = die passendste oben, Mehrzahl („Rechnungen“) = alle nach Absender.
+    const chosen=el('explorerSort').dataset.chosen==='1';
+    const ranked=found&&(found.frage.rest.length||found.frage.bonus.length)&&!groupKey&&!(chosen&&sort!=='date');
+    const autoGroup=found&&found.frage.mehrzahl&&!chosen&&sort==='date'&&found.kaestchen.some(c=>c.feld==='art'||c.feld==='form')?(r=>r.kern?.absender||(r.mail?.from&&SF?SF.mailName(r.mail.from):'')):null;
+    const gk=groupKey||autoGroup;
+    if(!ranked)list.sort(order);
+    if(gk)list.sort((a,b)=>{const x=gk(a.r),y=gk(b.r);return (!x)-(!y)||x.localeCompare(y);});
+    if(found?.teilweise)files.append(Object.assign(document.createElement('p'),{className:'hint explorer-partly',textContent:text('partly')}));
+    const best=found&&found.frage.einzahl&&!gk&&list.length>1;
+    let lastGroup=null;
+    list.forEach((e,i)=>{
+      if(gk){const g=gk(e.r)||'';if(g!==lastGroup){lastGroup=g;const h=heading(g||text(sort==='absender'||autoGroup?'noSenderGroup':'noGroup'));h.classList.add('explorer-group');h.dataset.group=g;files.append(h);}}
+      else if(best&&(i===0||i===1)){const h=heading(text(i===0?'best':'more'));h.classList.add('explorer-group');files.append(h);}
+      const row=fileRow(e,view);if(best&&i===0)row.classList.add('explorer-best');
+      if(e.hit&&e.hit.wo!=='feld'){const m=row.querySelector('.explorer-meta');if(m)m.append(' · '+text('inContentFound'));row.dataset.hit=e.hit.wo;}
+      files.append(row);delete e.hit;
+    });
+    if(found&&!list.length&&found.ohne.length){const box=document.createElement('div');box.className='explorer-without';
+      for(const o of found.ohne){const b=button(text('without').replace('{x}',o.k.label).replace('{n}',o.n),()=>{if(chips.includes(o.k))chips=chips.filter(x=>x!==o.k);else chipIgnore.add(o.k.wort);renderExplorer();});box.append(b);}files.append(box);}
+    if(found&&found.frage.rest.length)meaningRows(found,files,new Set(list.map(e=>e.r.hash)),pool);
     if(extra?.row)for(const v of vaultList.sort((a,b)=>(Number(b.date)||b.stored||0)-(Number(a.date)||a.stored||0)))files.append(extra.row(v));
     if(here?.kind==='mail')extra?.lockedRow?.(files);
     if(here?.loose)files.append(Object.assign(document.createElement('p'),{className:'hint explorer-loose-hint',textContent:text('looseHint')}));
@@ -437,14 +610,15 @@
   }
   function refresh() {
     if(library && !DIR_HANDLES.has(libraryId)) {library=null;localStorage.setItem('pb_library_enabled','0');}
-    for (const node of document.querySelectorAll('[data-ws]')) node.textContent=text(node.dataset.ws);
+    for (const node of document.querySelectorAll('[data-ws]')) controlText(node,text(node.dataset.ws));
     el('explorerFilter').placeholder=text('filterShort');el('explorerFilter').setAttribute('aria-label',text('filter'));
     syncNavigation();
     el('chooseLibrary').disabled=!window.showDirectoryPicker || signing;
     el('pauseLibrary').disabled=!library || signing;
+    if(!window.PBFolders)el('pauseLibrary').hidden=!library;   // one line: the second button only once a folder is chosen
     el('pickDir').textContent=text(library?'copyFolder':'linkFolder');
-    el('pickDir').title=text(library?'copyFolder':'linkFolder');
-    el('libraryStatus').textContent=library?text('active')+': '+library.name:window.showDirectoryPicker?text('noFolder'):text('unsupported');
+    el('pickDir').title=text(library?'copyFolder':'linkFolder').replace(/^\p{Extended_Pictographic}\uFE0F?\s*/u,'');
+    if(!window.PBFolders)el('libraryStatus').textContent=library?text('active')+' „'+library.name+'“':window.showDirectoryPicker?text('noFolder'):text('unsupported');
     el('searchMailCount').textContent=CATALOG.filter(r=>r.mail).length+' '+text('emails');
     el('searchDocCount').textContent=CATALOG.filter(r=>!r.mail).length+' '+text('documents');
     el('searchLocalCount').textContent=entries().filter(e=>e.dirId || SESSION_FILES.has(e.r.hash) || window.PBOriginals?.stored.has(e.r.hash)).length+' '+text('stored');
@@ -454,14 +628,18 @@
   }
   el('chooseLibrary').onclick=chooseLibrary;
   el('pauseLibrary').onclick=()=>{if(signing)return;library=null;localStorage.setItem('pb_library_enabled','0');refresh();};
-  el('explorerFilter').oninput=renderExplorer;el('explorerSort').onchange=()=>{el('explorerSort').dataset.chosen='1';renderExplorer();};
+  el('explorerFilter').oninput=()=>{chipIgnore=new Set([...chipIgnore].filter(w=>foldText(el('explorerFilter').value).includes(w)));renderExplorer();};
+  // Rückschritt im leeren Feld nimmt das letzte feste Kästchen weg
+  el('explorerFilter').addEventListener('keydown',ev=>{if(ev.key==='Backspace'&&!el('explorerFilter').value&&chips.length){chips.pop();renderExplorer();}});
+  addEventListener('pb-kern-geordnet',()=>{if(el('panel-explorer')?.classList.contains('on')||el('explorerFiles')?.childElementCount)renderExplorer();});el('explorerSort').onchange=()=>{el('explorerSort').dataset.chosen='1';renderExplorer();};
   el('explorerHome').onclick=()=>openFolder('',{clear:true});
   el('explorerUp').onclick=()=>openFolder(folderPath.startsWith('topic:')?'':lastModel?.get(folderPath)?.parent??'');
   new MutationObserver(refresh).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
   new MutationObserver(syncNavigation).observe(el('panel-search'),{attributes:true,attributeFilter:['class']});
   window.addEventListener('popstate',()=>navigate(location.hash.slice(1)||'search',{record:false}));
   window.addEventListener('hashchange',()=>navigate(location.hash.slice(1)||'search',{record:false}));
-  window.PBWorkspace={prepareImport,storeItem,refresh,navigate,explorerState,restoreExplorer,kindOf,importSummary,showKind,explorerSections,explorerSection};
+  window.addEventListener('pb-originals-change',refresh);
+  window.PBWorkspace={addChip:c=>addChip(c),renderExplorer:()=>renderExplorer(),prepareImport,storeItem,refresh,navigate,explorerState,restoreExplorer,kindOf,importSummary,showKind,explorerSections,explorerSection,overview:overviewSummary};
   navigate(location.hash.slice(1)||'search',{replace:true});
   const wait=setInterval(()=>{if(db){clearInterval(wait);ready=restore().catch(()=>refresh());}},50);
   refresh();

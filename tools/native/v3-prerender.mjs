@@ -120,7 +120,7 @@ export async function prerenderV3(html, root, { version } = {}) {
     + `\n      <button type="button" id="v3FilterToggle" class="ghost v3-filter-toggle" aria-expanded="false" aria-controls="filterbar" title="Filter">${svgV('filter')}<span>Filter</span></button>`);
   // Ohne Suche und Treffer ist der Hinweissatz still (v3-ui.js quietSearch); „Alle geprüft“ steht schon an seinem
   // Platz (native-check.js übernimmt den Knopf und schreibt nur, wenn sich der Text ändert).
-  swap('<span id="searchInfo" data-i18n="searchInfo">', '<span id="searchInfo" class="v3-quiet" data-i18n="searchInfo">');
+  swap('<span id="searchInfo" role="status" data-i18n="searchInfo">', '<span id="searchInfo" role="status" class="v3-quiet" data-i18n="searchInfo">');
   swap('<span id="corpusInfo"></span>', '<span id="corpusInfo"></span><button class="ghost pb-check-all-button" type="button" data-text="🛡 Alle geprüft">🛡 Alle geprüft</button>');
   // Klaus 2026-10-26 (Sitzung 1, Punkt 1): E-Mails · Dateien · lokal · Katalog in einer Zeile mit dem Prüfstand.
   swap('    <div class="search-totals"><span id="searchMailCount"></span><span id="searchDocCount"></span><span id="searchLocalCount"></span></div>\n', '');

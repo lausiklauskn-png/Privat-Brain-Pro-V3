@@ -33,7 +33,7 @@ try{
     rebuildIndex();refreshAll();
   });
   await page.locator('[data-tab="explorer"]').click();
-  const names=()=>page.locator('#explorerFiles .explorer-row strong').allTextContents().then(a=>a.map(x=>x.replace(/^\S+\s/,'')));
+  const names=()=>page.locator('#explorerFiles .explorer-row strong').allTextContents().then(a=>a.map(x=>x.replace(/^\s*\p{Extended_Pictographic}\S*\s/u,'').trim()));
   ok('Newest file is on top by default',JSON.stringify(await names())===JSON.stringify(['Rechnung-Stadtwerke.pdf','Gehaltsabrechnung-September.pdf','Arztbrief-Orthopaedie.pdf']));
   ok('Mails from "Alle Konten" do not appear in the explorer',!(await names()).some(n=>n.includes('Aldi'))&&!(await page.locator('#explorerTree').textContent()).includes('Mail'));
   // Klaus 2026-10-24: one sorting control. Sitzung 2 (2026-10-26): it shows its choice on the button, „D ↓“.
@@ -54,9 +54,9 @@ try{
   ok('„T ↑“: type is offered too',await short()==='T ↑'&&(await page.evaluate(()=>PBWorkspace.explorerState().sort))==='type');
   await choose('[data-sort-key="date"]');
   await page.fill('#explorerFilter','bandscheibe');
-  ok('Without the content switch only names are searched',(await names()).length===0);
-  await page.locator('#explorerContent').check();
-  ok('"auch im Inhalt" finds the doctor\'s letter by its text',JSON.stringify(await names())===JSON.stringify(['Arztbrief-Orthopaedie.pdf']));
+  // Pro 15.11.2026 (Suche, V3 Schritt 2): kein Haken „auch im Inhalt“ mehr – der Inhalt wird von selbst mit durchsucht.
+  ok('The content is searched without a switch; the switch is no longer shown',JSON.stringify(await names())===JSON.stringify(['Arztbrief-Orthopaedie.pdf'])&&!await page.locator('#explorerContent').isVisible());
+  await page.locator('#explorerContent').evaluate(b=>{b.checked=true;b.dispatchEvent(new Event('change'));});
   await page.fill('#explorerFilter','lohnsteuer brutto');
   ok('All words must occur in the content',JSON.stringify(await names())===JSON.stringify(['Gehaltsabrechnung-September.pdf']));
   await page.fill('#explorerFilter','zahlerstand');
@@ -68,10 +68,10 @@ try{
   ok('Restoring a state restores the order, the button and the switch',(await names())[0]==='Arztbrief-Orthopaedie.pdf'&&await sortBox.inputValue()==='date-r'&&!(await page.locator('#explorerContent').isChecked()));
   await page.evaluate(()=>{document.documentElement.lang='en';PBWorkspace.refresh();});
   await page.waitForFunction(()=>document.querySelector('#pb-explorer-sort>summary').getAttribute('aria-label')==='Sort: Date · Oldest first');
-  ok('English labels',await short()==='D ↑'&&(await page.locator('.explorer-content').textContent()).includes('also in content'));
+  ok('English labels',await short()==='D ↑');
   await page.setViewportSize({width:360,height:740});
   ok('Toolbar fits a phone without sideways scrolling',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
-  ok('Sort button and switch are flat but easy to tap (26–44 px)',await page.evaluate(()=>['#pb-explorer-sort>summary','.explorer-content'].every(s=>{const h=document.querySelector(s).getBoundingClientRect().height;return h>=26&&h<=44;})));
+  ok('Sort button is flat but easy to tap (26–44 px)',await page.evaluate(()=>['#pb-explorer-sort>summary'].every(s=>{const h=document.querySelector(s).getBoundingClientRect().height;return h>=26&&h<=44;})));
   ok('No runtime errors',errors.length===0);
 }finally{await browser?.close();await new Promise(r=>server.close(r));}
 console.log(`${count} explorer order checks passed (seeded catalog; no files written).`);

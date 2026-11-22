@@ -93,6 +93,7 @@ ok('Modal schließt wieder', !(await page.$eval('#modalBg', el=>el.classList.con
 // --- Reorg-Vorschau öffnet ohne Fehler ---
 // Seit Sitzung 5 (assets/pb-zielordner.js) steht die Vorschau als Ordnerbaum direkt unter den Knöpfen, nicht mehr im Fenster.
 await page.click('.tab[data-tab="order"]');
+await page.click('#reorgTile');   // Pro 1.0.53 (V7): „Neu ordnen“ klappt hinter der Kachel „+ Neuer Ordner“ auf
 await page.click('#reorgPreview'); await page.waitForTimeout(120);
 ok('Neu-Ordnen-Vorschau öffnet als Baum unter den Knöpfen, ohne Fenster', await page.evaluate(()=>!!document.querySelector('#panel-order [data-pb-zielordner="preview"]') && !document.getElementById('modalBg').classList.contains('on')));
 await page.click('#panel-order .pb-zo-close'); await page.waitForTimeout(80);

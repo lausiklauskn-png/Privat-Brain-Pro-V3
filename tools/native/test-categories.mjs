@@ -50,7 +50,7 @@ try{
   ok('"Anlegen" adds "🧾 Rechnungen (3)" to the folder tree',plain(await page.locator('#explorerTree [data-topic=invoice]').textContent())==='Rechnungen (3)');
   ok('No file was moved or renamed',await page.evaluate(()=>JSON.stringify(CATALOG.map(r=>[r.hash,r.path,r.dirId])))===before);
   await page.locator('#explorerTree [data-topic=invoice]').click();
-  const names=()=>page.locator('#explorerFiles .explorer-row strong').allTextContents().then(a=>a.map(x=>x.replace(/^\S+\s/,'')));
+  const names=()=>page.locator('#explorerFiles .explorer-row strong').allTextContents().then(a=>a.map(x=>x.replace(/^\s*\p{Extended_Pictographic}\S*\s/u,'').trim()));
   ok('The category shows exactly the invoices, newest on top',JSON.stringify(await names())===JSON.stringify(['Rechnung-Stadtwerke-Oktober.pdf','Telefon-Oktober.pdf','Baumarkt-Beleg.pdf']));
   ok('Mails from "Alle Konten" stay out of categories',!(await names()).includes('Newsletter'));
   await page.evaluate(async()=>{await addDoc('Rechnung-Versand.pdf',0,'Rechnungsnummer 99, zahlbar bis 5.11.');PBWorkspace.refresh();});
